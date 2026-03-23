@@ -1,0 +1,3809 @@
+# CHIBEMBA LANGUAGE - COMPREHENSIVE GRAMMAR
+# ============================================================================
+# ChiBemba Grammar — Gobelo Grammar Toolkit (GGT)
+# Schema: Gobelo-YAML Grammar Framework v1.0
+# Reference: Spitulnik & Kashoki (1992); Hoch (1960)
+# Generated: 2025-07-11
+# ============================================================================
+
+metadata:
+  language:
+    name: "ChiBemba"
+    iso_code: "bem"
+    guthrie: "M.42"
+    primary_region: "Zambia (Northern, Luapula, Copperbelt Provinces)"
+    approximate_speakers: "4.1 million"
+    family: "Niger-Congo, Bantu (Zone M)"
+    description: "A comprehensive concord and verbal morphology system for ChiBemba, covering major dialects for linguistic, educational, and computational applications."
+    dialects: ["Bemba proper", "Bisa", "Lala", "Swaka", "Luunda"]
+
+  orthography:
+    base: "Standard Zambia Bemba Orthography"
+    standard: "Zambia 1977 Revised Orthography"
+    alternative: "Missionary Orthography (White Fathers)"
+
+  tone_marking: false
+  date_created: "2025-07-11"
+  last_updated: "2025-07-11"
+  version: "1.0.0 (RC)"
+
+  schema_compatibility:
+    min_parser_version: "1.0"
+    max_parser_version: "2.x"
+
+  maintainer:
+    name: "Your Name"
+    email: "your.email@example.com"
+
+  framework:
+    name: "Gobelo-YAML Grammar Framework"
+    version: "1.0"
+    template_for: [Regional Official languages - Bemba, Nyanja, Lozi, Lunda, Kaonde, Luvale, Tonga]
+    Yaml_version: 1.0
+    license: "MIT"
+
+  documentation: [See docs/grammar_documentation.yaml]
+  Target_audience: [Educators, Linguists, Developers, Researchers, Students]
+  reference_grammar: "Spitulnik & Kashoki (1992), A Bemba Grammar; Hoch (1960), Bemba Pocket Grammar"
+  editing_instructions: |
+    This file is designed for linguists to read and edit.
+    - Add examples liberally for clarity
+    - Use verbose descriptions where helpful
+    - Include linguistic references
+
+# ============================================================================
+# PHONOLOGY SYSTEM
+# ============================================================================
+
+phonology:
+
+  phonology_metadata:
+    language: chibemba
+    framework: gobelo
+    module: unified_phonology
+    version: "1.0"
+    last_updated: "2025-07-11"
+    status: stable
+    design_goals:
+      - full_reversibility
+      - explicit_rule_ordering
+      - autosegmental_tone
+      - dialect_feature_gating
+      - NLP_safe_normalization
+      - integrated_sandhi_processing
+    sources:
+      - Spitulnik & Kashoki 1992
+      - Hoch 1960
+      - Jones 1943
+      - Goldsmith 1984
+      - Hyman 2007
+    integration_notes:
+      This file integrates phonological and sandhi rules into a unified
+      processing architecture. Sandhi rules apply post-morphology at
+      boundary interfaces, while phonological rules apply at broader structural domains.
+    schema_compatibility:
+      min_parser_version: "1.0"
+      max_parser_version: "2.x"
+
+  # ================================
+  # 1. PHONOLOGICAL INVENTORY
+  # ================================
+
+  vowels:
+    segments: [i, e, a, o, u]
+    short: [i, e, a, o, u]
+    long: [ii, ee, aa, oo, uu]
+    features:
+      height:
+        high: [i, u]
+        mid: [e, o]
+        low: [a]
+      backness:
+        front: [i, e]
+        central: [a]
+        back: [o, u]
+      round:
+        rounded: [o, u]
+        unrounded: [i, e, a]
+    notes: "Contrastive vowel length is phonologically significant in Chibemba, especially in TAM distinctions"
+
+  consonants:
+    segments: [
+        b, f, fy, g, h, k, l, m, n, p, s, sh, t, v, w, y,
+        mb, mp, mf, mfsh, mv, mw, my, nc, nd, nf, ng, nk, ns, nt, nsh, nw, ny, nz,
+        bw, fw, gw, kw, lw, pw, sw, tw, vw,
+        by, ky, py, ty,
+        bb, ff, gg, kk, pp, tt
+      ]
+    features:
+      place:
+        labial: [p, b, m, f, v, w, fy, mv]
+        alveolar: [t, d, n, s, z, l]
+        velar: [k, g]
+        palatal: [y, sh, ny]
+      manner:
+        stop: [p, t, k, b, g]
+        nasal: [m, n, ny]
+        fricative: [f, v, s, sh, fy]
+        liquid: [l]
+        glide: [w, y]
+        prenasalised: [mb, mp, mf, mv, nd, nk, ng, ns, nt, nsh]
+      voicing:
+        voiced: [b, g, m, n, v, l, w, y, mb, mv, nd, ng]
+        voiceless: [p, t, k, f, s, sh, mp, mf, nk, ns, nt, nsh]
+    notes: "The fy/fsh bilabial-palatal fricative series is characteristic of Chibemba (M.42 zone). Geminate consonants (bb, ff, etc.) occur in intensive verb forms."
+
+  syllable_structure:
+    pattern: [(C)V(N), CCV(N), CCCV(N)]
+    variants: []
+
+  tones:
+    levels: ["high", "low", "falling", "rising"]
+    notation: ["´", "`", "^", "ˇ"]
+    notes: "Chibemba has complex H-tone spreading (unbounded rightward); floating H tones on prefixes are grammatically distinctive. TAM distinctions depend heavily on tonal melody."
+
+  # ================================
+  # 2. BOUNDARY MARKERS
+  # ================================
+
+  boundaries:
+    morpheme: "+"
+    zone: "|"
+    word: "#"
+    phrase: "##"
+
+  # ================================
+  # 3. ENGINE FEATURES
+  # ================================
+
+  engine_features:
+    extended_H_spread:
+      type: boolean
+      default: true
+      note: "Chibemba-specific: unbounded rightward H-tone spreading activates TS.2"
+    reduced_H_spread:
+      type: boolean
+      default: false
+    initial_H_lowering:
+      type: boolean
+      default: false
+
+  # ================================
+  # 4. PROCESSING ARCHITECTURE
+  # ================================
+
+  processing_stages:
+    - stage: morphophonology
+      description: "Stem-internal and morpheme-triggered alternations"
+      applies_to: [stem, affix_attachment]
+    - stage: sandhi
+      description: "Boundary-conditioned surface adjustments"
+      applies_to: [morpheme_boundary, zone_boundary, word_boundary]
+    - stage: prosody
+      description: "Suprasegmental and phrasal processes"
+      applies_to: [syllable, word, phrase]
+    - stage: tone
+      description: "Tonal association and spreading (including unbounded H-spread)"
+      applies_to: [mora, word, phrase]
+
+  # ================================
+  # 5. MORPHOPHONOLOGICAL RULES
+  # ================================
+
+  morphophonology:
+
+    - id: VH.1
+      type: segmental
+      subtype: vowel_harmony
+      domain: stem
+      stage: morphophonology
+      ordering: 1
+      input:
+        suffix: applicative
+      conditions:
+        stem_vowel:
+          high_or_low: il
+          mid: el
+      output:
+        suffix_form: conditioned
+      reversible: true
+      notes: "Height harmony conditions applicative -il-/-el- and related suffixes"
+
+    - id: CA.1
+      type: segmental
+      subtype: consonant_alternation
+      domain: syllable_onset
+      stage: morphophonology
+      ordering: 2
+      input:
+        consonant: l
+        following_vowel: [+high]
+      output:
+        consonant: d
+      reversible: true
+      notes: "l/d alternation before high vowels; attested in some Bemba dialects"
+
+    - id: CA.2
+      type: segmental
+      subtype: palatalization
+      domain: syllable_onset
+      stage: morphophonology
+      ordering: 3
+      input:
+        consonant: k
+        following_vowel: [+front]
+      output:
+        consonant: sh
+      reversible: true
+      notes: "Chibemba reflex of *k-palatalisation is sh (not c as in Chitonga); e.g., *ki- → shi- in some environments"
+
+  # ================================
+  # 6. SANDHI RULES
+  # ================================
+
+  sandhi_rules:
+
+    - id: SND.1
+      name: high_vowel_glide
+      type: segmental
+      subtype: glide_formation
+      stage: sandhi
+      direction: bidirectional
+      applies_across: [morpheme, zone]
+      ordering: 10
+      input:
+        left:
+          features: [+high, +vowel]
+        right:
+          features: [+vowel]
+      output:
+        mapping:
+          i: y
+          u: w
+      blocks: [SND.2]
+      reversible: true
+      examples:
+        - underlying: ku+i+enda
+          surface: kuyenda
+      notes: "Glide formation at morpheme boundaries; same as Chitonga baseline"
+
+    - id: SND.2
+      name: vowel_coalescence
+      type: segmental
+      subtype: vowel_coalescence
+      stage: sandhi
+      direction: bidirectional
+      applies_across: [morpheme]
+      ordering: 11
+      input:
+        sequence: [V, V]
+      conditions:
+        blocked_by: [SND.1]
+      output:
+        mapping:
+          a+i: e
+          a+u: o
+          i+a: ya
+          u+a: wa
+      reversible: true
+      examples:
+        - underlying: ba+a+enda
+          surface: benda
+      notes: "Vowel coalescence applies when glide formation is blocked"
+
+    - id: SND.3
+      name: nasal_assimilation
+      type: segmental
+      subtype: nasal_assimilation
+      stage: sandhi
+      direction: bidirectional
+      applies_across: [morpheme]
+      ordering: 12
+      input:
+        left:
+          segment: N
+        right:
+          features: [+consonant, +oral]
+      output:
+        left: homorganic_nasal
+      reversible: true
+      examples:
+        - underlying: N+b
+          surface: mb
+        - underlying: N+d
+          surface: nd
+        - underlying: N+f
+          surface: mf
+        - underlying: N+sh
+          surface: nsh
+      notes: "Place assimilation of nasal prefix to following consonant; includes labiodental mf- before /f/"
+
+    - id: SND.4
+      name: vowel_elision
+      type: segmental
+      subtype: vowel_deletion
+      stage: sandhi
+      direction: unidirectional
+      applies_across: [word]
+      ordering: 13
+      input:
+        left:
+          features: [+vowel]
+        right:
+          boundary: word
+      output:
+        delete: left
+      constraints:
+        - prosodic_clitic
+      reversible: false
+      examples:
+        - underlying: na+enda+a#
+          surface: naenda
+      notes: "Unidirectional; applies only in word-boundary cliticisation contexts"
+
+  # ================================
+  # 7. PROSODIC RULES
+  # ================================
+
+  prosody:
+
+    - id: MP.1
+      type: prosodic
+      subtype: mora_preservation
+      domain: syllable
+      stage: prosody
+      ordering: 20
+      trigger:
+        deleted_segment: consonant
+      effect:
+        target: adjacent_vowel
+        add_mora: 1
+      reversible: true
+      notes: "Compensatory lengthening; passive vowel lengthening -w-/-iiw- in Chibemba is analysed via this rule"
+
+    - id: VL.2
+      type: prosodic
+      subtype: penultimate_lengthening
+      domain: phonological_phrase
+      stage: prosody
+      ordering: 21
+      input:
+        position: penultimate
+      output:
+        vowel_length: long
+      reversible: true
+
+  # ================================
+  # 8. TONAL RULES
+  # ================================
+
+  tone:
+
+    - id: TBU.1
+      type: tonal
+      subtype: tone_bearing_unit
+      domain: mora
+      stage: tone
+      ordering: 30
+      definition:
+        each_mora_bears_tone: true
+      reversible: true
+
+    - id: TS.1
+      type: tonal
+      subtype: high_spread
+      domain: phonological_word
+      stage: tone
+      ordering: 31
+      gate:
+        tone: H
+        following_tone: Ø
+        block_if_following_tone: H
+      effect:
+        associate: H
+      reversible: true
+
+    - id: TS.2
+      type: tonal
+      subtype: unbounded_high_spread
+      domain: phonological_phrase
+      stage: tone
+      ordering: 32
+      gate:
+        engine_feature: extended_H_spread
+      effect:
+        associate: H_to_all_following
+      reversible: true
+      notes: "Chibemba-specific: rightward unbounded H-tone spreading across the phonological phrase; activated by engine_features.extended_H_spread: true"
+
+    - id: OCP.1
+      type: tonal
+      subtype: adjacent_H_resolution
+      domain: phonological_word
+      stage: tone
+      ordering: 33
+      input:
+        sequence: H H
+      output:
+        delete: first_H
+      reversible: true
+
+    - id: TL.1
+      type: tonal
+      subtype: final_lowering
+      domain: phonological_phrase
+      stage: tone
+      ordering: 34
+      gate:
+        position: final
+        tone: H
+      output:
+        contour: HL
+      reversible: true
+
+    - id: TL.2
+      type: tonal
+      subtype: penultimate_lowering
+      domain: phonological_phrase
+      stage: tone
+      ordering: 35
+      gate:
+        position: penultimate
+        tone: H
+      output:
+        contour: HL
+      reversible: true
+
+  # ================================
+  # 9. RULE INTERACTIONS
+  # ================================
+
+  rule_interactions:
+    feeding:
+      - [SND.1, SND.2]
+      - [SND.3, MP.1]
+      - [OCP.1, TS.1]   # OCP feeds H-spread (Meeussen's Rule ordering)
+    bleeding:
+      - [SND.1, SND.2]
+    counterfeeding:
+      - [VL.2, SND.4]
+    opacity:
+      - note: "SND.1 creates opacity in vowel sequences; extended H-spread creates opaque tonal domains in TS.2"
+
+  # ================================
+  # 10. GLOBAL ORDERING
+  # ================================
+
+  global_ordering:
+    - morphophonology: [1-9]
+    - sandhi: [10-19]
+    - prosody: [20-29]
+    - tone: [30-39]
+  notes:
+    Sandhi rules must apply after morphophonological processes but before
+    phrasal prosody and tone. OCP.1 is ordered before TS.1 to respect
+    Meeussen's Rule in Chibemba tonal derivations. TS.2 (unbounded spread)
+    is gated by engine_features.extended_H_spread and applies only in Chibemba.
+
+  # ================================
+  # 11. REVERSIBILITY CONSTRAINTS
+  # ================================
+
+  constraints:
+    - id: R.1
+      description: "Mora count must be preserved or explicitly reassigned"
+      enforce: true
+
+    - id: R.2
+      description: "No contrastive feature deletion"
+      forbidden:
+        - tone
+        - vowel_height
+        - vowel_backness
+
+    - id: R.3
+      description: "Rule blocking must be explicit"
+      enforce: true
+
+    - id: R.4
+      description: "Each rule must be independently invertible"
+      enforce: true
+      exceptions: [SND.4]
+
+    - id: R.5
+      description: "Sandhi rules must specify boundary conditions"
+      enforce: true
+      applies_to: sandhi
+
+
+# ============================================================================
+# NOUN CLASS SYSTEM
+# ============================================================================
+
+noun_class_system:
+
+  noun_class_metadata:
+    language: chibemba
+    framework: gobelo
+    module: noun_class_system
+    version: "1.0"
+    last_updated: "2025-07-11"
+    status: stable
+    default_pos_tag: NOUN
+
+    augment_system:
+      description: "Pre-prefix that appears before noun class prefix"
+      form: "i-"
+      secondary_form: "a-"
+      usage: "optional"
+      contexts: ["definite_reference", "specific_reference", "emphasis", "isolation_form"]
+      examples:
+        - without_augment: "umuntu (a person)"
+          with_augment: "umuntu (the person — tone distinguishes)"
+        - without_augment: "ifikolwe (things)"
+          with_augment: "ifikolwe (the things)"
+      notes: "# VERIFY: Augment realisation in Chibemba is closely tied to tonal melody; the augment i- may fuse with the noun prefix via glide formation or coalescence"
+
+    loanword_assignment:
+      default_class: "NC9"
+      strategy: "phonological_and_semantic"
+      notes: "Loanwords from English typically enter NC9/NC10; human loanwords enter NC1/NC2"
+
+    sources:
+      - Spitulnik & Kashoki 1992
+      - Hoch 1960
+      - Jones 1943
+      - CBOLD
+
+    integration_notes:
+      Noun class prefixes in Chibemba (M.42 zone) differ critically from Chitonga
+      (M.64) in the NC7/NC8 slot — Chibemba uses fi-/bi- where Chitonga uses ci-/zi-.
+      The NC12/NC13 ka-/tu- diminutive series is highly productive in Chibemba.
+
+    schema_compatibility:
+      min_parser_version: "1.0"
+      max_parser_version: "2.x"
+
+  # ============================================================================
+  # NOUN CLASS DEFINITIONS
+  # ============================================================================
+
+  noun_classes:
+
+    # ==========================================================================
+    # CLASS 1 - Human Singular
+    # ==========================================================================
+    NC1:
+      class_number: 1
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC2
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "u-"
+        allomorphs:
+          - form: "w-"
+            condition: before_vowels
+            condition_formal: _V
+            examples: [umwana, umwaume]
+        tone: L
+        notes: "# VERIFY: Some analyses give mu- for NC1 in Chibemba; u- is the most common surface form in modern Zambia Bemba"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: human_beings
+        features: [+human, +animate, +singular]
+        typical_referents: [humans, kinship, professions, titles]
+
+    # ==========================================================================
+    # CLASS 1a - Kinship/Proper Names Singular
+    # ==========================================================================
+    NC1a:
+      class_number: 1
+      class_type: irregular
+      grammatical_number: singular
+      paired_class: NC2a
+      frequency: medium
+      active: true
+
+      prefix:
+        canonical_form: "Ø-"
+        allomorphs: []
+        formatives:
+          - form: ["na-", "shi-", "ba-", "Ø"]
+        tone: L
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: kinship_proper_names
+        features: [+human, +animate, +singular]
+        typical_referents: [kinship_terms, proper_names, animals_treated_as_persons]
+
+    # ==========================================================================
+    # CLASS 2 - Human Plural
+    # ==========================================================================
+    NC2:
+      class_number: 2
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC1
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "ba-"
+        allomorphs:
+          - form: "b-"
+            condition: before_vowels_e_o
+            condition_formal: _V[e,o]
+        tone: L
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.2
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: human_beings
+        features: [+human, +animate, +plural]
+        typical_referents: [human_groups, plural_kinship, professions_plural]
+
+    # ==========================================================================
+    # CLASS 2a - Kinship/Proper Names Plural
+    # ==========================================================================
+    NC2a:
+      class_number: 2
+      class_type: subclass
+      grammatical_number: plural
+      paired_class: NC1a
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "ba-"
+        allomorphs: []
+        tone: L
+        notes: "Uses NC2 prefix; paired with NC1a nouns"
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - SND.2
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: kinship_proper_names_plural
+        features: [+human, +animate, +plural]
+        typical_referents: [kinship_plural, proper_name_plural]
+
+    # ==========================================================================
+    # CLASS 2b - Honorific/Respectful Plural
+    # ==========================================================================
+    NC2b:
+      class_number: 2
+      class_type: irregular
+      grammatical_number: plural
+      paired_class: NC1
+      frequency: low
+      active: true
+
+      prefix:
+        canonical_form: "ba-"
+        allomorphs: []
+        formative: "bama-"
+        tone: L
+        notes: "Plural prefix used for respectful reference to singular person"
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - SND.2
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: respectful_reference
+        features: [+human, +animate, +respectful]
+        typical_referents: [elders, chiefs, respected_persons]
+
+    # ==========================================================================
+    # CLASS 3 - Trees/Plants Singular
+    # ==========================================================================
+    NC3:
+      class_number: 3
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC4
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "u-"
+        allomorphs:
+          - form: "w-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+        notes: "Homophonous with NC1 in surface form; distinguished by concord agreement"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: plants_trees_long_objects
+        features: [-human, +animate, +singular]
+        typical_referents: [trees, plants, long_objects, body_parts]
+
+      notes: "Homophonous with NC1 in prefix form; distinguished by concord"
+
+    # ==========================================================================
+    # CLASS 4 - Trees/Plants Plural
+    # ==========================================================================
+    NC4:
+      class_number: 4
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC3
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "i-"
+        allomorphs:
+          - form: "y-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: plants_trees_long_objects_plural
+        features: [-human, +animate, +plural]
+        typical_referents: [trees_plural, plants_plural, body_parts_plural]
+
+    # ==========================================================================
+    # CLASS 5 - Augmentative/Body Parts Singular
+    # ==========================================================================
+    NC5:
+      class_number: 5
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC6
+      frequency: medium
+      active: true
+
+      prefix:
+        canonical_form: "ili-"
+        allomorphs:
+          - form: "li-"
+            condition: common_shortened_form
+          - form: "Ø"
+            condition: some_nouns_zero_prefix
+        tone: L
+        notes: "# VERIFY: Chibemba NC5 prefix is often cited as ili- (fuller form than Chitonga li-); verify against Spitulnik & Kashoki (1992)"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - CA.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: augmentative_body_parts
+        features: [-human, +singular]
+        typical_referents: [body_parts, large_items, paired_body_parts, natural_objects]
+
+    # ==========================================================================
+    # CLASS 6 - Liquids/Masses/Plurals
+    # ==========================================================================
+    NC6:
+      class_number: 6
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC5
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "ama-"
+        allomorphs:
+          - form: "ma-"
+            condition: reduced_form_common
+          - form: "m-"
+            condition: before_consonants
+        tone: L
+        notes: "# VERIFY: Chibemba often shows fuller ama- (not just ma-); verify frequency of ama- vs ma- in modern usage"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.2
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: liquids_masses_plurals
+        features: [-human, +plural]
+        typical_referents: [liquids, masses, collectives, NC5_plurals]
+
+    # ==========================================================================
+    # CLASS 7 - Things/Instruments Singular (KEY DIFFERENCE: fi- not ci-)
+    # ==========================================================================
+    NC7:
+      class_number: 7
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC8
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "ifi-"
+        allomorphs:
+          - form: "fi-"
+            condition: reduced_form_common
+          - form: "f-"
+            condition: before_vowels
+        tone: L
+        notes: "CRITICAL DIFFERENCE from Chitonga: Chibemba NC7 prefix is fi- (not ci-). The fuller form ifi- is common in isolation."
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: things_instruments_diminutives
+        features: [-human, -animate, +singular]
+        typical_referents: [objects, instruments, diminutives, languages, customs]
+
+    # ==========================================================================
+    # CLASS 8 - Things/Instruments Plural (KEY DIFFERENCE: bi- not zi-)
+    # ==========================================================================
+    NC8:
+      class_number: 8
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC7
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "ibi-"
+        allomorphs:
+          - form: "bi-"
+            condition: reduced_form_common
+          - form: "b-"
+            condition: before_vowels
+        tone: L
+        notes: "CRITICAL DIFFERENCE from Chitonga: Chibemba NC8 prefix is bi- (not zi-). The fuller form ibi- appears in isolation contexts."
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: things_instruments_plural
+        features: [-human, -animate, +plural]
+        typical_referents: [objects_plural, instruments_plural, diminutives_plural]
+
+    # ==========================================================================
+    # CLASS 9 - Animals/Loanwords Singular
+    # ==========================================================================
+    NC9:
+      class_number: 9
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC10
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "N-"
+        allomorphs:
+          - form: "m-"
+            condition: before_labials
+            condition_formal: _[+labial]
+          - form: "n-"
+            condition: before_alveolars
+            condition_formal: _[+alveolar]
+          - form: "ng-"
+            condition: before_velars
+            condition_formal: _[+velar]
+          - form: "mf-"
+            condition: before_labiodentals
+            condition_formal: _f
+          - form: "nsh-"
+            condition: before_palatals_sh
+            condition_formal: _sh
+          - form: "Ø"
+            condition: before_fricatives_and_vowels
+        tone: L
+        notes: "Abstract N- assimilates to following consonant; includes mf- before /f/ which is a Chibemba-specific allomorph"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.3
+        - MP.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: animals_loanwords_diverse
+        features: [-human, +singular]
+        typical_referents: [animals, loanwords, diverse_objects]
+
+      notes: "NC9 is the only class with exclusive nasal assimilation rules. Chibemba adds mf- before /f/ beyond the Chitonga baseline."
+
+    # ==========================================================================
+    # CLASS 10 - Animals/Loanwords Plural
+    # ==========================================================================
+    NC10:
+      class_number: 10
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC9
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "N-"
+        allomorphs:
+          - form: "m-"
+            condition: before_labials
+            condition_formal: _[+labial]
+          - form: "n-"
+            condition: before_alveolars
+            condition_formal: _[+alveolar]
+          - form: "ng-"
+            condition: before_velars
+            condition_formal: _[+velar]
+          - form: "mf-"
+            condition: before_labiodentals
+            condition_formal: _f
+          - form: "nsh-"
+            condition: before_palatals_sh
+          - form: "Ø"
+            condition: before_fricatives_and_vowels
+        tone: L
+        notes: "Identical to NC9 in prefix form; distinguished by concord agreement"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.3
+        - MP.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: animals_loanwords_diverse_plural
+        features: [-human, +plural]
+        typical_referents: [animals_plural, loanwords_plural]
+
+    # ==========================================================================
+    # CLASS 11 - Long Objects Singular
+    # ==========================================================================
+    NC11:
+      class_number: 11
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC10
+      frequency: medium
+      active: true
+
+      prefix:
+        canonical_form: "ulu-"
+        allomorphs:
+          - form: "lu-"
+            condition: reduced_form
+          - form: "lw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+        notes: "# VERIFY: Chibemba NC11 may appear as ulu- in isolation vs lu- in connected speech"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: long_thin_objects
+        features: [-human, +singular]
+        typical_referents: [long_thin_objects, abstract_nouns, body_parts_linear]
+
+    # ==========================================================================
+    # CLASS 12 - Diminutive Singular (highly productive in Chibemba)
+    # ==========================================================================
+    NC12:
+      class_number: 12
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC13
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "aka-"
+        allomorphs:
+          - form: "ka-"
+            condition: reduced_form
+          - form: "k-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+        notes: "NC12 ka- diminutive is highly productive in Chibemba, more so than in Chitonga"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: diminutives_small
+        features: [-human, +singular, +diminutive]
+        typical_referents: [small_objects, diminutives, affectionate_reference]
+
+    # ==========================================================================
+    # CLASS 13 - Diminutive Plural (highly productive in Chibemba)
+    # ==========================================================================
+    NC13:
+      class_number: 13
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC12
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "utu-"
+        allomorphs:
+          - form: "tu-"
+            condition: reduced_form
+          - form: "tw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+        notes: "NC13 tu- diminutive plural; fuller form utu- in isolation"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: diminutives_plural
+        features: [-human, +plural, +diminutive]
+        typical_referents: [small_objects_plural, diminutives_plural]
+
+    # ==========================================================================
+    # CLASS 14 - Abstract/Mass Nouns
+    # ==========================================================================
+    NC14:
+      class_number: 14
+      class_type: regular
+      grammatical_number: singular
+      paired_class: null
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "ubu-"
+        allomorphs:
+          - form: "bu-"
+            condition: reduced_form
+          - form: "bw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+        notes: "Chibemba NC14 prefix is bu- (same as Chitonga); fuller form ubu- in isolation"
+
+      augment:
+        form: "i-"
+        usage: optional
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: abstract_mass
+        features: [-human, -count, +singular]
+        typical_referents: [abstract_qualities, masses, uncountables]
+
+      notes: "Typically has no plural; mass/abstract interpretation"
+
+    # ==========================================================================
+    # CLASS 15 - Infinitives
+    # ==========================================================================
+    NC15:
+      class_number: 15
+      class_type: verbal
+      grammatical_number: null
+      paired_class: null
+      frequency: very_high
+      active: true
+
+      prefix:
+        canonical_form: "uku-"
+        allomorphs:
+          - form: "ku-"
+            condition: reduced_form_in_connected_speech
+          - form: "kw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+        notes: "Chibemba infinitive prefix is uku- (fuller form) / ku- (reduced); same function as Chitonga ku-"
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: verbal_infinitives
+        features: [+verbal, -count]
+        typical_referents: [actions, processes, infinitival_complements]
+
+      notes: "Forms infinitives from verb roots; no plural"
+
+    # ==========================================================================
+    # CLASS 16 - Locative (Definite Surface)
+    # ==========================================================================
+    NC16:
+      class_number: 16
+      class_type: locative
+      grammatical_number: null
+      paired_class: null
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "pa-"
+        allomorphs:
+          - form: "p-"
+            condition: before_a_vowel
+        tone: L
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - SND.2
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: definite_surface_location
+        features: [+locative, +definite, +surface]
+        typical_referents: [specific_places, surfaces, at_locations]
+
+    # ==========================================================================
+    # CLASS 17 - Locative (Directional/General)
+    # ==========================================================================
+    NC17:
+      class_number: 17
+      class_type: locative
+      grammatical_number: null
+      paired_class: null
+      frequency: high
+      active: true
+
+      prefix:
+        canonical_form: "ku-"
+        allomorphs:
+          - form: "kw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: directional_general_location
+        features: [+locative, -definite]
+        typical_referents: [general_areas, directions, to_locations]
+
+      notes: "Homophonous with NC15 in reduced form; distinguished by context"
+
+    # ==========================================================================
+    # CLASS 18 - Locative (Interior)
+    # ==========================================================================
+    NC18:
+      class_number: 18
+      class_type: locative
+      grammatical_number: null
+      paired_class: null
+      frequency: medium
+      active: true
+
+      prefix:
+        canonical_form: "mu-"
+        allomorphs:
+          - form: "mw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+
+      augment:
+        form: null
+        usage: not_applicable
+
+      triggers_rules:
+        - SND.1
+        - VL.2
+        - TS.1
+        - TS.2
+
+      semantics:
+        primary_domain: interior_location
+        features: [+locative, +interior]
+        typical_referents: [inside_places, within_locations, in_locations]
+
+      notes: "Homophonous with NC3 in reduced form; distinguished by concord and semantics"
+
+  # ============================================================================
+  # NOUN CLASS FEATURES
+  # ============================================================================
+
+  noun_class_features:
+    cross_class_patterns:
+      high_vowel_classes:
+        description: "Classes triggering SND.1 (Glide Formation)"
+        classes: [NC1, NC3, NC4, NC7, NC8, NC11, NC14, NC15, NC17, NC18]
+        rule: SND.1
+
+      low_vowel_classes:
+        description: "Classes triggering SND.2 (Vowel Coalescence)"
+        classes: [NC2, NC6, NC16]
+        rule: SND.2
+
+      nasal_classes:
+        description: "Classes with exclusive nasal assimilation"
+        classes: [NC9, NC10]
+        rule: SND.3
+        note: "ONLY classes with class-specific phonology"
+
+      human_classes:
+        description: "Classes for human reference"
+        classes: [NC1, NC2]
+        features: [+human, +animate]
+
+      locative_classes:
+        description: "Locative noun classes"
+        classes: [NC16, NC17, NC18]
+        features: [+locative]
+
+      homophonous_prefixes:
+        "u-": [NC1, NC3]
+        "ku-": [NC15, NC17]
+        "mu-": [NC18]
+        note: "Distinguished by concord agreement patterns"
+
+      derivational_patterns:
+
+        diminutive_formation:
+          source_class: "any"
+          target_class: "NC12/NC13"
+          pattern: "aka-/utu- + stem"
+          semantic_change: "indicates smallness, affection, or contempt; highly productive in Chibemba"
+          examples:
+            - base: "umuntu (person, NC1)"
+              derived: "akamuntu (little person)"
+              plural: "utumuntu (little people)"
+            - base: "imbwa (dog, NC9)"
+              derived: "akambwa (little dog)"
+              plural: "utumbwa (little dogs)"
+            - base: "inshima (porridge, NC9)"
+              derived: "akanshima (small portion of porridge)"
+              plural: "utunsima (small portions)"
+
+        augmentative_formation:
+          source_class: "any"
+          target_class: "NC5/NC6"
+          pattern: "ili-/ama- + stem"
+          semantic_change: "indicates largeness or importance"
+          examples:
+            - base: "ifikolwe (things, NC7)"
+              derived: "ilikolwe (big thing)"
+              plural: "amakolwe (big things)"
+
+        language_names:
+          source_class: "NC1 (ethnic group)"
+          target_class: "NC7"
+          pattern: "ifi- + ethnic stem"
+          semantic_change: "creates language name from ethnic group"
+          examples:
+            - base: "umubemba (Bemba person, NC1)"
+              derived: "ichibemba (Bemba language, NC7)"
+            - base: "umutonga (Tonga person)"
+              derived: "ichitonga (Tonga language)"
+            - base: "umufwila (Luvale person)"
+              derived: "ichiluvale (Luvale language)"
+
+        abstract_nouns:
+          source_class: "adjective"
+          target_class: "NC14"
+          pattern: "ubu-/bu- + adjective stem"
+          semantic_change: "creates abstract quality noun"
+          examples:
+            - base: "-mfumu (chief)"
+              derived: "ubufumu (chieftainship)"
+            - base: "-suma (good)"
+              derived: "ubusuma (goodness)"
+            - base: "-muntu (person)"
+              derived: "ubuntu (humanity, personhood)"
+
+        infinitives:
+          source_class: "verb stem"
+          target_class: "NC15"
+          pattern: "uku- + verb stem"
+          semantic_change: "creates infinitive/verbal noun"
+          examples:
+            - base: "-lya (eat)"
+              derived: "ukulya (to eat/eating)"
+            - base: "-buta (hunt)"
+              derived: "ukubuta (to hunt/hunting)"
+            - base: "-ya (go)"
+              derived: "ukuya (to go/going)"
+
+        manner_nouns:
+          source_class: "verb stem"
+          target_class: "NC7"
+          pattern: "ifi- + verb stem"
+          semantic_change: "creates manner/way of doing"
+          examples:
+            - base: "-soma (read)"
+              derived: "ifisomo (reading matter, literacy)"
+            - base: "-bele (speak)"
+              derived: "ifikabelo (saying, proverb)"
+
+        locative_derivation:
+          source_class: "any noun"
+          target_class: "NC16/17/18"
+          patterns:
+            - "pa- + noun (at/on)"
+            - "ku- + noun (to/towards)"
+            - "mu- + noun (in/inside)"
+          examples:
+            - base: "ng'anda (house, NC9)"
+              derived:
+                - "pang'anda (at the house)"
+                - "kung'anda (to the house)"
+                - "mung'anda (in the house)"
+
+      semantic_notes:
+
+        class_pairing_semantics:
+          description: "Semantic relationships between singular and plural classes"
+          patterns:
+            - pairing: "NC1/NC2"
+              semantics: "human beings"
+              examples: ["umuntu/abantu (person/people)"]
+            - pairing: "NC3/NC4"
+              semantics: "trees, plants, natural objects, extended body parts"
+              examples: ["umuti/imiti (tree/trees)", "umutwe/imitwe (head/heads)"]
+            - pairing: "NC5/NC6"
+              semantics: "large/important objects, paired body parts"
+              examples: ["iliino/amano (tooth/teeth)", "ilisabi/amasabi (fish/fish)"]
+            - pairing: "NC7/NC8"
+              semantics: "things, objects, instruments, languages, customs (fi-/bi- in Chibemba)"
+              examples: ["ifintu/ibintu (thing/things)", "ichibemba (Bemba language)"]
+            - pairing: "NC9/NC10"
+              semantics: "animals, loanwords, various objects"
+              examples: ["imbwa/imbwa (dog/dogs)", "inshimi/inshimi (bee/bees)"]
+            - pairing: "NC12/NC13"
+              semantics: "diminutives, small objects (highly productive)"
+              examples: ["akamuntu/utumuntu (little person/little people)"]
+
+        loanword_assignment:
+          description: "How borrowed words are assigned to noun classes"
+          strategies:
+            - strategy: "phonological"
+              description: "Nouns beginning with certain sounds → NC9"
+              examples:
+                - word: "basi (bus)"
+                  class: "NC9"
+                  plural: "mabasi (NC6)"
+                - word: "sitima (train)"
+                  class: "NC9"
+            - strategy: "semantic"
+              description: "Human referents → NC1/NC2"
+              examples:
+                - word: "dokotela (doctor)"
+                  class: "NC1"
+                  plural: "badokotela (NC2)"
+
+        homonymy_disambiguation:
+          description: "How context and concord disambiguate identical forms"
+          examples:
+            - forms: "umuntu"
+              meanings:
+                - class: "NC1"
+                  meaning: "person (human)"
+                - class: "NC18"
+                  meaning: "# VERIFY: potential interior locative usage"
+            - forms: "imbwa"
+              meanings:
+                - singular: "dog (one)"
+                  example: "imbwa iyi (this dog — NC9 concord)"
+                - plural: "dogs (many)"
+                  example: "imbwa izi (these dogs — NC10 concord)"
+
+      dialectal_variation:
+        description: "Variation across Chibemba dialects"
+
+        major_dialects:
+          - name: "Bemba proper"
+            region: "Northern Province, Kasama, Chinsali"
+            speakers: "~2.5 million"
+            characteristics:
+              - "Prestige dialect; basis of standard written form"
+              - "Fuller prefix forms (ifi-, ibi-, uku-) more common"
+              - "Complex tonal system fully preserved"
+          - name: "Bisa"
+            region: "Muchinga Province"
+            speakers: "~300,000"
+            characteristics:
+              - "Closely related variety"
+              - "Some lexical divergence"
+              - "High mutual intelligibility with Bemba proper"
+          - name: "Lala"
+            region: "Central Province, Serenje"
+            speakers: "~350,000"
+            characteristics:
+              - "More innovative; some prefix simplifications"
+              - "Possible NC7 fi- vs shi- variation"  # VERIFY
+          - name: "Swaka"
+            region: "Mpika area"
+            speakers: "~80,000"
+            characteristics:
+              - "Conservative variety"
+              - "Close to Bemba proper"
+
+        phonological_variation:
+          - feature: "NC7 prefix"
+            bemba_proper: "ifi-/fi-"
+            lala: "ifi-/fi-"  # VERIFY: some sources suggest shi- variant
+            note: "fi- is standard across dialects but # VERIFY Lala variant"
+          - feature: "NC15 prefix"
+            bemba_proper: "uku-/ku-"
+            others: "uku-/ku- (consistent)"
+
+        lexical_variation:
+          - concept: "water"
+            bemba_proper: "amanzi"
+            variation: "amanshi (some dialects)"  # VERIFY
+          - concept: "fire"
+            bemba_proper: "umoto"
+            variation: "umwoto (some dialects)"  # VERIFY
+
+      usage_notes:
+
+        register_variation:
+          formal:
+            description: "Used in official contexts, church, education, media"
+            features:
+              - "Fuller prefix forms (uku-, ifi-, ubu-)"
+              - "Conservative tonal patterns"
+              - "Avoidance of loanwords where Chibemba equivalent exists"
+          informal:
+            description: "Used in casual conversation"
+            features:
+              - "Reduced prefix forms (ku-, fi-, bu-)"
+              - "More loanwords from English"
+              - "Contracted forms common on Copperbelt"
+          respectful:
+            description: "Used when addressing elders or in ceremonial contexts"
+            features:
+              - "NC2b honorific usage"
+              - "Respectful kinship terms"
+              - "Use of bama- prefix for respected adults"
+
+        contemporary_changes:
+          - change: "prefix_reduction"
+            description: "Younger and urban speakers use shorter prefix forms"
+            example: "ku- instead of uku-; fi- instead of ifi-"
+          - change: "tone_simplification"
+            description: "Complex tonal patterns simplified on Copperbelt"
+            trend: "increasing among urban youth"
+          - change: "loanword_integration"
+            description: "More English loanwords entering NC9"
+            examples: ["foni (phone)", "basi (bus)", "motoka (car)"]
+
+        cultural_notes:
+          - note: "respect_system"
+            description: "Hierarchical respect shown through NC2b and bama- prefix for elders"
+            example: "Addressing an elder man as bamishimbi (father figure)"
+          - note: "kinship_terms"
+            description: "Elaborate kinship system with distinct terms for maternal/paternal relatives"
+          - note: "chieftaincy_language"
+            description: "Special vocabulary around chiefs (abafumu); plural of umufumu is abafumu"
+
+        special_rules:
+          - rule: "vowel_coalescence_at_prefix_boundary"
+            description: "uku- becomes ukw- before vowels; ifi- becomes if- before vowels"
+            examples:
+              - "uku- + -iya → ukuya (to go)"
+              - "ifi- + -ino → ifino (this thing — shortened)"
+          - rule: "augment_tonal_function"
+            description: "In Chibemba the augment i-/a- also carries tonal information distinguishing definite from indefinite"
+            examples:
+              - "umuntu (indefinite — a person)"
+              - "omuntu / umuntu-H (definite tone — the person)"  # VERIFY tone pattern
+          - rule: "honorific_concord"
+            description: "Elders and chiefs addressed with plural concords even when singular"
+            note: "Uses bama- prefixed forms or straight NC2 concords for respect"
+
+
+# ============================================================================
+# CONCORD SYSTEM
+# ============================================================================
+
+concord_system:
+  concords_metadata:
+    description: "Agreement markers for ChiBemba across all grammatical contexts. Key differences from Chitonga: NC7 concords use fi-/f- series; NC8 concords use bi-/b- series."
+
+  concords:
+
+    # === SUBJECT CONCORDS ===
+    subject_concords:
+      description: "Subject markers appearing on verbs"
+      position: "pre_TAM"
+
+      # Personal pronouns
+      NEG.SG:  { forms: ["nshi", "si"], tone: "H", agreement: "NC1", syntax_expectation: "subject", gloss: "NEG.1SG" }
+      1SG:     { forms: ["ndi"], allomorphs: { forms: ["nd", "n"] }, tone: "H", agreement: "NC1", syntax_expectation: "subject", gloss: "1SG.SM" }
+      2SG:     { forms: ["u"], allomorphs: { forms: ["w"] }, tone: "L", agreement: "NC1", syntax_expectation: "subject", gloss: "2SG.SM" }
+      3SG:     { forms: ["a"], allomorphs: { forms: ["Ø"] }, tone: "L", agreement: "NC1", syntax_expectation: "subject", gloss: "3SG.SM" }
+      NEG.1PL: { forms: ["te"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "NEG.1PL" }
+      1PL_EXCL: { forms: ["tu"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "1PL.EXCL.SM" }
+      1PL_INCL: { forms: ["tw"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "1PL.INCL.SM" }
+      2PL:     { forms: ["mu"], allomorphs: { forms: ["mw"] }, tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "2PL.SM" }
+      3PL_HUMAN: { forms: ["ba", "b"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "3PL.SM" }
+      # Noun class concords
+      NC3:  { forms: ["u"], allomorphs: { forms: ["w"] }, tone: "L", agreement: "NC3", syntax_expectation: "subject", gloss: "CL3.SM" }
+      NC4:  { forms: ["i"], allomorphs: { forms: ["y"] }, tone: "L", agreement: "NC4", syntax_expectation: "subject", gloss: "CL4.SM" }
+      NC5:  { forms: ["ili", "li"], allomorphs: { forms: ["ly"] }, tone: "L", agreement: "NC5", syntax_expectation: "subject", gloss: "CL5.SM" }
+      NC6:  { forms: ["a"], allomorphs: { forms: ["Ø"] }, tone: "L", agreement: "NC6", syntax_expectation: "subject", gloss: "CL6.SM" }
+      NC7:  { forms: ["ifi", "fi"], allomorphs: { forms: ["f"] }, tone: "L", agreement: "NC7", syntax_expectation: "subject", gloss: "CL7.SM", note: "fi- not ci- — Chibemba M.42 zone" }
+      NC8:  { forms: ["ibi", "bi"], allomorphs: { forms: ["b"] }, tone: "L", agreement: "NC8", syntax_expectation: "subject", gloss: "CL8.SM", note: "bi- not zi- — Chibemba M.42 zone" }
+      NC9:  { forms: ["i"], allomorphs: { forms: ["y"] }, tone: "L", agreement: "NC9", syntax_expectation: "subject", gloss: "CL9.SM" }
+      NC10: { forms: ["i"], allomorphs: { forms: ["y"] }, tone: "L", agreement: "NC10", syntax_expectation: "subject", gloss: "CL10.SM", note: "# VERIFY: NC10 SM may be i- same as NC9 or bi- in some analyses" }
+      NC11: { forms: ["lu"], allomorphs: { forms: ["lw"] }, tone: "L", agreement: "NC11", syntax_expectation: "subject", gloss: "CL11.SM" }
+      NC12: { forms: ["aka", "ka"], allomorphs: { forms: ["k"] }, tone: "L", agreement: "NC12", syntax_expectation: "subject", gloss: "CL12.SM" }
+      NC13: { forms: ["utu", "tu"], allomorphs: { forms: ["tw"] }, tone: "L", agreement: "NC13", syntax_expectation: "subject", gloss: "CL13.SM" }
+      NC14: { forms: ["ubu", "bu"], allomorphs: { forms: ["bw"] }, tone: "L", agreement: "NC14", syntax_expectation: "subject", gloss: "CL14.SM" }
+      NC15: { forms: ["uku", "ku"], allomorphs: { forms: ["kw"] }, tone: "L", agreement: "NC15", syntax_expectation: "subject", gloss: "CL15.SM" }
+      NC16: { forms: ["pa"], allomorphs: { forms: ["p"] }, tone: "L", agreement: "NC16", syntax_expectation: "subject", gloss: "CL16.SM", note: "Locative can be subject" }
+      NC17: { forms: ["ku"], allomorphs: { forms: ["kw"] }, tone: "L", agreement: "NC17", syntax_expectation: "subject", gloss: "CL17.SM", note: "Locative can be subject" }
+      NC18: { forms: ["mu"], allomorphs: { forms: ["mw"] }, tone: "L", agreement: "NC18", syntax_expectation: "subject", gloss: "CL18.SM", note: "Locative can be subject" }
+
+    # === OBJECT CONCORDS ===
+    object_concords:
+      description: "Object markers appearing on verbs"
+      position: "pre_root_post_TAM"
+
+      1SG:  { forms: ["ndi"], tone: "H", agreement: "NC1", syntax_expectation: "object", gloss: "1SG.OM" }
+      2SG:  { forms: ["ku"], tone: "L", agreement: "NC1", syntax_expectation: "object", gloss: "2SG.OM" }
+      3SG:  { forms: ["mu"], tone: "L", agreement: "NC1", syntax_expectation: "object", gloss: "3SG.OM" }
+      1PL:  { forms: ["tu"], tone: "L", agreement: "NC1", syntax_expectation: "object", gloss: "1PL.OM" }
+      2PL:  { forms: ["mu"], tone: "L", agreement: "NC1", syntax_expectation: "object", gloss: "2PL.OM" }
+      3PL:  { forms: ["ba"], tone: "L", agreement: "NC2", syntax_expectation: "object", gloss: "3PL.OM" }
+      NC3:  { forms: ["u"], tone: "L", agreement: "NC3", syntax_expectation: "object", gloss: "CL3.OM" }
+      NC4:  { forms: ["i"], tone: "L", agreement: "NC4", syntax_expectation: "object", gloss: "CL4.OM" }
+      NC5:  { forms: ["li"], allomorphs: { forms: ["ili"] }, tone: "L", agreement: "NC5", syntax_expectation: "object", gloss: "CL5.OM" }
+      NC6:  { forms: ["a"], tone: "L", agreement: "NC6", syntax_expectation: "object", gloss: "CL6.OM" }
+      NC7:  { forms: ["fi"], allomorphs: { forms: ["ifi"] }, tone: "L", agreement: "NC7", syntax_expectation: "object", gloss: "CL7.OM" }
+      NC8:  { forms: ["bi"], allomorphs: { forms: ["ibi"] }, tone: "L", agreement: "NC8", syntax_expectation: "object", gloss: "CL8.OM" }
+      NC9:  { forms: ["i"], tone: "L", agreement: "NC9", syntax_expectation: "object", gloss: "CL9.OM" }
+      NC10: { forms: ["i"], tone: "L", agreement: "NC10", syntax_expectation: "object", gloss: "CL10.OM" }
+      NC11: { forms: ["lu"], tone: "L", agreement: "NC11", syntax_expectation: "object", gloss: "CL11.OM" }
+      NC12: { forms: ["ka"], tone: "L", agreement: "NC12", syntax_expectation: "object", gloss: "CL12.OM" }
+      NC13: { forms: ["tu"], tone: "L", agreement: "NC13", syntax_expectation: "object", gloss: "CL13.OM" }
+      NC14: { forms: ["bu"], tone: "L", agreement: "NC14", syntax_expectation: "object", gloss: "CL14.OM" }
+      NC15: { forms: ["ku"], tone: "L", agreement: "NC15", syntax_expectation: "object", gloss: "CL15.OM" }
+      NC16: { forms: ["pa"], tone: "L", agreement: "NC16", syntax_expectation: "object", gloss: "CL16.OM" }
+      NC17: { forms: ["ku"], tone: "L", agreement: "NC17", syntax_expectation: "object", gloss: "CL17.OM" }
+      NC18: { forms: ["mu"], tone: "L", agreement: "NC18", syntax_expectation: "object", gloss: "CL18.OM" }
+
+    # === RELATIVE CONCORDS ===
+    relative_concords:
+      description: "Relative clause markers (often with high tone)"
+      NC1:  { forms: ["uú"], tone: "H", agreement: "NC1", syntax_expectation: "relative", gloss: "CL1.REL" }
+      NC2:  { forms: ["baá"], tone: "H", agreement: "NC2", syntax_expectation: "relative", gloss: "CL2.REL" }
+      NC3:  { forms: ["uú"], tone: "H", agreement: "NC3", syntax_expectation: "relative", gloss: "CL3.REL" }
+      NC4:  { forms: ["ií"], tone: "H", agreement: "NC4", syntax_expectation: "relative", gloss: "CL4.REL" }
+      NC5:  { forms: ["iliî"], tone: "H", agreement: "NC5", syntax_expectation: "relative", gloss: "CL5.REL" }
+      NC6:  { forms: ["aá"], tone: "H", agreement: "NC6", syntax_expectation: "relative", gloss: "CL6.REL" }
+      NC7:  { forms: ["ifiî", "fiî"], tone: "H", agreement: "NC7", syntax_expectation: "relative", gloss: "CL7.REL" }
+      NC8:  { forms: ["ibiî", "biî"], tone: "H", agreement: "NC8", syntax_expectation: "relative", gloss: "CL8.REL" }
+      NC9:  { forms: ["iî"], tone: "H", agreement: "NC9", syntax_expectation: "relative", gloss: "CL9.REL" }
+      NC10: { forms: ["iî"], tone: "H", agreement: "NC10", syntax_expectation: "relative", gloss: "CL10.REL" }
+      NC11: { forms: ["luú"], tone: "H", agreement: "NC11", syntax_expectation: "relative", gloss: "CL11.REL" }
+      NC12: { forms: ["kaá"], tone: "H", agreement: "NC12", syntax_expectation: "relative", gloss: "CL12.REL" }
+      NC13: { forms: ["tuú"], tone: "H", agreement: "NC13", syntax_expectation: "relative", gloss: "CL13.REL" }
+      NC14: { forms: ["buú"], tone: "H", agreement: "NC14", syntax_expectation: "relative", gloss: "CL14.REL" }
+      NC15: { forms: ["kuú"], tone: "H", agreement: "NC15", syntax_expectation: "relative", gloss: "CL15.REL" }
+      NC16: { forms: ["paá"], tone: "H", agreement: "NC16", syntax_expectation: "relative", gloss: "CL16.REL" }
+      NC17: { forms: ["kuú"], tone: "H", agreement: "NC17", syntax_expectation: "relative", gloss: "CL17.REL" }
+      NC18: { forms: ["muú"], tone: "H", agreement: "NC18", syntax_expectation: "relative", gloss: "CL18.REL" }
+
+    # === POSSESSIVE CONCORDS ===
+    possessive_concords:
+      description: "Possessive agreement markers"
+      construction: "N + POSS + possessor"
+
+      NC1:  { forms: ["wa", "w"], tone: "L", agreement: "NC1", syntax_expectation: "possessive", gloss: "CL1.POSS", allomorph_context: "w- before vowels" }
+      NC1a: { forms: ["wa", "w"], tone: "L", agreement: "NC1a", syntax_expectation: "possessive", gloss: "CL1a.POSS", note: "Uses NC1 concords" }
+      NC2:  { forms: ["ba"], tone: "L", agreement: "NC2", syntax_expectation: "possessive", gloss: "CL2.POSS" }
+      NC2a: { forms: ["ba"], tone: "L", agreement: "NC2a", syntax_expectation: "possessive", gloss: "CL2a.POSS", note: "Uses NC2 concords" }
+      NC2b: { forms: ["ba"], tone: "L", agreement: "NC2b", syntax_expectation: "possessive", gloss: "CL2b.POSS", note: "Uses NC2 concords" }
+      NC3:  { forms: ["wa"], tone: "L", agreement: "NC3", syntax_expectation: "possessive", gloss: "CL3.POSS" }
+      NC4:  { forms: ["ya"], tone: "L", agreement: "NC4", syntax_expectation: "possessive", gloss: "CL4.POSS" }
+      NC5:  { forms: ["lya", "ilya"], tone: "L", agreement: "NC5", syntax_expectation: "possessive", gloss: "CL5.POSS" }
+      NC6:  { forms: ["a"], tone: "L", agreement: "NC6", syntax_expectation: "possessive", gloss: "CL6.POSS" }
+      NC7:  { forms: ["fya", "ifya"], tone: "L", agreement: "NC7", syntax_expectation: "possessive", gloss: "CL7.POSS", note: "fya- not cya-" }
+      NC8:  { forms: ["bya", "ibya"], tone: "L", agreement: "NC8", syntax_expectation: "possessive", gloss: "CL8.POSS", note: "bya- not zya-" }
+      NC9:  { forms: ["ya"], tone: "L", agreement: "NC9", syntax_expectation: "possessive", gloss: "CL9.POSS" }
+      NC10: { forms: ["ya"], tone: "L", agreement: "NC10", syntax_expectation: "possessive", gloss: "CL10.POSS" }
+      NC11: { forms: ["lwa"], tone: "L", agreement: "NC11", syntax_expectation: "possessive", gloss: "CL11.POSS" }
+      NC12: { forms: ["ka", "aka"], tone: "L", agreement: "NC12", syntax_expectation: "possessive", gloss: "CL12.POSS" }
+      NC13: { forms: ["twa", "utwa"], tone: "L", agreement: "NC13", syntax_expectation: "possessive", gloss: "CL13.POSS" }
+      NC14: { forms: ["bwa", "ubwa"], tone: "L", agreement: "NC14", syntax_expectation: "possessive", gloss: "CL14.POSS" }
+      NC15: { forms: ["kwa", "ukwa"], tone: "L", agreement: "NC15", syntax_expectation: "possessive", gloss: "CL15.POSS" }
+      NC16: { forms: ["pa"], tone: "L", agreement: "NC16", syntax_expectation: "possessive", gloss: "CL16.POSS" }
+      NC17: { forms: ["kwa"], tone: "L", agreement: "NC17", syntax_expectation: "possessive", gloss: "CL17.POSS" }
+      NC18: { forms: ["mwa"], tone: "L", agreement: "NC18", syntax_expectation: "possessive", gloss: "CL18.POSS" }
+
+    # === DEMONSTRATIVE CONCORDS ===
+    demonstrative_concords:
+      description: "Demonstrative agreement markers (proximal, medial, distal)"
+
+      proximal:
+        description: "This/these (near speaker)"
+        3SG:  { forms: ["uyu"], tone: "L", agreement: "NC1", syntax_expectation: "demonstrative", gloss: "3SG.DEM.PROX" }
+        3PL:  { forms: ["aba"], tone: "L", agreement: "NC2", syntax_expectation: "demonstrative", gloss: "3PL.DEM.PROX" }
+        NC3:  { forms: ["uyu"], tone: "L-H", agreement: "NC3", syntax_expectation: "demonstrative", gloss: "CL3.DEM.PROX" }
+        NC4:  { forms: ["iyi"], tone: "L-H", agreement: "NC4", syntax_expectation: "demonstrative", gloss: "CL4.DEM.PROX" }
+        NC5:  { forms: ["ilyi", "lyi"], tone: "L-H", agreement: "NC5", syntax_expectation: "demonstrative", gloss: "CL5.DEM.PROX" }
+        NC6:  { forms: ["aya"], tone: "L-L", agreement: "NC6", syntax_expectation: "demonstrative", gloss: "CL6.DEM.PROX" }
+        NC7:  { forms: ["ifi", "ifi"], tone: "L-H", agreement: "NC7", syntax_expectation: "demonstrative", gloss: "CL7.DEM.PROX", note: "ifi- proximal demonstrative" }
+        NC8:  { forms: ["ibi"], tone: "L-H", agreement: "NC8", syntax_expectation: "demonstrative", gloss: "CL8.DEM.PROX", note: "ibi- proximal demonstrative" }
+        NC9:  { forms: ["iyi"], tone: "L-H", agreement: "NC9", syntax_expectation: "demonstrative", gloss: "CL9.DEM.PROX" }
+        NC10: { forms: ["izi", "iyi"], tone: "L-H", agreement: "NC10", syntax_expectation: "demonstrative", gloss: "CL10.DEM.PROX", note: "# VERIFY: NC10 proximal form" }
+        NC11: { forms: ["ulu"], tone: "L-H", agreement: "NC11", syntax_expectation: "demonstrative", gloss: "CL11.DEM.PROX" }
+        NC12: { forms: ["aka"], tone: "L-L", agreement: "NC12", syntax_expectation: "demonstrative", gloss: "CL12.DEM.PROX" }
+        NC13: { forms: ["utu"], tone: "L-H", agreement: "NC13", syntax_expectation: "demonstrative", gloss: "CL13.DEM.PROX" }
+        NC14: { forms: ["ubu"], tone: "L-H", agreement: "NC14", syntax_expectation: "demonstrative", gloss: "CL14.DEM.PROX" }
+        NC15: { forms: ["uku"], tone: "L-H", agreement: "NC15", syntax_expectation: "demonstrative", gloss: "CL15.DEM.PROX" }
+        NC16: { forms: ["apa"], tone: "L-L", agreement: "NC16", syntax_expectation: "demonstrative", gloss: "CL16.DEM.PROX" }
+        NC17: { forms: ["uku"], tone: "L-H", agreement: "NC17", syntax_expectation: "demonstrative", gloss: "CL17.DEM.PROX" }
+        NC18: { forms: ["umu"], tone: "L-H", agreement: "NC18", syntax_expectation: "demonstrative", gloss: "CL18.DEM.PROX" }
+
+      medial:
+        description: "That/those (near addressee)"
+        3SG:  { forms: ["uyo"], tone: "L", agreement: "NC1", syntax_expectation: "demonstrative", gloss: "3SG.DEM.MED" }
+        3PL:  { forms: ["abo"], tone: "L", agreement: "NC2", syntax_expectation: "demonstrative", gloss: "3PL.DEM.MED" }
+        NC1:  { forms: ["uyo"], tone: "L-L", agreement: "NC1", syntax_expectation: "demonstrative", gloss: "CL1.DEM.MED" }
+        NC1a: { forms: ["uyo"], tone: "L-L", agreement: "NC1a", syntax_expectation: "demonstrative", gloss: "CL1a.DEM.MED" }
+        NC2:  { forms: ["abo"], tone: "L-L", agreement: "NC2", syntax_expectation: "demonstrative", gloss: "CL2.DEM.MED" }
+        NC2a: { forms: ["abo"], tone: "L-L", agreement: "NC2a", syntax_expectation: "demonstrative", gloss: "CL2a.DEM.MED" }
+        NC2b: { forms: ["abo"], tone: "L-L", agreement: "NC2b", syntax_expectation: "demonstrative", gloss: "CL2b.DEM.MED" }
+        NC3:  { forms: ["uyo"], tone: "L-L", agreement: "NC3", syntax_expectation: "demonstrative", gloss: "CL3.DEM.MED" }
+        NC4:  { forms: ["iyo"], tone: "L-L", agreement: "NC4", syntax_expectation: "demonstrative", gloss: "CL4.DEM.MED" }
+        NC5:  { forms: ["ilyo", "lyo"], tone: "L-L", agreement: "NC5", syntax_expectation: "demonstrative", gloss: "CL5.DEM.MED" }
+        NC6:  { forms: ["ayo"], tone: "L-L", agreement: "NC6", syntax_expectation: "demonstrative", gloss: "CL6.DEM.MED" }
+        NC7:  { forms: ["ifyo", "fyo"], tone: "L-L", agreement: "NC7", syntax_expectation: "demonstrative", gloss: "CL7.DEM.MED", note: "fyo- medial" }
+        NC8:  { forms: ["ibyo", "byo"], tone: "L-L", agreement: "NC8", syntax_expectation: "demonstrative", gloss: "CL8.DEM.MED", note: "byo- medial" }
+        NC9:  { forms: ["iyo"], tone: "L-L", agreement: "NC9", syntax_expectation: "demonstrative", gloss: "CL9.DEM.MED" }
+        NC10: { forms: ["iyo"], tone: "L-L", agreement: "NC10", syntax_expectation: "demonstrative", gloss: "CL10.DEM.MED" }
+        NC11: { forms: ["ulo"], tone: "L-L", agreement: "NC11", syntax_expectation: "demonstrative", gloss: "CL11.DEM.MED" }
+        NC12: { forms: ["ako"], tone: "L-L", agreement: "NC12", syntax_expectation: "demonstrative", gloss: "CL12.DEM.MED" }
+        NC13: { forms: ["uto"], tone: "L-L", agreement: "NC13", syntax_expectation: "demonstrative", gloss: "CL13.DEM.MED" }
+        NC14: { forms: ["ubo"], tone: "L-L", agreement: "NC14", syntax_expectation: "demonstrative", gloss: "CL14.DEM.MED" }
+        NC15: { forms: ["uko"], tone: "L-L", agreement: "NC15", syntax_expectation: "demonstrative", gloss: "CL15.DEM.MED" }
+        NC16: { forms: ["apo"], tone: "L-L", agreement: "NC16", syntax_expectation: "demonstrative", gloss: "CL16.DEM.MED" }
+        NC17: { forms: ["uko"], tone: "L-L", agreement: "NC17", syntax_expectation: "demonstrative", gloss: "CL17.DEM.MED" }
+        NC18: { forms: ["umo"], tone: "L-L", agreement: "NC18", syntax_expectation: "demonstrative", gloss: "CL18.DEM.MED" }
+
+      distal:
+        description: "That/those (far from both)"
+        3SG:  { forms: ["ulya"], tone: "L", agreement: "NC1", syntax_expectation: "demonstrative", gloss: "3SG.DEM.DIST" }
+        3PL:  { forms: ["abaya", "aba lya"], tone: "L", agreement: "NC2", syntax_expectation: "demonstrative", gloss: "3PL.DEM.DIST" }
+        NC1:  { forms: ["ulya"], tone: "L-L", agreement: "NC1", syntax_expectation: "demonstrative", gloss: "CL1.DEM.DIST" }
+        NC1a: { forms: ["ulya"], tone: "L-L", agreement: "NC1a", syntax_expectation: "demonstrative", gloss: "CL1a.DEM.DIST" }
+        NC2:  { forms: ["balya"], tone: "L-L", agreement: "NC2", syntax_expectation: "demonstrative", gloss: "CL2.DEM.DIST" }
+        NC2a: { forms: ["balya"], tone: "L-L", agreement: "NC2a", syntax_expectation: "demonstrative", gloss: "CL2a.DEM.DIST" }
+        NC2b: { forms: ["balya"], tone: "L-L", agreement: "NC2b", syntax_expectation: "demonstrative", gloss: "CL2b.DEM.DIST" }
+        NC3:  { forms: ["ulya"], tone: "L-L", agreement: "NC3", syntax_expectation: "demonstrative", gloss: "CL3.DEM.DIST" }
+        NC4:  { forms: ["ilya"], tone: "L-L", agreement: "NC4", syntax_expectation: "demonstrative", gloss: "CL4.DEM.DIST" }
+        NC5:  { forms: ["ilya", "lya"], tone: "L-L", agreement: "NC5", syntax_expectation: "demonstrative", gloss: "CL5.DEM.DIST" }
+        NC6:  { forms: ["alya"], tone: "L-L", agreement: "NC6", syntax_expectation: "demonstrative", gloss: "CL6.DEM.DIST" }
+        NC7:  { forms: ["ifilya", "filya"], tone: "L-L", agreement: "NC7", syntax_expectation: "demonstrative", gloss: "CL7.DEM.DIST" }
+        NC8:  { forms: ["ibilya", "bilya"], tone: "L-L", agreement: "NC8", syntax_expectation: "demonstrative", gloss: "CL8.DEM.DIST" }
+        NC9:  { forms: ["ilya"], tone: "L-L", agreement: "NC9", syntax_expectation: "demonstrative", gloss: "CL9.DEM.DIST" }
+        NC10: { forms: ["ilya"], tone: "L-L", agreement: "NC10", syntax_expectation: "demonstrative", gloss: "CL10.DEM.DIST" }
+        NC11: { forms: ["ulwaya", "ulya"], tone: "L-L", agreement: "NC11", syntax_expectation: "demonstrative", gloss: "CL11.DEM.DIST" }
+        NC12: { forms: ["akalya", "kalya"], tone: "L-L", agreement: "NC12", syntax_expectation: "demonstrative", gloss: "CL12.DEM.DIST" }
+        NC13: { forms: ["utulya", "tulya"], tone: "L-L", agreement: "NC13", syntax_expectation: "demonstrative", gloss: "CL13.DEM.DIST" }
+        NC14: { forms: ["ubulya", "bulya"], tone: "L-L", agreement: "NC14", syntax_expectation: "demonstrative", gloss: "CL14.DEM.DIST" }
+        NC15: { forms: ["ukulya", "kulya"], tone: "L-L", agreement: "NC15", syntax_expectation: "demonstrative", gloss: "CL15.DEM.DIST" }
+        NC16: { forms: ["palya"], tone: "L-L", agreement: "NC16", syntax_expectation: "demonstrative", gloss: "CL16.DEM.DIST" }
+        NC17: { forms: ["kulya"], tone: "L-L", agreement: "NC17", syntax_expectation: "demonstrative", gloss: "CL17.DEM.DIST" }
+        NC18: { forms: ["mulya"], tone: "L-L", agreement: "NC18", syntax_expectation: "demonstrative", gloss: "CL18.DEM.DIST" }
+
+    # === ADJECTIVAL CONCORDS ===
+    adjectival_concords:
+      description: "Agreement markers on adjectives"
+      3SG:  { forms: ["mu", "mw"], tone: "L", agreement: "NC1", syntax_expectation: "adjectival", gloss: "3SG.ADJ" }
+      3PL:  { forms: ["ba", "b"], tone: "L", agreement: "NC2", syntax_expectation: "adjectival", gloss: "3PL.ADJ" }
+      NC3:  { forms: ["mu", "mw"], tone: "L", agreement: "NC3", syntax_expectation: "adjectival", gloss: "CL3.ADJ" }
+      NC4:  { forms: ["mi", "my"], tone: "L", agreement: "NC4", syntax_expectation: "adjectival", gloss: "CL4.ADJ" }
+      NC5:  { forms: ["ili", "li"], tone: "L", agreement: "NC5", syntax_expectation: "adjectival", gloss: "CL5.ADJ" }
+      NC6:  { forms: ["ama", "ma"], tone: "L", agreement: "NC6", syntax_expectation: "adjectival", gloss: "CL6.ADJ" }
+      NC7:  { forms: ["ifi", "fi"], tone: "L", agreement: "NC7", syntax_expectation: "adjectival", gloss: "CL7.ADJ" }
+      NC8:  { forms: ["ibi", "bi"], tone: "L", agreement: "NC8", syntax_expectation: "adjectival", gloss: "CL8.ADJ" }
+      NC9:  { forms: ["N", "n", "i"], tone: "L", agreement: "NC9", syntax_expectation: "adjectival", gloss: "CL9.ADJ", note: "Assimilating nasal" }
+      NC10: { forms: ["N", "n", "i"], tone: "L", agreement: "NC10", syntax_expectation: "adjectival", gloss: "CL10.ADJ" }
+      NC11: { forms: ["ulu", "lu"], tone: "L", agreement: "NC11", syntax_expectation: "adjectival", gloss: "CL11.ADJ" }
+      NC12: { forms: ["aka", "ka"], tone: "L", agreement: "NC12", syntax_expectation: "adjectival", gloss: "CL12.ADJ" }
+      NC13: { forms: ["utu", "tu"], tone: "L", agreement: "NC13", syntax_expectation: "adjectival", gloss: "CL13.ADJ" }
+      NC14: { forms: ["ubu", "bu", "bw"], tone: "L", agreement: "NC14", syntax_expectation: "adjectival", gloss: "CL14.ADJ" }
+      NC15: { forms: ["uku", "ku", "kw"], tone: "L", agreement: "NC15", syntax_expectation: "adjectival", gloss: "CL15.ADJ" }
+      NC16: { forms: ["pa"], tone: "L", agreement: "NC16", syntax_expectation: "adjectival", gloss: "CL16.ADJ" }
+      NC17: { forms: ["ku", "kw"], tone: "L", agreement: "NC17", syntax_expectation: "adjectival", gloss: "CL17.ADJ" }
+      NC18: { forms: ["mu", "mw"], tone: "L", agreement: "NC18", syntax_expectation: "adjectival", gloss: "CL18.ADJ" }
+
+    # === ADVERBIAL CONCORDS ===
+    adverbial_concords:
+      description: "Adverbial concords matching noun class they modify"
+      position: "pre_adverbial_stem"
+      NC1:  { forms: ["mu"], tone: "L", agreement: "NC1", syntax_expectation: "adverbial", gloss: "CL1.ADV" }
+      NC2:  { forms: ["ba"], tone: "L", agreement: "NC2", syntax_expectation: "adverbial", gloss: "CL2.ADV" }
+      NC3:  { forms: ["mu"], tone: "L", agreement: "NC3", syntax_expectation: "adverbial", gloss: "CL3.ADV" }
+      NC4:  { forms: ["mi"], tone: "L", agreement: "NC4", syntax_expectation: "adverbial", gloss: "CL4.ADV" }
+      NC5:  { forms: ["ili", "li"], tone: "L", agreement: "NC5", syntax_expectation: "adverbial", gloss: "CL5.ADV" }
+      NC6:  { forms: ["ama", "ma"], tone: "L", agreement: "NC6", syntax_expectation: "adverbial", gloss: "CL6.ADV" }
+      NC7:  { forms: ["ifi", "fi"], tone: "L", agreement: "NC7", syntax_expectation: "adverbial", gloss: "CL7.ADV" }
+      NC8:  { forms: ["ibi", "bi"], tone: "L", agreement: "NC8", syntax_expectation: "adverbial", gloss: "CL8.ADV" }
+      NC9:  { forms: ["n"], tone: "L", agreement: "NC9", syntax_expectation: "adverbial", gloss: "CL9.ADV" }
+      NC10: { forms: ["n"], tone: "L", agreement: "NC10", syntax_expectation: "adverbial", gloss: "CL10.ADV" }
+      NC11: { forms: ["lu"], tone: "L", agreement: "NC11", syntax_expectation: "adverbial", gloss: "CL11.ADV" }
+      NC12: { forms: ["ka"], tone: "L", agreement: "NC12", syntax_expectation: "adverbial", gloss: "CL12.ADV" }
+      NC13: { forms: ["tu"], tone: "L", agreement: "NC13", syntax_expectation: "adverbial", gloss: "CL13.ADV" }
+      NC14: { forms: ["bu"], tone: "L", agreement: "NC14", syntax_expectation: "adverbial", gloss: "CL14.ADV" }
+      NC15: { forms: ["ku"], tone: "L", agreement: "NC15", syntax_expectation: "adverbial", gloss: "CL15.ADV" }
+      NC16: { forms: ["pa"], tone: "L", agreement: "NC16", syntax_expectation: "adverbial", gloss: "CL16.ADV", note: "Locative adverbial" }
+      NC17: { forms: ["ku"], tone: "L", agreement: "NC17", syntax_expectation: "adverbial", gloss: "CL17.ADV", note: "Locative adverbial" }
+      NC18: { forms: ["mu"], tone: "L", agreement: "NC18", syntax_expectation: "adverbial", gloss: "CL18.ADV", note: "Locative adverbial" }
+
+    # === RELATIVE SUBJECT CONCORDS ===
+    relative_subject_concords:
+      description: "Relative subject markers appearing on verbs in relative clauses"
+      position: "pre_TAM"
+      1SG:      { forms: ["nee", "ee", "indi"], tone: "H", agreement: "NC1", syntax_expectation: "subject", gloss: "1SG.RSP" }
+      2SG:      { forms: ["oo", "noo"], tone: "L", agreement: "NC1", syntax_expectation: "subject", gloss: "2SG.RSP" }
+      3SG:      { forms: ["uu", "iw"], tone: "L", agreement: "NC1", syntax_expectation: "subject", gloss: "3SG.RSP" }
+      1PL_EXCL: { forms: ["notu"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "1PL.EXCL.RSP" }
+      1PL_INCL: { forms: ["notw"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "1PL.INCL.RSP" }
+      2PL:      { forms: ["nomu", "nomw"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "2PL.RSP" }
+      3PL_HUMAN: { forms: ["aba", "ib"], tone: "L", agreement: "NC2", syntax_expectation: "subject", gloss: "3PL.RSP" }
+      NC3:  { forms: ["uu", "iw"], tone: "L", agreement: "NC3", syntax_expectation: "subject", gloss: "CL3.RSP" }
+      NC4:  { forms: ["ii", "iy"], tone: "L", agreement: "NC4", syntax_expectation: "subject", gloss: "CL4.RSP" }
+      NC5:  { forms: ["ilili", "ily"], tone: "L", agreement: "NC5", syntax_expectation: "subject", gloss: "CL5.RSP" }
+      NC6:  { forms: ["aa", "a"], tone: "L", agreement: "NC6", syntax_expectation: "subject", gloss: "CL6.RSP" }
+      NC7:  { forms: ["ififi", "ific", "if"], tone: "L", agreement: "NC7", syntax_expectation: "subject", gloss: "CL7.RSP" }
+      NC8:  { forms: ["ibiî", "ibic", "ib"], tone: "L", agreement: "NC8", syntax_expectation: "subject", gloss: "CL8.RSP" }
+      NC9:  { forms: ["ii", "iy"], tone: "L", agreement: "NC9", syntax_expectation: "subject", gloss: "CL9.RSP" }
+      NC10: { forms: ["ii", "iy"], tone: "L", agreement: "NC10", syntax_expectation: "subject", gloss: "CL10.RSP" }
+      NC11: { forms: ["ilu", "ilw"], tone: "L", agreement: "NC11", syntax_expectation: "subject", gloss: "CL11.RSP" }
+      NC12: { forms: ["aka", "ak"], tone: "L", agreement: "NC12", syntax_expectation: "subject", gloss: "CL12.RSP" }
+      NC13: { forms: ["utu", "utw"], tone: "L", agreement: "NC13", syntax_expectation: "subject", gloss: "CL13.RSP" }
+      NC14: { forms: ["ibu", "ibw"], tone: "L", agreement: "NC14", syntax_expectation: "subject", gloss: "CL14.RSP" }
+      NC15: { forms: ["iku", "ikw"], tone: "L", agreement: "NC15", syntax_expectation: "subject", gloss: "CL15.RSP" }
+      NC16: { forms: ["aa", "pa"], tone: "L", agreement: "NC16", syntax_expectation: "subject", gloss: "CL16.RSP" }
+      NC17: { forms: ["iku", "ikw"], tone: "L", agreement: "NC17", syntax_expectation: "subject", gloss: "CL17.RSP" }
+      NC18: { forms: ["imu", "imw"], tone: "L", agreement: "NC18", syntax_expectation: "subject", gloss: "CL18.RSP" }
+
+    # === RELATIVE OBJECT CONCORDS ===
+    relative_object_concords:
+      description: "Relative object markers on verbs"
+      position: "pre_root_post_TAM"
+      3SG:  { forms: ["ngo", "ngu"], tone: "L", agreement: "NC1", syntax_expectation: "object", gloss: "3SG.ROC" }
+      3PL:  { forms: ["mbo", "mbi"], tone: "L", agreement: "NC2", syntax_expectation: "object", gloss: "3PL.ROC" }
+      NC3:  { forms: ["ngo", "ngu"], tone: "L", agreement: "NC3", syntax_expectation: "object", gloss: "CL3.ROC" }
+      NC4:  { forms: ["njo", "nji"], tone: "L", agreement: "NC4", syntax_expectation: "object", gloss: "CL4.ROC" }
+      NC5:  { forms: ["ndyo", "ndi"], tone: "L", agreement: "NC5", syntax_expectation: "object", gloss: "CL5.ROC" }
+      NC6:  { forms: ["ngo", "ngi"], tone: "L", agreement: "NC6", syntax_expectation: "object", gloss: "CL6.ROC" }
+      NC7:  { forms: ["nfyo", "nfi"], tone: "L", agreement: "NC7", syntax_expectation: "object", gloss: "CL7.ROC", note: "nfyo- not nco- — Chibemba NC7" }
+      NC8:  { forms: ["mbyo", "mbi"], tone: "L", agreement: "NC8", syntax_expectation: "object", gloss: "CL8.ROC", note: "mbyo- not nzyo- — Chibemba NC8" }
+      NC9:  { forms: ["njo", "nji"], tone: "L", agreement: "NC9", syntax_expectation: "object", gloss: "CL9.ROC" }
+      NC10: { forms: ["njo", "nji"], tone: "L", agreement: "NC10", syntax_expectation: "object", gloss: "CL10.ROC" }
+      NC11: { forms: ["ndo", "ndu"], tone: "L", agreement: "NC11", syntax_expectation: "object", gloss: "CL11.ROC" }
+      NC12: { forms: ["nko", "nki"], tone: "L", agreement: "NC12", syntax_expectation: "object", gloss: "CL12.ROC" }
+      NC13: { forms: ["nto", "nti"], tone: "L", agreement: "NC13", syntax_expectation: "object", gloss: "CL13.ROC" }
+      NC14: { forms: ["mbo", "mbu"], tone: "L", agreement: "NC14", syntax_expectation: "object", gloss: "CL14.ROC" }
+      NC15: { forms: ["nko", "nku"], tone: "L", agreement: "NC15", syntax_expectation: "object", gloss: "CL15.ROC" }
+      NC16: { forms: ["mpo", "mpu"], tone: "L", agreement: "NC16", syntax_expectation: "object", gloss: "CL16.ROC" }
+      NC17: { forms: ["nko", "nku"], tone: "L", agreement: "NC17", syntax_expectation: "object", gloss: "CL17.ROC" }
+      NC18: { forms: ["mo", "mi"], tone: "L", agreement: "NC18", syntax_expectation: "object", gloss: "CL18.ROC" }
+
+    # === ENUMERATIVE CONCORDS ===
+    enumerative_concords:
+      description: "Agreement markers with numerals"
+      NC1:  { forms: ["mu"], tone: "L", agreement: "NC1", syntax_expectation: "enumerative", gloss: "CL1.ENUM" }
+      NC2:  { forms: ["ba"], tone: "L", agreement: "NC2", syntax_expectation: "enumerative", gloss: "CL2.ENUM" }
+      NC3:  { forms: ["mu"], tone: "L", agreement: "NC3", syntax_expectation: "enumerative", gloss: "CL3.ENUM" }
+      NC4:  { forms: ["mi"], tone: "L", agreement: "NC4", syntax_expectation: "enumerative", gloss: "CL4.ENUM" }
+      NC5:  { forms: ["ili", "li"], tone: "L", agreement: "NC5", syntax_expectation: "enumerative", gloss: "CL5.ENUM" }
+      NC6:  { forms: ["ama", "ma"], tone: "L", agreement: "NC6", syntax_expectation: "enumerative", gloss: "CL6.ENUM" }
+      NC7:  { forms: ["ifi", "fi"], tone: "L", agreement: "NC7", syntax_expectation: "enumerative", gloss: "CL7.ENUM" }
+      NC8:  { forms: ["ibi", "bi"], tone: "L", agreement: "NC8", syntax_expectation: "enumerative", gloss: "CL8.ENUM" }
+      NC9:  { forms: ["i"], tone: "L", agreement: "NC9", syntax_expectation: "enumerative", gloss: "CL9.ENUM" }
+      NC10: { forms: ["i"], tone: "L", agreement: "NC10", syntax_expectation: "enumerative", gloss: "CL10.ENUM" }
+      NC11: { forms: ["lu"], tone: "L", agreement: "NC11", syntax_expectation: "enumerative", gloss: "CL11.ENUM" }
+      NC12: { forms: ["ka"], tone: "L", agreement: "NC12", syntax_expectation: "enumerative", gloss: "CL12.ENUM" }
+      NC13: { forms: ["tu"], tone: "L", agreement: "NC13", syntax_expectation: "enumerative", gloss: "CL13.ENUM" }
+      NC14: { forms: ["bu"], tone: "L", agreement: "NC14", syntax_expectation: "enumerative", gloss: "CL14.ENUM" }
+      NC15: { forms: ["ku"], tone: "L", agreement: "NC15", syntax_expectation: "enumerative", gloss: "CL15.ENUM" }
+      NC16: { forms: ["pa"], tone: "L", agreement: "NC16", syntax_expectation: "enumerative", gloss: "CL16.ENUM" }
+      NC17: { forms: ["ku"], tone: "L", agreement: "NC17", syntax_expectation: "enumerative", gloss: "CL17.ENUM" }
+      NC18: { forms: ["mu"], tone: "L", agreement: "NC18", syntax_expectation: "enumerative", gloss: "CL18.ENUM" }
+
+    # === INDEPENDENT PRONOUNS ===
+    independent_pronouns:
+      description: "Standalone emphatic pronouns"
+      1SG:      { forms: ["ine", "nge"], tone: "L-L", agreement: "1SG", syntax_expectation: "pronoun", gloss: "1SG.PRO" }
+      2SG:      { forms: ["iwe"], tone: "L-L", agreement: "2SG", syntax_expectation: "pronoun", gloss: "2SG.PRO" }
+      1PL_EXCL: { forms: ["fiswe"], tone: "L-L", agreement: "1PL.EXCL", syntax_expectation: "pronoun", gloss: "1PL.EXCL.PRO" }
+      1PL_INCL: { forms: ["iswe", "fitwe"], tone: "L-L", agreement: "1PL.INCL", syntax_expectation: "pronoun", gloss: "1PL.INCL.PRO" }
+      2PL:      { forms: ["imwe"], tone: "L-L", agreement: "2PL", syntax_expectation: "pronoun", gloss: "2PL.PRO" }
+      NC1:  { forms: ["uyo"], tone: "L-H", agreement: "NC1", syntax_expectation: "pronoun", gloss: "CL1.PRO" }
+      NC2:  { forms: ["abo"], tone: "L-L", agreement: "NC2", syntax_expectation: "pronoun", gloss: "CL2.PRO" }
+      NC3:  { forms: ["uyo"], tone: "L-L", agreement: "NC3", syntax_expectation: "pronoun", gloss: "CL3.PRO" }
+      NC4:  { forms: ["iyo"], tone: "L-L", agreement: "NC4", syntax_expectation: "pronoun", gloss: "CL4.PRO" }
+      NC5:  { forms: ["ilyo"], tone: "L-L", agreement: "NC5", syntax_expectation: "pronoun", gloss: "CL5.PRO" }
+      NC6:  { forms: ["ayo"], tone: "L-L", agreement: "NC6", syntax_expectation: "pronoun", gloss: "CL6.PRO" }
+      NC7:  { forms: ["ifyo", "fyo"], tone: "L-L", agreement: "NC7", syntax_expectation: "pronoun", gloss: "CL7.PRO" }
+      NC8:  { forms: ["ibyo", "byo"], tone: "L-L", agreement: "NC8", syntax_expectation: "pronoun", gloss: "CL8.PRO" }
+      NC9:  { forms: ["iyo"], tone: "L-L", agreement: "NC9", syntax_expectation: "pronoun", gloss: "CL9.PRO" }
+      NC10: { forms: ["iyo"], tone: "L-L", agreement: "NC10", syntax_expectation: "pronoun", gloss: "CL10.PRO" }
+      NC11: { forms: ["ulo"], tone: "L-L", agreement: "NC11", syntax_expectation: "pronoun", gloss: "CL11.PRO" }
+      NC12: { forms: ["ako"], tone: "L-L", agreement: "NC12", syntax_expectation: "pronoun", gloss: "CL12.PRO" }
+      NC13: { forms: ["uto"], tone: "L-L", agreement: "NC13", syntax_expectation: "pronoun", gloss: "CL13.PRO" }
+      NC14: { forms: ["ubo"], tone: "L-L", agreement: "NC14", syntax_expectation: "pronoun", gloss: "CL14.PRO" }
+      NC15: { forms: ["uko"], tone: "L-L", agreement: "NC15", syntax_expectation: "pronoun", gloss: "CL15.PRO" }
+      NC16: { forms: ["apo"], tone: "L-L", agreement: "NC16", syntax_expectation: "pronoun", gloss: "CL16.PRO" }
+      NC17: { forms: ["uko"], tone: "L-L", agreement: "NC17", syntax_expectation: "pronoun", gloss: "CL17.PRO" }
+      NC18: { forms: ["umo"], tone: "L-L", agreement: "NC18", syntax_expectation: "pronoun", gloss: "CL18.PRO" }
+
+    # === QUANTIFIER CONCORDS ===
+    quantifier_concords:
+      description: "Agreement with quantifiers (all, some, many, few)"
+      all:
+        description: "Universal quantifier 'all' — -onse pattern"
+        NC1:  { forms: ["wonse"], tone: "L-L", agreement: "NC1", syntax_expectation: "quantifier", gloss: "CL1.all" }
+        NC2:  { forms: ["bonse"], tone: "L-L", agreement: "NC2", syntax_expectation: "quantifier", gloss: "CL2.all" }
+        NC3:  { forms: ["wonse"], tone: "L-L", agreement: "NC3", syntax_expectation: "quantifier", gloss: "CL3.all" }
+        NC4:  { forms: ["yonse"], tone: "L-L", agreement: "NC4", syntax_expectation: "quantifier", gloss: "CL4.all" }
+        NC5:  { forms: ["lyonse", "ilyonse"], tone: "L-L", agreement: "NC5", syntax_expectation: "quantifier", gloss: "CL5.all" }
+        NC6:  { forms: ["onse"], tone: "L-L", agreement: "NC6", syntax_expectation: "quantifier", gloss: "CL6.all" }
+        NC7:  { forms: ["fyonse", "ifyonse"], tone: "L-L", agreement: "NC7", syntax_expectation: "quantifier", gloss: "CL7.all" }
+        NC8:  { forms: ["byonse", "ibyonse"], tone: "L-L", agreement: "NC8", syntax_expectation: "quantifier", gloss: "CL8.all" }
+        NC9:  { forms: ["yonse"], tone: "L-L", agreement: "NC9", syntax_expectation: "quantifier", gloss: "CL9.all" }
+        NC10: { forms: ["yonse"], tone: "L-L", agreement: "NC10", syntax_expectation: "quantifier", gloss: "CL10.all" }
+        NC11: { forms: ["lwonse"], tone: "L-L", agreement: "NC11", syntax_expectation: "quantifier", gloss: "CL11.all" }
+        NC12: { forms: ["konse", "kaonse"], tone: "L-L", agreement: "NC12", syntax_expectation: "quantifier", gloss: "CL12.all" }
+        NC13: { forms: ["twonse", "utwonse"], tone: "L-L", agreement: "NC13", syntax_expectation: "quantifier", gloss: "CL13.all" }
+        NC14: { forms: ["bwonse", "ubwonse"], tone: "L-L", agreement: "NC14", syntax_expectation: "quantifier", gloss: "CL14.all" }
+        NC15: { forms: ["kwonse", "ukwonse"], tone: "L-L", agreement: "NC15", syntax_expectation: "quantifier", gloss: "CL15.all" }
+      many:
+        description: "Quantifier 'many/much'"
+        NC1:  { forms: ["ngi"], tone: "L", agreement: "NC1", syntax_expectation: "quantifier", gloss: "CL1.many" }
+        NC2:  { forms: ["ngi"], tone: "L", agreement: "NC2", syntax_expectation: "quantifier", gloss: "CL2.many" }
+        NC3:  { forms: ["ngi"], tone: "L", agreement: "NC3", syntax_expectation: "quantifier", gloss: "CL3.many" }
+        NC4:  { forms: ["ngi"], tone: "L", agreement: "NC4", syntax_expectation: "quantifier", gloss: "CL4.many" }
+        NC5:  { forms: ["ngi"], tone: "L", agreement: "NC5", syntax_expectation: "quantifier", gloss: "CL5.many" }
+        NC6:  { forms: ["ngi"], tone: "L", agreement: "NC6", syntax_expectation: "quantifier", gloss: "CL6.many" }
+        NC7:  { forms: ["ngi"], tone: "L", agreement: "NC7", syntax_expectation: "quantifier", gloss: "CL7.many" }
+        NC8:  { forms: ["ngi"], tone: "L", agreement: "NC8", syntax_expectation: "quantifier", gloss: "CL8.many" }
+        NC9:  { forms: ["ngi"], tone: "L", agreement: "NC9", syntax_expectation: "quantifier", gloss: "CL9.many" }
+        NC10: { forms: ["ngi"], tone: "L", agreement: "NC10", syntax_expectation: "quantifier", gloss: "CL10.many" }
+
+    # === INTERROGATIVE CONCORDS ===
+    interrogative_concords:
+      description: "Agreement with question words"
+      which:
+        description: "Which one(s)? — -pi pattern"
+        NC1:  { forms: ["-pi"], tone: "L", agreement: "NC1", syntax_expectation: "interrogative", gloss: "CL1.which", construction: "stem + -pi" }
+        NC2:  { forms: ["-pi"], tone: "L", agreement: "NC2", syntax_expectation: "interrogative", gloss: "CL2.which", construction: "stem + -pi" }
+        NC3:  { forms: ["-pi"], tone: "L", agreement: "NC3", syntax_expectation: "interrogative", gloss: "CL3.which", construction: "stem + -pi" }
+        NC4:  { forms: ["-pi"], tone: "L", agreement: "NC4", syntax_expectation: "interrogative", gloss: "CL4.which", construction: "stem + -pi" }
+        NC5:  { forms: ["-pi"], tone: "L", agreement: "NC5", syntax_expectation: "interrogative", gloss: "CL5.which", construction: "stem + -pi" }
+        NC6:  { forms: ["-pi"], tone: "L", agreement: "NC6", syntax_expectation: "interrogative", gloss: "CL6.which", construction: "stem + -pi" }
+        NC7:  { forms: ["-pi"], tone: "L", agreement: "NC7", syntax_expectation: "interrogative", gloss: "CL7.which", construction: "stem + -pi" }
+        NC8:  { forms: ["-pi"], tone: "L", agreement: "NC8", syntax_expectation: "interrogative", gloss: "CL8.which", construction: "stem + -pi" }
+        NC9:  { forms: ["-pi"], tone: "L", agreement: "NC9", syntax_expectation: "interrogative", gloss: "CL9.which", construction: "stem + -pi" }
+        NC10: { forms: ["-pi"], tone: "L", agreement: "NC10", syntax_expectation: "interrogative", gloss: "CL10.which", construction: "stem + -pi" }
+      what_kind:
+        description: "What kind of?"
+        NC1:  { forms: ["umuntu wa lubali lupi"], tone: "varies", agreement: "NC1", syntax_expectation: "interrogative", gloss: "CL1.what_kind" }
+        NC2:  { forms: ["abantu ba lubali lupi"], tone: "varies", agreement: "NC2", syntax_expectation: "interrogative", gloss: "CL2.what_kind" }
+
+    # === CONNECTIVE CONCORDS ===
+    connective_concords:
+      description: "Associative/connective 'of' construction"
+      construction: "N1 + CONN + N2 (N1 of N2)"
+      NC1:  { forms: ["wa"], tone: "L", agreement: "NC1", syntax_expectation: "connective", gloss: "CL1.CONN", example: "umuntu wa mwine (a person of importance)" }
+      NC2:  { forms: ["ba"], tone: "L", agreement: "NC2", syntax_expectation: "connective", gloss: "CL2.CONN", example: "abantu ba mwine" }
+      NC3:  { forms: ["wa"], tone: "L", agreement: "NC3", syntax_expectation: "connective", gloss: "CL3.CONN", example: "umuti wa lupwa (a tree of the family)" }
+      NC4:  { forms: ["ya"], tone: "L", agreement: "NC4", syntax_expectation: "connective", gloss: "CL4.CONN", example: "imiti ya lupwa" }
+      NC5:  { forms: ["lya", "ilya"], tone: "L", agreement: "NC5", syntax_expectation: "connective", gloss: "CL5.CONN", example: "ilino lya ng'ombe (tooth of a cow)" }
+      NC6:  { forms: ["a"], tone: "L", agreement: "NC6", syntax_expectation: "connective", gloss: "CL6.CONN", example: "amanzi a ng'anda (water of the house)" }
+      NC7:  { forms: ["fya", "ifya"], tone: "L", agreement: "NC7", syntax_expectation: "connective", gloss: "CL7.CONN", example: "ifintu fya bantu (things of people)" }
+      NC8:  { forms: ["bya", "ibya"], tone: "L", agreement: "NC8", syntax_expectation: "connective", gloss: "CL8.CONN", example: "ibintu bya bantu (things of people)" }
+      NC9:  { forms: ["ya"], tone: "L", agreement: "NC9", syntax_expectation: "connective", gloss: "CL9.CONN", example: "ng'anda ya Mutale (house of Mutale)" }
+      NC10: { forms: ["ya"], tone: "L", agreement: "NC10", syntax_expectation: "connective", gloss: "CL10.CONN", example: "imbwa ya Mutale (dogs of Mutale)" }
+      NC11: { forms: ["lwa"], tone: "L", agreement: "NC11", syntax_expectation: "connective", gloss: "CL11.CONN", example: "ulupwa lwa Mutale (family of Mutale)" }
+      NC12: { forms: ["ka", "aka"], tone: "L", agreement: "NC12", syntax_expectation: "connective", gloss: "CL12.CONN", example: "akamuntu ka lupwa (little person of family)" }
+      NC13: { forms: ["twa", "utwa"], tone: "L", agreement: "NC13", syntax_expectation: "connective", gloss: "CL13.CONN", example: "utumuntu twa lupwa (little people of family)" }
+      NC14: { forms: ["bwa", "ubwa"], tone: "L", agreement: "NC14", syntax_expectation: "connective", gloss: "CL14.CONN", example: "ubuntu bwa Mutale (humanity of Mutale)" }
+      NC15: { forms: ["kwa", "ukwa"], tone: "L", agreement: "NC15", syntax_expectation: "connective", gloss: "CL15.CONN", example: "ukubona kwa bantu (seeing of people)" }
+      NC16: { forms: ["pa"], tone: "L", agreement: "NC16", syntax_expectation: "connective", gloss: "CL16.CONN", example: "panshi pa ng'anda (under the house)" }
+      NC17: { forms: ["kwa"], tone: "L", agreement: "NC17", syntax_expectation: "connective", gloss: "CL17.CONN", example: "kumushi kwa Mutale (to the village of Mutale)" }
+      NC18: { forms: ["mwa"], tone: "L", agreement: "NC18", syntax_expectation: "connective", gloss: "CL18.CONN", example: "mung'anda mwa Mutale (in the house of Mutale)" }
+
+    # === REFLEXIVE CONCORDS ===
+    reflexive_concords:
+      description: "Reflexive 'self' markers"
+      construction: "li- + CLASS.POSS"
+      NC1:  { forms: ["liwe"], tone: "L-L", agreement: "NC1", syntax_expectation: "reflexive", gloss: "CL1.REFL", example: "a-li-bona liwe (he sees himself)" }
+      NC2:  { forms: ["libo"], tone: "L-L", agreement: "NC2", syntax_expectation: "reflexive", gloss: "CL2.REFL", example: "ba-li-bona libo (they see themselves)" }
+      NC3:  { forms: ["liwo"], tone: "L-L", agreement: "NC3", syntax_expectation: "reflexive", gloss: "CL3.REFL" }
+      NC4:  { forms: ["liyo"], tone: "L-L", agreement: "NC4", syntax_expectation: "reflexive", gloss: "CL4.REFL" }
+      NC5:  { forms: ["lilyo"], tone: "L-L", agreement: "NC5", syntax_expectation: "reflexive", gloss: "CL5.REFL" }
+      NC6:  { forms: ["loo"], tone: "L-L", agreement: "NC6", syntax_expectation: "reflexive", gloss: "CL6.REFL" }
+      NC7:  { forms: ["lifyo", "ilifyo"], tone: "L-L", agreement: "NC7", syntax_expectation: "reflexive", gloss: "CL7.REFL" }
+      NC8:  { forms: ["libyo", "ilibyo"], tone: "L-L", agreement: "NC8", syntax_expectation: "reflexive", gloss: "CL8.REFL" }
+      NC9:  { forms: ["liyo"], tone: "L-L", agreement: "NC9", syntax_expectation: "reflexive", gloss: "CL9.REFL" }
+      NC10: { forms: ["liyo"], tone: "L-L", agreement: "NC10", syntax_expectation: "reflexive", gloss: "CL10.REFL" }
+
+    # === IDENTIFICATIONAL COPULA CONCORDS ===
+    copula_concords:
+      description: "Identificational copula 'to be' (X is Y)"
+      forms: ["ngu-", "ngo-", "nga-"]
+      NC1:  { forms: ["ngumuntu"], tone: "L-L-L", agreement: "NC1", syntax_expectation: "copula", gloss: "COP-person", construction: "ngu + noun" }
+      NC2:  { forms: ["ngobantu", "ngabantu"], tone: "L-L-L", agreement: "NC2", syntax_expectation: "copula", gloss: "COP-people", construction: "ngo + noun" }
+      NC5:  { forms: ["ngoilino", "ngalino"], tone: "L-L-L", agreement: "NC5", syntax_expectation: "copula", gloss: "COP-tooth", construction: "ngo + noun" }
+      NC7:  { forms: ["ngoifintu", "ngafintu"], tone: "L-L-L", agreement: "NC7", syntax_expectation: "copula", gloss: "COP-thing.PL", construction: "ngo + noun" }
+      note: "# VERIFY: Copula forms in Chibemba — ngu-/nga- variation; verify against Spitulnik & Kashoki (1992)"
+
+    # === COMITATIVE CONCORDS ===
+    comitative_concords:
+      description: "'With' construction using na- + pronoun"
+      construction: "na + POSS_PRONOUN"
+      1SG: { forms: ["naine", "nange"], tone: "L-L", agreement: "NC1", syntax_expectation: "comitative", gloss: "with.me", example: "a-la-inka naine (he goes with me)" }
+      2SG: { forms: ["naiwe"], tone: "L-L", agreement: "NC1", syntax_expectation: "comitative", gloss: "with.you.SG" }
+      1PL: { forms: ["naiswe", "nafiswe"], tone: "L-L", agreement: "NC2", syntax_expectation: "comitative", gloss: "with.us" }
+      2PL: { forms: ["naimwe"], tone: "L-L", agreement: "NC2", syntax_expectation: "comitative", gloss: "with.you.PL" }
+      NC5: { forms: ["nalyo", "nailyo"], tone: "L-L", agreement: "NC5", syntax_expectation: "comitative", gloss: "with.it.CL5" }
+      NC6: { forms: ["nayo", "naayo"], tone: "L-L", agreement: "NC6", syntax_expectation: "comitative", gloss: "with.them.CL6" }
+      NC7: { forms: ["nafyo", "naifyo"], tone: "L-L", agreement: "NC7", syntax_expectation: "comitative", gloss: "with.it.CL7" }
+      NC9: { forms: ["nayo", "naayo"], tone: "L-L", agreement: "NC9", syntax_expectation: "comitative", gloss: "with.it.CL9" }
+
+    # === EMPHATIC CONCORDS ===
+    emphatic_concords:
+      description: "Emphatic/intensive markers (X-self, very X)"
+      construction: "pronoun + mwine/beni"
+      NC1: { forms: ["uyo mwine"], tone: "L-H L-L", agreement: "NC1", syntax_expectation: "emphatic", gloss: "he/she himself/herself", example: "uyo mwine (he/she himself/herself)" }
+      NC2: { forms: ["abo beni"], tone: "L-L L-L", agreement: "NC2", syntax_expectation: "emphatic", gloss: "they themselves" }
+      NC3: { forms: ["uyo mwine"], tone: "L-L L-L", agreement: "NC3", syntax_expectation: "emphatic", gloss: "it itself CL3" }
+      NC7: { forms: ["ifyo mwine", "fyo mwine"], tone: "L-L L-L", agreement: "NC7", syntax_expectation: "emphatic", gloss: "it itself CL7" }
+
+
+# ============================================================================
+# VERB SYSTEM
+# ============================================================================
+
+verb_system:
+  verb_system_metadata:
+    name: "Gobelo Verb Morphosyntax Framework — ChiBemba"
+    version: "2.1"
+    date: "2025-07-11"
+    description: "Structured inventory of ChiBemba verb morphology and extensions"
+    changelog:
+      - version: "2.1"
+        date: "2025-07-11"
+    schema_compatibility:
+      min_parser_version: "1.0"
+      max_parser_version: "2.x"
+
+  constants:
+    subject_number:
+      SINGULAR: "singular"
+      PLURAL: "plural"
+    agreement_features:
+      PERSON: ["1", "2", "3"]
+      NUMBER: ["Sg", "Pl"]
+      NOUN_CLASS: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    zones:
+      Z1:
+        name: "VALENCY_INCREASING"
+        description: "Extensions that add arguments"
+      Z2:
+        name: "VALENCY_ADJUSTING"
+        description: "Extensions that remap arguments"
+      Z3:
+        name: "VOICE"
+        description: "Voice alternations"
+      Z4:
+        name: "ASPECTUAL_LEXICAL"
+        description: "Aspectual and lexical modifications"
+
+  # ============================================================================
+  # VERBAL SYSTEM COMPONENTS
+  # ============================================================================
+
+  verbal_system_components:
+
+    # ===================================
+    # PRE-INITIAL NEGATION
+    # ===================================
+
+    negation_pre:
+      present:
+        forms: ["ta", "si"]
+        gloss: NEG
+        usage_context: "General negative marker in main clause; ta- before vowel-initial SM; si- variant common in some dialects"
+        example: "ta-bona"
+        gloss1: "He does not see"
+        note: "# VERIFY: Distribution of ta- vs si- in Chibemba negation; Spitulnik & Kashoki (1992) should clarify"
+      past:
+        forms: ["tee", "tii", "si"]
+        gloss: NEG
+        usage_context: "Negative in past tense contexts"
+        example: "si-bona"
+        gloss1: "I did not see"
+      subjunctive:
+        forms: ["tii", "si"]
+        gloss: NEG
+        usage_context: "Strong prohibition / negative subjunctive"
+        gloss1: "Absolutely must not see"
+
+    # ===================================
+    # PRE-INITIAL ELEMENTS
+    # ===================================
+
+    pre_initial:
+      COND:
+        forms: ["ka"]
+        gloss: COND
+        function: "Remote future/conditional"
+      TEMP1:
+        forms: ["ni", "no"]
+        gloss: TEMP
+        function: "When/if conditional"
+      TEMP2:
+        forms: ["lyo"]
+        gloss: TEMP
+        function: "When (future temporal)"
+
+    # ===================================
+    # NEGATION INFIX
+    # ===================================
+
+    negation_infix:
+      negative:
+        forms: "-ta-"
+        gloss: NEG
+        function: "Negative infix in subordinate/relative clause structures"
+        usage_context: "Appears between subject concord and TAM in subordinate negation"
+
+    # ===================================
+    # TENSE-ASPECT-MOOD (TAM)
+    # ===================================
+
+    tam:
+      PRES:
+        forms: "a"
+        tone: "L"
+        gloss: PRES
+        function: "Present habitual/general"
+        interacts_with: ["final_vowels.indicative"]
+        note: "Distinguished from perfect by final vowel (a vs. ile)"
+
+      PST:
+        forms: "na"
+        tone: "L"
+        gloss: PST
+        function: "General past tense (same-day or recent)"
+        interacts_with: ["final_vowels.indicative"]
+        note: "# VERIFY: Chibemba past may use -ali- for hodiernal and -na- for further past; verify degree boundaries"
+
+      PST_HODIERNAL:
+        forms: "ali"
+        tone: "L-L"
+        gloss: PST.HOD
+        function: "Hodiernal past (earlier today)"
+        interacts_with: ["final_vowels.perfective"]
+        note: "Chibemba-specific: same-day past before present relevance"
+
+      PST_HESTERNAL:
+        forms: "alii"
+        tone: "L-L"
+        gloss: PST.HEST
+        function: "Hesternal past (yesterday)"
+        interacts_with: ["final_vowels.perfective"]
+        note: "# VERIFY: Form against Spitulnik & Kashoki (1992); some analyses use -ala- for this degree"
+
+      REC_PST:
+        forms: "ali"
+        tone: "L-L"
+        gloss: REC.PST
+        function: "Recent past (yesterday to a few days ago)"
+        interacts_with: ["final_vowels.perfective"]
+        note: "# VERIFY: Distinguish hodiernal vs hesternal vs recent past in Chibemba; multiple degrees attested"
+
+      REM_PST:
+        forms: "alaa"
+        tone: "H-L"
+        gloss: REM.PST
+        function: "Remote past (long ago)"
+        interacts_with: ["final_vowels.perfective"]
+        note: "# VERIFY: alaa- vs other forms for remote past; tonal distinction from hodiernal"
+
+      FUT_NEAR:
+        forms: "laa"
+        tone: "L"
+        gloss: FUT.NEAR
+        function: "Near future (today, tomorrow)"
+        interacts_with: ["final_vowels.indicative"]
+        note: "Chibemba -laa- distinguishes from Chitonga -yo-"
+
+      FUT_REM:
+        forms: "ka"
+        tone: "L"
+        gloss: FUT.REM
+        function: "Remote future"
+        interacts_with: ["final_vowels.indicative"]
+        note: "# VERIFY: ka- remote future; some analyses use -ala- or -laa- for remote; verify Spitulnik & Kashoki"
+
+      HAB:
+        forms: "la"
+        tone: "L"
+        gloss: HAB
+        function: "Habitual aspect"
+        interacts_with: ["final_vowels.indicative"]
+
+      PERF:
+        forms: "a"
+        tone: "L"
+        gloss: PERF
+        function: "Perfect aspect"
+        interacts_with: ["final_vowels.perfective"]
+        note: "Distinguished from present by final vowel -ile (not -ide as in Chitonga)"
+
+    # ===================================
+    # MODAL
+    # ===================================
+
+    modal:
+      COND:
+        forms: ["nga"]
+        gloss: COND
+        function: "Conditional mood"
+        interacts_with: ["final_vowels.subjunctive"]
+      POT:
+        forms: ["nga"]
+        gloss: POT
+        function: "Potential mood"
+        interacts_with: ["final_vowels.subjunctive"]
+        note: "Context distinguishes from conditional"
+      PROG:
+        forms: ["-la-", "-ci-"]
+        gloss: PROG
+        function: "Present progressive"
+        interacts_with: ["final_vowels.indicative"]
+        position: "Appears as infix in SLOT4 or SLOT6"
+
+    # ===================================
+    # DERIVATIONAL EXTENSIONS
+    # ===================================
+
+    derivational_extensions:
+
+      # Z1: VALENCY INCREASING
+      # ----------------------
+
+      APPL:
+        name: "Applicative"
+        form: ["-il-", "-el-"]
+        zone: Z1
+        ARGMAP: "V(x,y) → V(x,y,z)"
+        gloss: APPL
+        allomorphs:
+          - form: ["-el-"]
+            context: "stem contains [e, o] — vowel harmony"
+          - form: ["-en-", "-id-"]
+            context: "dialectal variants"
+          - form: ["-izy-", "-wid-", "-elw-", "-idw-"]
+            context: "before certain extensions"
+        function: "Adds beneficiary, goal, location, instrument, or purpose"
+        semantic_expectation: "Beneficiary, Location, Instrument"
+        syntax_expectation: "iobj"
+        effect_on_agreement: "Adds object concord for beneficiary or location"
+        height_harmony: true
+        ud_effects:
+          adds: ["iobj", "obl"]
+        ordering:
+          within_zone: 1
+          before: ["CAUS"]
+          after: []
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukubona"
+            gloss: "to see"
+            extended: "ukubonil-a"
+            extended_gloss: "to see for (beneficiary)"
+          - verb: "ukupika"
+            gloss: "to cook"
+            extended: "ukupikil-a"
+            extended_gloss: "to cook for"
+        combinations:
+          - with: "CAUS"
+            form: ["-il-ish-"]
+            example: "ukubonil-isha"
+            gloss: "to cause to see for"
+          - with: "PASS"
+            form: ["-il-w-"]
+            example: "ukupikiilwa"
+            gloss: "to be cooked for"
+          - with: "RECIP"
+            form: ["-il-an-"]
+            example: "ukusukul-il-an-a"
+            gloss: "to help each other"
+        productivity: "Very high"
+        notes: "Same form as Chitonga (-il-/-el-); height harmony applies"
+
+      CAUS:
+        name: "Causative"
+        form: ["-ish-", "-esh-", "-y-"]
+        zone: Z1
+        ARGMAP: "V(x,y) → V(x,y,z)"
+        gloss: CAUS
+        allomorphs:
+          - form: ["-esh-"]
+            context: "stem contains [e, o]"
+          - form: ["-y-"]
+            context: "after vowel-final stems"
+          - form: ["-ish-"]
+            context: "after consonant-final stems (most common)"
+        function: "Adds causer argument; indicates causing an action"
+        semantic_expectation: "Causer"
+        syntax_expectation: "csubj"
+        effect_on_agreement: "Adds object concord for causee"
+        height_harmony: true
+        ud_effects:
+          adds: ["csubj"]
+        ordering:
+          within_zone: 2
+          before: []
+          after: ["APPL"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukulila"
+            gloss: "to cry"
+            extended: "ukulilisha"
+            extended_gloss: "to make cry"
+          - verb: "ukufwa"
+            gloss: "to die"
+            extended: "ukufwisha"
+            extended_gloss: "to kill"
+          - verb: "ukuya"
+            gloss: "to go"
+            extended: "ukuyisha"
+            extended_gloss: "to make go; to send"
+        combinations:
+          - with: "APPL"
+            form: ["-ish-il-", "-y-il-"]
+            example: "ukulilishila"
+            gloss: "to make cry for"
+          - with: "PASS"
+            form: ["-ish-w-"]
+            example: "ukulilishiwa"
+            gloss: "to be made to cry"
+        productivity: "High"
+        notes: "KEY DIFFERENCE from Chitonga: Chibemba causative is -ish-/-esh- (palatalised), not -is-/-y-"
+
+      TRANS:
+        name: "Transitive"
+        form: ["-ol-", "-ok-"]
+        zone: Z1
+        ARGMAP: "V(x) → V(x,y)"
+        gloss: TRANS
+        allomorphs:
+          - form: ["-ok-"]
+            context: "intransitive variant"
+        function: "Makes intransitive verb transitive"
+        semantic_expectation: "Transitive"
+        syntax_expectation: []
+        effect_on_agreement: "Allows object concord"
+        height_harmony: true
+        ud_effects:
+          adds: ["obj"]
+        ordering:
+          within_zone: 3
+          before: []
+          after: ["APPL", "CAUS"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukupuluka"
+            gloss: "to escape (intransitive)"
+            extended: "ukupulula"
+            extended_gloss: "to free/release something (transitive)"
+        productivity: "Low"
+        notes: "Limited to specific verb pairs in Chibemba"
+
+      CONT:
+        name: "Contactive"
+        form: ["-at-"]
+        zone: Z1
+        ARGMAP: "V(x,y) → V(x,y with contact)"
+        gloss: CONT
+        function: "Indicates action involving contact or holding"
+        semantic_expectation: "Contactive"
+        syntax_expectation: []
+        effect_on_agreement: "Adds object concord for entity contacted"
+        ud_effects:
+          adds: []
+        ordering:
+          within_zone: 4
+          before: []
+          after: ["APPL", "CAUS", "TRANS"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukumba"
+            gloss: "to touch"
+            extended: "ukumbata"
+            extended_gloss: "to embrace"
+        productivity: "Low"
+        notes: "Lexicalised with certain verb roots in Chibemba"
+
+      # Z2: VALENCY ADJUSTING
+      # ---------------------
+
+      RECIP:
+        name: "Reciprocal"
+        form: ["-an-"]
+        zone: Z2
+        ARGMAP: "V(x,y) → V(x,y↔z)"
+        gloss: RECIP
+        allomorphs:
+          - form: ["-elen-", "-elan-"]
+            context: "combinations with applicative"
+        function: "Indicates mutual action between participants"
+        semantic_expectation: "Reciprocal"
+        syntax_expectation: "conj"
+        effect_on_agreement: "Removes object concord; subject must be plural"
+        height_harmony: false
+        ud_effects:
+          removes: ["obj"]
+        ordering:
+          within_zone: 1
+          before: []
+          after: []
+        constraints:
+          requires:
+            subject_number: "PLURAL"
+          incompatible_with: []
+        examples:
+          - verb: "ukusukula"
+            gloss: "to help"
+            extended: "ukusukul-an-a"
+            extended_gloss: "to help each other"
+          - verb: "ukumfwa"
+            gloss: "to hear/understand"
+            extended: "ukumfwana"
+            extended_gloss: "to understand each other / to agree"
+        combinations:
+          - with: "APPL"
+            form: ["-el-an-"]
+            example: "ukusukul-el-an-a"
+            gloss: "to help each other for (a purpose)"
+        productivity: "Medium-high"
+
+      STAT:
+        name: "Stative/Neuter"
+        form: ["-ik-", "-ek-"]
+        zone: Z2
+        ARGMAP: "V(x,y) → V(y)"
+        gloss: STAT
+        allomorphs:
+          - form: ["-ek-"]
+            context: "stem contains [e, o]"
+        function: "Expresses state, condition, or potential ('be X-able')"
+        semantic_expectation: "Static state"
+        syntax_expectation: []
+        effect_on_agreement: "Intransitivises verb; no object concord"
+        height_harmony: true
+        ud_effects:
+          removes: ["obj"]
+        ordering:
+          within_zone: 2
+          before: []
+          after: ["RECIP"]
+        constraints:
+          requires: {}
+          incompatible_with: ["PASS"]
+        examples:
+          - verb: "ukumfwa"
+            gloss: "to hear"
+            extended: "ukumfwika"
+            extended_gloss: "to be audible"
+          - verb: "ukubona"
+            gloss: "to see"
+            extended: "ukubonek-a"
+            extended_gloss: "to be visible"
+        combinations:
+          - with: "CAUS"
+            form: ["-ik-ish-"]
+            example: "ukumfwikisha"
+            gloss: "to make audible; to explain"
+        productivity: "Medium-high"
+
+      # Z3: VOICE
+      # ---------
+
+      PASS:
+        name: "Passive"
+        form: ["-w-", "-iw-", "-iiw-"]
+        zone: Z3
+        ARGMAP: "V(x,y) → V(y)"
+        gloss: PASS
+        allomorphs:
+          - form: ["-iiw-"]
+            context: "after vowel-final stems — Chibemba vowel lengthening in passive"
+          - form: ["-ew-"]
+            context: "stem contains [e, o]"
+          - form: ["-igw-"]
+            context: "after certain consonants"
+        function: "Suppresses agent, promotes object to subject"
+        semantic_expectation: "Patient"
+        syntax_expectation: "nsubj:pass"
+        effect_on_agreement: "Object becomes subject; agent becomes optional"
+        height_harmony: true
+        ud_effects:
+          voice: "Pass"
+          promotes: "obj to nsubj:pass"
+          demotes: "nsubj to obl:agent (optional)"
+        ordering:
+          within_zone: 1
+          before: []
+          after: []
+          position: "always final extension"
+        constraints:
+          requires: {}
+          incompatible_with: ["STAT"]
+        examples:
+          - verb: "ukubona"
+            gloss: "to see"
+            extended: "ukuboníiwa"
+            extended_gloss: "to be seen"
+          - verb: "ukupika"
+            gloss: "to cook"
+            extended: "ukupikiwa"
+            extended_gloss: "to be cooked"
+        combinations:
+          - with: "APPL"
+            form: ["-il-w-"]
+            example: "ukupikilwa"
+            gloss: "to be cooked for"
+          - with: "CAUS"
+            form: ["-ish-w-"]
+            example: "ukulilishiwa"
+            gloss: "to be made to cry"
+        productivity: "High"
+        notes: "KEY DIFFERENCE: Chibemba passive uses -iiw- (vowel lengthening) not just -iw- as in Chitonga"
+
+      # Z4: ASPECTUAL/LEXICAL
+      # ---------------------
+
+      INTENS:
+        name: "Intensive"
+        form: ["-ish-", "-ishi-", "-esh-"]
+        zone: Z4
+        ARGMAP: "V(x,y) → V(x,y)"
+        gloss: INTENS
+        allomorphs:
+          - form: ["-eshi-"]
+            context: "stem contains [e, o]"
+        function: "Intensifies action; indicates thoroughness"
+        semantic_expectation: "Intensive"
+        syntax_expectation: []
+        effect_on_agreement: "Retains original agreement structure"
+        height_harmony: true
+        ud_effects: {}
+        ordering:
+          within_zone: 1
+          before: []
+          after: []
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukulanga"
+            gloss: "to look"
+            extended: "ukulangisha"
+            extended_gloss: "to look intently"
+        productivity: "Medium"
+        notes: "Often phonologically identical to causative in Chibemba; context disambiguates"
+
+      REDUP:
+        name: "Reduplicative/Iterative"
+        form: ["-ishish-", "-ishyish-"]
+        zone: Z4
+        ARGMAP: "V(x,y) → V(x,y)"
+        gloss: ITER
+        allomorphs:
+          - form: ["-eshesh-"]
+            context: "stem contains [e, o]"
+        function: "Indicates repetition, continuation, or intensity"
+        semantic_expectation: "Iterative"
+        syntax_expectation: []
+        effect_on_agreement: "Retains original agreement structure"
+        ud_effects: {}
+        ordering:
+          within_zone: 2
+          before: []
+          after: ["INTENS"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukulila"
+            gloss: "to cry"
+            extended: "ukulilishisha"
+            extended_gloss: "to cry continuously"
+        productivity: "Medium"
+
+      PERF:
+        name: "Perfective Extension"
+        form: ["-ilil-", "-elel-", "-inin-", "-enen-"]
+        zone: Z4
+        ARGMAP: "V(x,y) → V(x,y)"
+        gloss: PERF.EXT
+        allomorphs:
+          - form: ["-elel-"]
+            context: "stem contains [e, o]"
+        function: "Indicates completed action with present relevance; thoroughness"
+        semantic_expectation: "Perfective"
+        syntax_expectation: []
+        effect_on_agreement: "Retains original agreement structure"
+        ud_effects: {}
+        ordering:
+          within_zone: 3
+          before: []
+          after: ["INTENS", "REDUP"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukulanga"
+            gloss: "to look"
+            extended: "ukulangilila"
+            extended_gloss: "to observe carefully / look thoroughly"
+          - verb: "ukuleka"
+            gloss: "to release"
+            extended: "ukulekelela"
+            extended_gloss: "to forgive completely"
+        productivity: "Medium"
+
+      REV:
+        name: "Reversive"
+        form: ["-ul-", "-ol-"]
+        zone: Z4
+        ARGMAP: "V(x,y) → V'(x,y)"
+        gloss: REV
+        allomorphs:
+          - form: ["-ol-"]
+            context: "stem contains [e, o]"
+          - form: ["-uk-"]
+            context: "intransitive reversive"
+          - form: ["-ulul-", "-unun-"]
+            context: "extended reversive"
+        function: "Indicates reversing or undoing an action"
+        semantic_expectation: "Reversive"
+        syntax_expectation: []
+        effect_on_agreement: "Retains original object concord if transitive"
+        height_harmony: true
+        ud_effects: {}
+        ordering:
+          within_zone: 4
+          before: []
+          after: ["INTENS", "REDUP", "PERF"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukujala"
+            gloss: "to close"
+            extended: "ukujalula"
+            extended_gloss: "to open"
+          - verb: "ukuanga"
+            gloss: "to tie"
+            extended: "ukuangula"
+            extended_gloss: "to untie"
+        productivity: "Medium"
+
+      REPET:
+        name: "Repetitive"
+        form: ["-ulul-", "-olol-"]
+        zone: Z4
+        ARGMAP: "V(x,y) → V(x,y again)"
+        gloss: REPET
+        allomorphs:
+          - form: ["-olol-"]
+            context: "stem contains [e, o]"
+        function: "Indicates doing an action again"
+        semantic_expectation: "Repetitive"
+        syntax_expectation: []
+        effect_on_agreement: "Retains original agreement structure"
+        ud_effects: {}
+        ordering:
+          within_zone: 5
+          before: []
+          after: ["REV"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukusyanga"
+            gloss: "to plant"
+            extended: "ukusyangulula"
+            extended_gloss: "to replant"
+        productivity: "Low-medium"
+
+      FREQ:
+        name: "Frequentative"
+        form: ["-aul-", "-auk-"]
+        zone: Z4
+        ARGMAP: "V(x,y) → V(x,y)+"
+        gloss: FREQ
+        function: "Indicates frequent or careless repetition"
+        semantic_expectation: "Frequentative"
+        syntax_expectation: []
+        effect_on_agreement: "Retains original agreement structure"
+        ud_effects: {}
+        ordering:
+          within_zone: 6
+          before: []
+          after: ["INTENS", "REDUP", "PERF", "REV", "REPET"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukusala"
+            gloss: "to select"
+            extended: "ukusalaula"
+            extended_gloss: "to select carelessly/repeatedly"
+        productivity: "Low"
+        notes: "Often carries negative connotation in Chibemba"
+
+      POS:
+        name: "Positional"
+        form: ["-am-"]
+        zone: Z4
+        ARGMAP: "V(x) → V(x in position)"
+        gloss: POS
+        function: "Indicates assuming or maintaining a position/posture"
+        semantic_expectation: "Positional"
+        syntax_expectation: []
+        effect_on_agreement: "Intransitivises verb"
+        ud_effects:
+          removes: ["obj"]
+        ordering:
+          within_zone: 7
+          before: []
+          after: ["INTENS", "REDUP", "PERF", "REV", "REPET", "FREQ"]
+        constraints:
+          requires: {}
+          incompatible_with: []
+        examples:
+          - verb: "ukulala"
+            gloss: "to lie down"
+            extended: "ukulalama"
+            extended_gloss: "to be in lying position"
+        productivity: "Low-medium"
+
+      # ===================================
+      # EXTENSION ORDERING RULES
+      # ===================================
+
+      extension_ordering:
+        description: "Hierarchical constraint system for extension ordering"
+        canonical_order: "ROOT + [Z1] + [Z2] + [Z3] + [Z4] + FV"
+        zones:
+          Z1:
+            name: "VALENCY_INCREASING"
+            order: 1
+            extensions: ["APPL", "CAUS", "TRANS", "CONT"]
+            internal_order: ["APPL", "CAUS", "TRANS", "CONT"]
+            description: "Extensions that add arguments"
+            adds_argument: true
+          Z2:
+            name: "VALENCY_ADJUSTING"
+            order: 2
+            extensions: ["RECIP", "STAT"]
+            internal_order: ["RECIP", "STAT"]
+            description: "Extensions that remap arguments"
+            adds_argument: false
+            remaps_arguments: true
+          Z3:
+            name: "VOICE"
+            order: 3
+            extensions: ["PASS"]
+            internal_order: ["PASS"]
+            description: "Voice alternations"
+            position_constraint: "always final extension"
+            ud_features:
+              Voice: "Pass"
+          Z4:
+            name: "ASPECTUAL_LEXICAL"
+            order: 4
+            extensions: ["INTENS", "REDUP", "PERF", "REV", "REPET", "FREQ", "POS"]
+            internal_order: ["INTENS", "REDUP", "PERF", "REV", "REPET", "FREQ", "POS"]
+            description: "Aspectual and lexical modifications"
+            affects_event_structure: true
+        strict_rules:
+          - rule: "Zone precedence must be Z1 < Z2 < Z3 < Z4"
+            type: "zone_ordering"
+            violation: "error"
+          - rule: "PASS must be final extension"
+            type: "position_constraint"
+            applies_to: ["PASS"]
+            violation: "error"
+          - rule: "Within Z1: APPL < CAUS < TRANS < CONT"
+            type: "intra_zone_ordering"
+            applies_to: "Z1"
+            violation: "error"
+          - rule: "RECIP requires plural subject"
+            type: "agreement_constraint"
+            applies_to: ["RECIP"]
+            violation: "error"
+        soft_constraints:
+          - rule: "APPL typically closest to root"
+            type: "preference"
+            applies_to: ["APPL"]
+            violation: "warning"
+          - rule: "Aspectual extensions (Z4) before voice (Z3)"
+            type: "zone_preference"
+            violation: "warning"
+        incompatibilities:
+          - extensions: ["PASS", "STAT"]
+            reason: "Both detransitivise; semantic incompatibility"
+            violation: "error"
+          - extensions: ["PASS", "RECIP"]
+            reason: "RECIP already removes object marking"
+            violation: "error"
+        validation:
+          check_zone_order: true
+          check_internal_order: true
+          check_incompatibilities: true
+          check_constraints: true
+
+      # ===================================
+      # SEMANTIC COMPOSITION
+      # ===================================
+
+      semantic_composition:
+        principle: "Extensions have scopal relations mirroring surface morpheme order"
+        description: "Inner extensions have narrow scope over verb meaning; outer extensions scope over derived meaning"
+        examples:
+          - form: "uku-pik-il-ish-a"
+            morphemes: ["uku-", "pik-", "-il-", "-ish-", "-a"]
+            structure: "[CAUS [APPL [cook]]]"
+            scope: "CAUS > APPL > ROOT"
+            reading: "cause [someone to cook for beneficiary]"
+            gloss: "INF-cook-APPL-CAUS-FV"
+          - form: "uku-sum-il-an-a"
+            morphemes: ["uku-", "sum-", "-il-", "-an-", "-a"]
+            structure: "[RECIP [APPL [help]]]"
+            scope: "RECIP > APPL > ROOT"
+            reading: "[each.other help for...]"
+            gloss: "INF-help-APPL-RECIP-FV"
+
+    # ===================================
+    # FINAL VOWELS
+    # ===================================
+
+    final_vowels:
+      indicative:
+        forms: "a"
+        gloss: IND
+        function: "Indicative positive"
+        interacts_with: ["tam.PRES", "tam.PST", "tam.FUT_NEAR", "tam.FUT_REM", "tam.HAB"]
+      subjunctive:
+        forms: "e"
+        gloss: SUBJ
+        function: "Subjunctive mood"
+        interacts_with: ["modal.COND", "modal.POT"]
+      negative:
+        forms: "i"
+        gloss: NEG
+        function: "Negative final vowel"
+        interacts_with: ["negation_pre"]
+      imperative_singular:
+        forms: "a"
+        gloss: IMP.SG
+        function: "Imperative singular"
+      imperative_plural:
+        forms: "eni"
+        gloss: IMP.PL
+        function: "Imperative plural"
+        note: "# VERIFY: Chibemba imperative plural may be -eni or -ani depending on dialect"
+      perfective:
+        forms: "ile"
+        gloss: PERF
+        function: "Perfective aspect"
+        interacts_with: ["tam.PERF", "tam.PST_HODIERNAL", "tam.PST_HESTERNAL", "tam.REC_PST", "tam.REM_PST"]
+        note: "KEY DIFFERENCE from Chitonga: Chibemba uses -ile not -ide"
+      infinitive:
+        forms: "a"
+        gloss: INF
+        function: "Infinitive form"
+
+    # ===================================
+    # POST-FINAL ELEMENTS
+    # ===================================
+
+    post_final:
+      relativizer:
+        forms: ["-yo", "-o"]
+        gloss: REL
+        function: "Relative clause marker"
+      question:
+        forms: ["na", "-nzi"]
+        gloss: Q
+        function: "Interrogative marker"
+      emphasis:
+        forms: ["ko"]
+        gloss: EMP
+        function: "Emphatic particle"
+      negation:
+        forms: ["pe", "te"]
+        gloss: NEG
+        function: "Negation reinforcement"
+        note: "te/pe used post-verbally for reinforced negation"
+      locative:
+        forms: "mo"
+        gloss: LOC
+        function: "Locative clitic (in/at/on)"
+
+  # ============================================================================
+  # CONSTRAINTS
+  # ============================================================================
+
+  constraints:
+    description: "Cross-slot constraints and co-occurrence restrictions"
+    negation:
+      - condition:
+          present: ["pre_initial"]
+        forbids: ["negation_infix"]
+        rationale: "Pre-initial and infix negation are mutually exclusive"
+      - condition:
+          present: ["final_vowels.negative"]
+        requires: ["negation_pre"]
+        rationale: "Negative FV requires pre-initial negation"
+    mood_tam:
+      - condition:
+          present: ["modal.POT"]
+        requires: ["final_vowels.subjunctive"]
+        rationale: "Potential mood requires subjunctive FV"
+      - condition:
+          present: ["modal.COND"]
+        requires: ["final_vowels.subjunctive"]
+        rationale: "Conditional mood requires subjunctive FV"
+    agreement:
+      - condition:
+          present: ["extensions.RECIP"]
+        requires:
+          subject_number: "PLURAL"
+        rationale: "Reciprocal requires plural subject"
+
+    # --- TAM-FV INTERACTIONS (copy 1, inside constraints) ---
+    tam_fv_interactions:
+      description: "TAM markers and final vowels work together to express complete temporal/modal meaning"
+      patterns:
+        present_habitual:
+          slots:
+            SLOT5: "tam.PRES (a)"
+            SLOT10: "final_vowels.indicative (a)"
+          full_meaning: "Present habitual/general"
+          example:
+            form: "a-a-bon-a"
+            gloss: "3SG-PRES-see-IND"
+            translation: "He/she sees (habitually)"
+        perfect:
+          slots:
+            SLOT5: "tam.PERF (a)"
+            SLOT10: "final_vowels.perfective (ile)"
+          full_meaning: "Perfect aspect"
+          example:
+            form: "a-a-bon-ile"
+            gloss: "3SG-PERF-see-PERF"
+            translation: "He/she has seen"
+          note: "KEY: -ile not -ide (Chibemba)"
+        hodiernal_past:
+          slots:
+            SLOT5: "tam.PST_HODIERNAL (ali)"
+            SLOT10: "final_vowels.perfective (ile)"
+          full_meaning: "Hodiernal past (earlier today)"
+          example:
+            form: "a-ali-bon-ile"
+            gloss: "3SG-HOD.PST-see-PERF"
+            translation: "He/she saw (earlier today)"
+        subjunctive:
+          slots:
+            SLOT5: "Ø"
+            SLOT10: "final_vowels.subjunctive (e)"
+          full_meaning: "Subjunctive mood"
+          example:
+            form: "a-bon-e"
+            gloss: "3SG-see-SUBJ"
+            translation: "That he/she see; may he/she see"
+        negative_present:
+          slots:
+            SLOT1: "negation_pre.present (ta/si)"
+            SLOT5: "tam.PRES (a) [optional]"
+            SLOT10: "final_vowels.negative (i)"
+          full_meaning: "Negative present"
+          example:
+            form: "ta-boni"
+            gloss: "NEG-see.NEG"
+            translation: "Does not see"
+
+    # --- MORPHOPHONOLOGY (copy 1, inside constraints) ---
+    morphophonology:
+      description: "Morphophonological processes affecting surface forms"
+      vowel_harmony:
+        type: "height_harmony"
+        description: "Extensions harmonise for vowel height with stem vowels"
+        rules:
+          - name: "Extension lowering"
+            condition:
+              stem_contains: ["e", "o"]
+            effect: "/i/ → /e/ in extensions"
+            examples:
+              - input: "uku-lemb-a + -il-"
+                output: "uku-lemb-el-a"
+                gloss: "INF-write-APPL-IND"
+          - name: "Extension retention"
+            condition:
+              stem_contains: ["a", "i", "u"]
+            effect: "Extensions retain /i/"
+            examples:
+              - input: "uku-pik-a + -il-"
+                output: "uku-pik-il-a"
+                gloss: "INF-cook-APPL-IND"
+      consonant_processes:
+        glide_formation:
+          description: "Causative -y- triggers coalescence or glide insertion"
+          rules:
+            - condition: "V + -y- + V"
+              effect: "Vowel coalescence and/or palatalisation"
+              examples:
+                - input: "lila + -y-a"
+                  output: "lilisya / lilisha"
+                  process: "Coalescence and palatalisation — Chibemba sh reflex"
+        palatalization:
+          description: "Chibemba-specific: /k/ palatalises to /sh/ before /i/ (not /c/ as in Chitonga)"
+          rules:
+            - condition: "k + i"
+              effect: "k → sh"
+              language_specific: true
+        nasal_assimilation:
+          description: "Nasals assimilate to following consonant place; includes mf- before /f/ in Chibemba"
+          rules:
+            - condition: "N + C"
+              effect: "N adopts place features of C"
+              examples:
+                - input: "N + p"
+                  output: "mp"
+                - input: "N + k"
+                  output: "nk"
+                - input: "N + f"
+                  output: "mf"
+
+    # --- SLOT ORDER (copy 1, inside constraints) ---
+    slot_order: [SLOT1, SLOT2, SLOT3, SLOT4, SLOT5, SLOT6, SLOT7, SLOT8, SLOT9, SLOT10, SLOT11]
+
+    # --- VERB SLOTS (copy 1, inside constraints) ---
+    verb_slots:
+      SLOT1:
+        code: "negation_pre"
+        name: "Pre-initial Negation"
+        position: 1
+        type: "Negation"
+        required: false
+        repeatable: false
+        pos_tag: "NEG"
+        udpos: "PART"
+        forms_ref: "negation_pre"
+        description: "Marks negation before subject in main clause; ta- or si- in Chibemba"
+        token_boundary: true
+        ud_features:
+          Polarity: "Neg"
+      SLOT2:
+        code: "pre_initial"
+        name: "Pre-initial Elements"
+        position: 2
+        type: "Modal"
+        required: false
+        repeatable: false
+        pos_tag: "PRE"
+        udpos: "AUX"
+        forms_ref: "pre_initial"
+        description: "Pre-initial elements for conditional/temporal relations"
+        token_boundary: false
+      SLOT3:
+        code: "subject_concords"
+        name: "Subject Concord"
+        position: 3
+        type: "Agreement"
+        subtype: "AGR_SUBJ"
+        required: true
+        repeatable: false
+        pos_tag: "SM"
+        udpos: "PRON"
+        ud_role: "nsubj"
+        forms_ref: ["concords.subject_concords", "concords.relative_concords"]
+        description: "Agrees with subject in noun class, person, and number"
+        token_boundary: false
+        agreement:
+          features: ["Person", "Number", "NounClass"]
+          target: "nsubj"
+      SLOT4:
+        code: "negation_infix"
+        name: "Negation Infix"
+        position: 4
+        type: "Negation"
+        required: false
+        repeatable: false
+        pos_tag: "NEG"
+        udpos: "PART"
+        forms_ref: "negation_infix"
+        description: "Secondary negation marker after SM in subordinate constructions"
+        token_boundary: false
+        ud_features:
+          Polarity: "Neg"
+      SLOT5:
+        code: "tense_aspect_mood"
+        name: "Tense/Aspect/Mood"
+        position: 5
+        type: "TAM"
+        required: false
+        repeatable: false
+        pos_tag: "TAM"
+        udpos: "AUX"
+        forms_ref: "tam"
+        description: "TAM marker; Chibemba has multiple past degree distinctions"
+        token_boundary: false
+      SLOT6:
+        code: "modal_aux"
+        name: "Mood/Auxiliary"
+        position: 6
+        type: "Modal"
+        required: false
+        repeatable: false
+        pos_tag: "AUX"
+        udpos: "AUX"
+        forms_ref: "modal"
+        description: "Mood and auxiliary information"
+        token_boundary: false
+      SLOT7:
+        code: "object_concord"
+        name: "Object Concord"
+        position: 7
+        type: "Agreement"
+        subtype: "AGR_OBJ"
+        required: false
+        repeatable: false
+        pos_tag: "OM"
+        udpos: "PRON"
+        ud_role: "obj"
+        forms_ref: "concords.object_concords"
+        description: "Agrees with object in noun class, person, and number"
+        token_boundary: false
+        agreement:
+          features: ["Person", "Number", "NounClass"]
+          target: "obj"
+      SLOT8:
+        code: "root"
+        name: "Verb Root"
+        position: 8
+        type: "Lexeme"
+        required: true
+        repeatable: false
+        pos_tag: "VERB"
+        udpos: "VERB"
+        forms_ref: null
+        description: "Core lexical verb form"
+        token_boundary: false
+        ud_role: "root"
+      SLOT9:
+        code: "verb_ext"
+        name: "Verb Extensions"
+        position: 9
+        type: "Derivational"
+        required: false
+        repeatable: true
+        pos_tag: "EXT"
+        udpos: "VERB"
+        forms_ref: "extensions"
+        description: "Ordered derivational suffixes; zones Z1-Z4 with fixed scope"
+        token_boundary: false
+      SLOT10:
+        code: "fv"
+        name: "Final Vowel"
+        position: 10
+        type: "Inflectional"
+        required: true
+        repeatable: false
+        pos_tag: "FV"
+        udpos: "VERB"
+        forms_ref: "final_vowels"
+        description: "Marks mood and polarity; -ile for perfective in Chibemba"
+        token_boundary: false
+      SLOT11:
+        code: "post_final"
+        name: "Post-Final Elements"
+        position: 11
+        type: "Clitic"
+        required: false
+        repeatable: false
+        pos_tag: "POST"
+        udpos: "PART"
+        forms_ref: "post_final"
+        description: "Clitics after final vowel"
+        token_boundary: true
+
+    # --- VALIDATION (copy 1, inside constraints) ---
+    validation:
+      description: "Validation rules for well-formed verb structures"
+      required_elements:
+        - element: "ROOT"
+          slot: "SLOT8"
+          rule: "Every verb must have a root"
+          violation: "error"
+        - element: "FV"
+          slot: "SLOT10"
+          rule: "Every verb must have a final vowel"
+          violation: "error"
+        - element: "SM"
+          slot: "SLOT3"
+          rule: "Every finite verb requires subject marker"
+          violation: "error"
+          exception: "Imperatives may lack overt SM"
+      slot_co_occurrence:
+        negation:
+          - condition:
+              present: ["SLOT1:negation_pre"]
+            forbids: ["SLOT4:negation_infix"]
+            rationale: "Pre-initial and infix negation are mutually exclusive"
+            violation: "error"
+          - condition:
+              present: ["SLOT10:final_vowels.negative"]
+            requires: ["SLOT1:negation_pre"]
+            rationale: "Negative FV requires pre-initial negation"
+            violation: "error"
+        mood_fv_agreement:
+          - condition:
+              present: ["SLOT6:modal.SUBJ"]
+            requires: ["SLOT10:final_vowels.subjunctive"]
+            rationale: "Subjunctive mood requires FV -e"
+            violation: "error"
+          - condition:
+              present: ["SLOT6:modal.POT"]
+            requires: ["SLOT10:final_vowels.subjunctive"]
+            rationale: "Potential mood requires FV -e"
+            violation: "error"
+        tam_fv_compatibility:
+          valid_combinations:
+            - tam: "PRES"
+              fv: "indicative"
+            - tam: "PERF"
+              fv: "perfective"
+            - tam: "PST_HODIERNAL"
+              fv: "perfective"
+            - tam: "PST_HESTERNAL"
+              fv: "perfective"
+            - tam: "REC_PST"
+              fv: "perfective"
+            - tam: "REM_PST"
+              fv: "perfective"
+            - tam: "HAB"
+              fv: "indicative"
+          note: "Chibemba perfective FV is -ile (not -ide)"
+      extension_validation:
+        max_extensions: 5
+        typical_max: 3
+        note: "More than 3 extensions rare in natural speech"
+        checks:
+          - check: "zone_ordering"
+            rule: "Extensions must follow zone precedence Z1 < Z2 < Z3 < Z4"
+            violation: "error"
+          - check: "internal_ordering"
+            rule: "Within each zone, follow specified internal order"
+            violation: "error"
+          - check: "incompatibilities"
+            rule: "Check for incompatible extension combinations"
+            violation: "error"
+          - check: "constraints"
+            rule: "Verify extension-specific constraints"
+            violation: "error"
+      agreement_validation:
+        - rule: "Subject marker must agree with subject noun"
+          features: ["Person", "Number", "NounClass"]
+          violation: "error"
+        - rule: "Object marker must agree with object noun"
+          features: ["Person", "Number", "NounClass"]
+          violation: "error"
+          condition: "object_marker present"
+
+  # ===================================
+  # TAM-FV INTERACTIONS (copy 2 — verb_system top level)
+  # ===================================
+
+  tam_fv_interactions:
+    description: "TAM markers and final vowels work together to express complete temporal/modal meaning"
+    patterns:
+      present_habitual:
+        slots:
+          SLOT5: "tam.PRES (a)"
+          SLOT10: "final_vowels.indicative (a)"
+        full_meaning: "Present habitual/general"
+        example:
+          form: "a-a-bon-a"
+          gloss: "3SG-PRES-see-IND"
+          translation: "He/she sees (habitually)"
+      perfect:
+        slots:
+          SLOT5: "tam.PERF (a)"
+          SLOT10: "final_vowels.perfective (ile)"
+        full_meaning: "Perfect aspect"
+        example:
+          form: "a-a-bon-ile"
+          gloss: "3SG-PERF-see-PERF"
+          translation: "He/she has seen"
+        note: "Chibemba perfective FV is -ile not -ide"
+      hodiernal_past:
+        slots:
+          SLOT5: "tam.PST_HODIERNAL (ali)"
+          SLOT10: "final_vowels.perfective (ile)"
+        full_meaning: "Hodiernal past (earlier today)"
+        example:
+          form: "a-ali-bon-ile"
+          gloss: "3SG-HOD.PST-see-PERF"
+          translation: "He/she saw (earlier today)"
+      hesternal_past:
+        slots:
+          SLOT5: "tam.PST_HESTERNAL (alii)"
+          SLOT10: "final_vowels.perfective (ile)"
+        full_meaning: "Hesternal past (yesterday)"
+        example:
+          form: "a-alii-bon-ile"
+          gloss: "3SG-HEST.PST-see-PERF"
+          translation: "He/she saw (yesterday)"
+      remote_past:
+        slots:
+          SLOT5: "tam.REM_PST (alaa)"
+          SLOT10: "final_vowels.perfective (ile)"
+        full_meaning: "Remote past"
+        example:
+          form: "a-alaa-bon-ile"
+          gloss: "3SG-REM.PST-see-PERF"
+          translation: "He/she saw (long ago)"
+      subjunctive:
+        slots:
+          SLOT5: "Ø"
+          SLOT10: "final_vowels.subjunctive (e)"
+        full_meaning: "Subjunctive mood"
+        example:
+          form: "a-bon-e"
+          gloss: "3SG-see-SUBJ"
+          translation: "That he/she see; may he/she see"
+      negative_present:
+        slots:
+          SLOT1: "negation_pre.present (ta)"
+          SLOT5: "tam.PRES (a) [optional]"
+          SLOT10: "final_vowels.negative (i)"
+        full_meaning: "Negative present"
+        example:
+          form: "ta-boni"
+          gloss: "NEG-see.NEG"
+          translation: "Does not see"
+    cross_linguistic_note: "Chibemba distinguishes multiple past degrees (hodiernal/hesternal/remote) unlike Chitonga baseline"
+
+  # ===================================
+  # MORPHOPHONOLOGY (copy 2 — verb_system top level)
+  # ===================================
+
+  morphophonology:
+    description: "Morphophonological processes affecting surface forms"
+    vowel_harmony:
+      type: "height_harmony"
+      description: "Extensions harmonise for vowel height with stem vowels"
+      rules:
+        - name: "Extension lowering"
+          condition:
+            stem_contains: ["e", "o"]
+          effect: "/i/ → /e/ in extensions"
+          examples:
+            - input: "uku-lemb-a + -il-"
+              output: "uku-lemb-el-a"
+              gloss: "INF-write-APPL-IND"
+        - name: "Extension retention"
+          condition:
+            stem_contains: ["a", "i", "u"]
+          effect: "Extensions retain /i/"
+          examples:
+            - input: "uku-pik-a + -il-"
+              output: "uku-pik-il-a"
+              gloss: "INF-cook-APPL-IND"
+    consonant_processes:
+      glide_formation:
+        description: "Causative -y- triggers coalescence or glide insertion"
+        rules:
+          - condition: "V + -y- + V"
+            effect: "Vowel coalescence and/or palatalisation with sh reflex"
+            examples:
+              - input: "lila + -y-a"
+                output: "lilisha"
+                process: "Palatalisation to sh in Chibemba"
+      palatalization:
+        description: "Chibemba CA.2: /k/ → /sh/ before front vowels"
+        rules:
+          - condition: "k + i"
+            effect: "k → sh"
+            language_specific: true
+      nasal_assimilation:
+        description: "Nasals assimilate to following consonant; includes mf- before /f/"
+        rules:
+          - condition: "N + C"
+            effect: "N adopts place features of C"
+            examples:
+              - input: "N + p"
+                output: "mp"
+              - input: "N + k"
+                output: "nk"
+              - input: "N + f"
+                output: "mf"
+
+  # ===================================
+  # PROSODY (verb_system top level only)
+  # ===================================
+
+  prosody:
+    tone:
+      description: "Tone is phonologically and grammatically significant; Chibemba has complex H-tone spreading"
+      levels:
+        H: "High tone"
+        L: "Low tone"
+        R: "Rising tone"
+        F: "Falling tone"
+      grammatical_functions:
+        tam_distinctions:
+          - markers: ["alaa", "ali"]
+            tonal_contrast:
+              - tone: "H-L"
+                function: "Remote past (REM_PST)"
+              - tone: "L-L"
+                function: "Hodiernal past (PST_HODIERNAL)"
+            note: "Tone distinguishes otherwise closely related TAM markers"
+          - markers: ["a"]
+            tonal_contrast:
+              - tone: "L"
+                context: "with FV -a"
+                function: "Present habitual"
+              - tone: "L"
+                context: "with FV -ile"
+                function: "Perfect"
+        extension_tone:
+          general: "Extensions typically have L tone"
+          exceptions:
+            - extension: "CAUS"
+              note: "-ish- in Chibemba may trigger H tone on adjacent syllables"
+        final_vowel_tone:
+          indicative: "Usually L"
+          subjunctive: "Usually L"
+          perfective: "-ile carries H on penultimate in some tonal melodies"
+      melodic_patterns:
+        language_specific: true
+        note: "Chibemba has unbounded rightward H-tone spreading (TS.2); complex floating H melodies on TAM prefixes distinguish tense degrees"
+        common_patterns:
+          - pattern: "H-L-L-L"
+            description: "Common pattern for certain TAM + extension combinations"
+
+  # ===================================
+  # SLOT ORDER (copy 2 — verb_system top level)
+  # ===================================
+
+  slot_order: [SLOT1, SLOT2, SLOT3, SLOT4, SLOT5, SLOT6, SLOT7, SLOT8, SLOT9, SLOT10, SLOT11]
+
+  # ===================================
+  # VERB SLOTS (copy 2 — verb_system top level)
+  # ===================================
+
+  verb_slots:
+    SLOT1:
+      code: "negation_pre"
+      name: "Pre-initial Negation"
+      position: 1
+      type: "Negation"
+      required: false
+      repeatable: false
+      pos_tag: "NEG"
+      udpos: "PART"
+      forms_ref: "negation_pre"
+      description: "Pre-verbal negation; ta- or si- in Chibemba"
+      token_boundary: true
+      ud_features:
+        Polarity: "Neg"
+    SLOT2:
+      code: "pre_initial"
+      name: "Pre-initial Elements"
+      position: 2
+      type: "Modal"
+      required: false
+      repeatable: false
+      pos_tag: "PRE"
+      udpos: "AUX"
+      forms_ref: ["pre_initial", "concords.relative_object_concords", "concords.relative_subject_concords"]
+      description: "Pre-initial elements for conditional/temporal relations"
+      token_boundary: false
+    SLOT3:
+      code: "subject_concords"
+      name: "Subject Concord"
+      position: 3
+      type: "Agreement"
+      subtype: "AGR_SUBJ"
+      required: true
+      repeatable: false
+      pos_tag: "SM"
+      udpos: "PRON"
+      ud_role: "nsubj"
+      forms_ref: ["concords.subject_concords", "concords.relative_concords"]
+      description: "Subject marker; agrees with subject in noun class, person, and number"
+      token_boundary: false
+      agreement:
+        features: ["Person", "Number", "NounClass"]
+        target: "nsubj"
+    SLOT4:
+      code: "negation_infix"
+      name: "Negation Infix"
+      position: 4
+      type: "Negation"
+      required: false
+      repeatable: false
+      pos_tag: "NEG"
+      udpos: "PART"
+      forms_ref: "negation_infix"
+      description: "Post-SM negation infix in subordinate constructions"
+      token_boundary: false
+      ud_features:
+        Polarity: "Neg"
+    SLOT5:
+      code: "tense_aspect_mood"
+      name: "Tense/Aspect/Mood"
+      position: 5
+      type: "TAM"
+      required: false
+      repeatable: false
+      pos_tag: "TAM"
+      udpos: "AUX"
+      forms_ref: "tam"
+      description: "TAM marker; Chibemba adds PST_HODIERNAL, PST_HESTERNAL beyond Chitonga baseline"
+      token_boundary: false
+    SLOT6:
+      code: "modal_aux"
+      name: "Mood/Auxiliary"
+      position: 6
+      type: "Modal"
+      required: false
+      repeatable: false
+      pos_tag: "AUX"
+      udpos: "AUX"
+      forms_ref: "modal"
+      description: "Mood and auxiliary"
+      token_boundary: false
+    SLOT7:
+      code: "object_concord"
+      name: "Object Concord"
+      position: 7
+      type: "Agreement"
+      subtype: "AGR_OBJ"
+      required: false
+      repeatable: false
+      pos_tag: "OM"
+      udpos: "PRON"
+      ud_role: "obj"
+      forms_ref: "concords.object_concords"
+      description: "Object marker; agrees with object in noun class, person, and number"
+      token_boundary: false
+      agreement:
+        features: ["Person", "Number", "NounClass"]
+        target: "obj"
+    SLOT8:
+      code: "root"
+      name: "Verb Root"
+      position: 8
+      type: "Lexeme"
+      required: true
+      repeatable: false
+      pos_tag: "VERB"
+      udpos: "VERB"
+      forms_ref: null
+      description: "Core lexical verb form"
+      token_boundary: false
+      ud_role: "root"
+    SLOT9:
+      code: "verb_ext"
+      name: "Verb Extensions"
+      position: 9
+      type: "Derivational"
+      required: false
+      repeatable: true
+      pos_tag: "EXT"
+      udpos: "VERB"
+      forms_ref: "extensions"
+      description: "Ordered derivational suffixes; zones Z1-Z4"
+      token_boundary: false
+    SLOT10:
+      code: "fv"
+      name: "Final Vowel"
+      position: 10
+      type: "Inflectional"
+      required: true
+      repeatable: false
+      pos_tag: "FV"
+      udpos: "VERB"
+      forms_ref: "final_vowels"
+      description: "Marks mood and polarity; -ile for perfective in Chibemba"
+      token_boundary: false
+    SLOT11:
+      code: "post_final"
+      name: "Post-Final Elements"
+      position: 11
+      type: "Clitic"
+      required: false
+      repeatable: false
+      pos_tag: "POST"
+      udpos: "PART"
+      forms_ref: "post_final"
+      description: "Post-verbal clitics"
+      token_boundary: true
+
+  # ===================================
+  # VALIDATION (copy 2 — verb_system top level)
+  # ===================================
+
+  validation:
+    description: "Validation rules for well-formed verb structures"
+    required_elements:
+      - element: "ROOT"
+        slot: "SLOT8"
+        rule: "Every verb must have a root"
+        violation: "error"
+      - element: "FV"
+        slot: "SLOT10"
+        rule: "Every verb must have a final vowel"
+        violation: "error"
+      - element: "SM"
+        slot: "SLOT3"
+        rule: "Every finite verb requires subject marker"
+        violation: "error"
+        exception: "Imperatives may lack overt SM"
+    slot_co_occurrence:
+      negation:
+        - condition:
+            present: ["SLOT1:negation_pre"]
+          forbids: ["SLOT4:negation_infix"]
+          rationale: "Pre-initial and infix negation are mutually exclusive"
+          violation: "error"
+        - condition:
+            present: ["SLOT10:final_vowels.negative"]
+          requires: ["SLOT1:negation_pre"]
+          rationale: "Negative FV requires pre-initial negation"
+          violation: "error"
+      mood_fv_agreement:
+        - condition:
+            present: ["SLOT6:modal.SUBJ"]
+          requires: ["SLOT10:final_vowels.subjunctive"]
+          rationale: "Subjunctive mood requires FV -e"
+          violation: "error"
+        - condition:
+            present: ["SLOT6:modal.POT"]
+          requires: ["SLOT10:final_vowels.subjunctive"]
+          rationale: "Potential mood requires FV -e"
+          violation: "error"
+      tam_fv_compatibility:
+        valid_combinations:
+          - tam: "PRES"
+            fv: "indicative"
+          - tam: "PERF"
+            fv: "perfective"
+          - tam: "PST_HODIERNAL"
+            fv: "perfective"
+          - tam: "PST_HESTERNAL"
+            fv: "perfective"
+          - tam: "REC_PST"
+            fv: "perfective"
+          - tam: "REM_PST"
+            fv: "perfective"
+          - tam: "HAB"
+            fv: "indicative"
+        note: "Chibemba adds hodiernal/hesternal/remote past distinctions beyond Chitonga baseline"
+    extension_validation:
+      max_extensions: 5
+      typical_max: 3
+      note: "More than 3 extensions rare in natural speech"
+      checks:
+        - check: "zone_ordering"
+          rule: "Extensions must follow zone precedence Z1 < Z2 < Z3 < Z4"
+          violation: "error"
+        - check: "internal_ordering"
+          rule: "Within each zone, follow specified internal order"
+          violation: "error"
+        - check: "incompatibilities"
+          rule: "Check for incompatible extension combinations"
+          violation: "error"
+        - check: "constraints"
+          rule: "Verify extension-specific constraints"
+          violation: "error"
+    agreement_validation:
+      - rule: "Subject marker must agree with subject noun"
+        features: ["Person", "Number", "NounClass"]
+        violation: "error"
+      - rule: "Object marker must agree with object noun"
+        features: ["Person", "Number", "NounClass"]
+        violation: "error"
+        condition: "object_marker present"
+
+# ============================================================================
+# TOKENIZATION
+# ============================================================================
+
+tokenization:
+  tokenization_metadata:
+    schema_compatibility:
+      min_parser_version: "1.0"
+      max_parser_version: "2.x"
+    external_file: "6_tokenization_rules.yaml"
+    description: "Rules for splitting text into tokens; adaptable for NLP. See separate file for detailed tokenization rules."
+
+  syllable:
+    pattern: (C?V(N|C)?)
+    description: "Default syllable structure for Chibemba; bimoraic minimum applies"
+
+  word_boundary: "\\s+"
+  morpheme_separators: ["+", "-"]
+  special_tokens:
+    punctuation: [".", ",", "!", "?"]
+    discourse_markers: ["na", "kuti", "lelo", "nomba"]
+  preserve_case: false
+

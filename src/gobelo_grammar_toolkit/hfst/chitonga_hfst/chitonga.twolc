@@ -1,0 +1,221 @@
+! ==============================================================
+! Chitonga — Two-Level Phonological Rules   chitonga.twolc
+! Helsinki FST (HFST) format
+! ==============================================================
+! Source: chitonga_grammar.yaml phonology module
+! Each rule references its grammar YAML rule ID (VH.1, SND.1, etc.)
+! so changes in the grammar can be traced back here.
+!
+! Compile:
+!   hfst-twolc chitonga.twolc -o chitonga-phonology.hfst
+! ==============================================================
+
+Alphabet
+! Vowels
+a e i o u
+A E I O U
+! Short consonants
+b c d f g h j k l m n p q r s t v w x y z
+B C D F G H J K L M N P Q R S T V W X Y Z
+! Prenasalised and complex consonants (written as digraphs)
+! These are stored in the lexicon as single units
+! Apostrophe for prenasalisation marker (ng'ombe etc.)
+'
+! Morpheme boundary marker (used in lexical representations)
+% + #
+;
+
+! ── PHONOLOGICAL FEATURE SETS ──────────────────────────────────
+
+Sets
+Vowel    = a e i o u A E I O U ;
+HighV    = i u I U ;
+MidV     = e o E O ;
+LowV     = a A ;
+Bilabial = b p m v f B P M V F ;
+Alveolar = d t s z l r n D T S Z L R N ;
+Velar    = g k G K ;
+Palatal  = j y J Y ;
+Cons     = b c d f g h j k l m n p q r s t v w x y z
+           B C D F G H J K L M N P Q R S T V W X Y Z ;
+
+! ── PROCESSING STAGE 1: MORPHOPHONOLOGICAL RULES ──────────────
+! (grammar.yaml stage: morphophonology, ordering 1-9)
+
+! ── VH.1  Applicative vowel harmony ──────────────────────────
+! Applicative suffix -il- lowers to -el- after mid-vowel stems.
+! Input (lexical):  ...e/o stem + il + a
+! Output (surface): ...e/o stem + el + a
+!
+! Grammar ref: VH.1 type=segmental subtype=vowel_harmony
+!   conditions: stem_vowel high_or_low -> il; mid -> el
+!   reversible: true
+"VH.1 Applicative harmony: i → e after mid-vowel stem"
+i:e <=> [ e | o ] Cons* _ l ;
+
+! ── CA.1  l/d consonant alternation ──────────────────────────
+! l → d before high vowels in certain morpheme-boundary contexts.
+! Grammar ref: CA.1 type=segmental subtype=consonant_alternation
+!   input: consonant=l, following_vowel=[+high]
+!   reversible: true
+"CA.1 l → d before high vowel at morpheme boundary"
+l:d <=> _ [ i | u ] ;
+! Note: this rule applies specifically at morpheme boundaries;
+! lexical l before i/u (e.g. lino) is NOT affected.
+! Flag diacritic @P.MORPHBOUND.ON@ can gate this if over-applies.
+
+! ── CA.2  Palatalization ──────────────────────────────────────
+! k → c (= /tʃ/) before front vowels.
+! Grammar ref: CA.2 type=segmental subtype=palatalization
+!   input: consonant=k, following_vowel=[+front]
+!   reversible: true
+"CA.2 Palatalization: k → c before front vowel"
+k:c <=> _ [ i | e ] ;
+
+! ── PROCESSING STAGE 2: SANDHI RULES ─────────────────────────
+! (grammar.yaml stage: sandhi, ordering 10-19)
+! Sandhi rules apply at morpheme and zone boundaries AFTER
+! morphophonological rules but BEFORE prosody and tone.
+
+! ── SND.1  High vowel glide formation ────────────────────────
+! High vowels become glides before another vowel.
+! Grammar ref: SND.1 type=segmental subtype=glide_formation
+!   direction: bidirectional
+!   applies_across: [morpheme, zone]
+!   i:y, u:w before vowel
+!   blocks: [SND.2]  — glide formation takes priority over coalescence
+!   reversible: true
+!
+! Examples from grammar:
+!   ku + i + enda  →  kuyenda   (NC15 + i + go)
+!   mu + ana       →  mwana     (NC1 + child)
+!   mi + i-        →  my-       (NC4 before vowel)
+!   bu + a-        →  bwa-      (NC14 before vowel)
+"SND.1a High vowel glide: i → y before vowel"
+i:y <=> _ Vowel ;
+
+"SND.1b High vowel glide: u → w before vowel"
+u:w <=> _ Vowel ;
+
+! ── SND.2  Vowel coalescence ──────────────────────────────────
+! Vowel sequences coalesce when glide formation is blocked.
+! Grammar ref: SND.2 type=segmental subtype=vowel_coalescence
+!   direction: bidirectional
+!   applies_across: [morpheme]
+!   blocked_by: [SND.1]
+!   reversible: true
+!
+! Coalescence map from grammar:
+!   a + i → e     (ba + enda → benda via a+e coalescence)
+!   a + u → o
+!   i + a → ya    (handled by SND.1)
+!   u + a → wa    (handled by SND.1)
+"SND.2a Vowel coalescence: a + i → e at morpheme boundary"
+a:0 <=> _ :e ;    ! delete the a; e remains from underlying /i/ → /e/
+
+"SND.2b Vowel coalescence: a + u → o at morpheme boundary"
+a:0 <=> _ :o ;
+
+! ── SND.3  Nasal assimilation ──────────────────────────────────
+! The abstract nasal prefix N- assimilates to the place of the
+! following consonant. Applies exclusively to NC9/NC10 nouns
+! and the negative prefix n-.
+! Grammar ref: SND.3 type=segmental subtype=nasal_assimilation
+!   direction: bidirectional
+!   applies_across: [morpheme]
+!   output: left = homorganic_nasal
+!   reversible: true
+!
+! Examples from grammar:
+!   N + b  →  mb    (N + bwa → mbwa: dog)
+!   N + d  →  nd    (N + dovu → ndovu: elephant)
+!   N + g  →  ng    (N + gombe → ng'ombe: cattle — written with ')
+!   N + k  →  nk
+!   N + t  →  nt
+!   N + p  →  mp
+!   N + f  →  mf    (labio-dental — same place as bilabial)
+!   N + y  →  ny
+!   N + z  →  nz
+!   N + s  →  ns
+!   N + V  →  Ø     (before vowels/fricatives: zero nasal)
+"SND.3a Nasal assimilation: N → m before bilabials"
+n:m <=> _ Bilabial ;
+
+"SND.3b Nasal assimilation: N → n before alveolars (transparent)"
+! n stays n before alveolar — no change needed in twolc
+
+"SND.3c Nasal assimilation: N → ng before velars"
+n:ng <=> _ Velar ;
+
+"SND.3d Nasal assimilation: N → ny before palatals"
+n:ny <=> _ Palatal ;
+
+"SND.3e Nasal deletion before fricatives and vowels"
+n:0 <=> _ [ f | v | s | z | Vowel ] ;
+
+! ── SND.4  Vowel elision at word boundary ────────────────────
+! Final vowel deletes in word-boundary cliticization contexts.
+! Grammar ref: SND.4 type=segmental subtype=vowel_deletion
+!   direction: unidirectional  (NOT reversible — affects generation only)
+!   applies_across: [word]
+!   constraints: [prosodic_clitic]
+!
+! Example: na + enda + a#  →  naenda  (and + go + FV + boundary)
+! NOTE: SND.4 is the only rule marked reversible: false in grammar.
+! In HFST this means it applies in the analyser direction only.
+"SND.4 Final vowel elision before word boundary in cliticization"
+a:0 <=> _ # ;     ! conservative: only in explicit boundary context
+
+! ── PROCESSING STAGE 3: PROSODIC RULES ───────────────────────
+! (grammar.yaml stage: prosody, ordering 20-29)
+
+! ── MP.1  Mora preservation (compensatory lengthening) ────────
+! When a consonant deletes (especially via SND.3e nasal deletion),
+! the adjacent vowel lengthens to preserve mora count.
+! Grammar ref: MP.1 type=prosodic subtype=mora_preservation
+!   trigger: deleted_segment=consonant
+!   effect: add_mora=1 to adjacent vowel
+!   reversible: true
+!
+! In standard Chitonga orthography, vowel length is written by
+! doubling the vowel letter: a → aa, e → ee, i → ii, o → oo, u → uu.
+! These long vowels are stored lexically via double letters;
+! MP.1 as a rule applies where nasal deletion creates compensatory length.
+"MP.1 Compensatory lengthening: short vowel after nasal deletion"
+! This rule interacts with SND.3e; handled lexically for most cases.
+! The twolc formalization: after n:0, adjacent V acquires length marker.
+! Practical implementation: store prenasalised forms with long vowel
+! in the lexicon directly (e.g. n + indi → iindi stored as lexical form).
+
+! ── VL.2  Penultimate lengthening ────────────────────────────
+! The penultimate syllable lengthens in utterance-final position.
+! Grammar ref: VL.2 type=prosodic subtype=penultimate_lengthening
+!   domain: phonological_phrase
+!   input: position=penultimate
+!   output: vowel_length=long
+!   reversible: true
+!
+! NOTE: Penultimate lengthening is a phrasal/prosodic rule that
+! applies post-lexically. In HFST it is best handled as a separate
+! post-processing transducer (Phase 2). For Phase 1 (morphological
+! analyser), it is marked as a known gap — the analyser operates
+! on citation forms without automatic penultimate lengthening.
+
+! ── PROCESSING STAGE 4: TONAL RULES ──────────────────────────
+! (grammar.yaml stage: tone, ordering 30-39)
+! TBU.1, TS.1, TS.2, OCP.1, TL.1, TL.2
+!
+! Tonal rules require a suprasegmental (autosegmental) architecture
+! that is beyond basic twolc. These are deferred to Phase 2.
+! Phase 1 strategy: tone is distinguished via morphological tags
+! (+PST vs +REM_PST for aka L-L vs aka H-L) not surface diacritics.
+! See: hfst_config.tone_fst_strategy in the grammar YAML.
+
+! ── RULE ORDERING CONSTRAINTS ────────────────────────────────
+! From grammar: rule_interactions
+!   feeding:        SND.1 feeds SND.2  (glide formation feeds coalescence)
+!   bleeding:       SND.1 bleeds SND.2 (glide formation blocks coalescence)
+!   counterfeeding: VL.2 before SND.4  (lengthen before elision)
+!
+! twolc enforces ordering via the global_ordering block:
+!   morphophonology [1-9] → sandhi [10-19] → prosody [20-29] → tone [30-39]

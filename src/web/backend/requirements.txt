@@ -1,0 +1,31 @@
+# web/backend/requirements.txt
+# ─────────────────────────────────────────────────────────────
+# Runtime dependencies for the Gobelo Grammar Toolkit web API.
+#
+# Install:
+#   pip install -r web/backend/requirements.txt
+#
+# The GGT library itself is installed separately:
+#   pip install -e .         (from repo root, editable dev install)
+#   pip install gobelo-grammar-toolkit   (from PyPI once published)
+# ─────────────────────────────────────────────────────────────
+
+# Web framework
+flask>=3.0,<4.0
+
+# WSGI server for production
+# gunicorn>=21.0   # uncomment for deployment; not needed in dev
+
+# GGT core (already declared in pyproject.toml; listed here for
+# standalone web-only environments that don't install the full package)
+pyyaml>=6.0
+
+# ─── Optional / dev only ──────────────────────────────────────
+# Uncomment for production deployments:
+# gunicorn>=21.0          # multi-worker WSGI server
+# python-dotenv>=1.0      # .env file support for config
+
+# Uncomment for API testing:
+# httpx>=0.25             # async-capable HTTP client for tests
+# pytest>=7.0
+# pytest-flask>=1.3

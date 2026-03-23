@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+"""
+scripts/add_language.py
+========================
+Scaffold a new grammar YAML from the canonical template and register
+the language in the GGT registry.
+
+Run:
+    python scripts/add_language.py chibemba
+    python scripts/add_language.py kaonde --iso kqn --guthrie L.41
+    python scripts/add_language.py silozi  --iso loz --guthrie K.21 --display siLozi
+
+Steps performed:
+    1. Check the language is not already registered.
+    2. Copy canonical_grammar_template.yaml → languages/<language>.yaml
+    3. Substitute the language, iso_code, and guthrie placeholders.
+    4. Append the language → filename mapping to registry.py.
+    5. Print next steps for the grammar author.
+
+The generated YAML is a VALID stub that the loader can parse immediately —
+it will raise 0 errors (but many VERIFY flags until data is filled in).
+"""
+
+from __future__ import annotations
+
+import sys
+import re
+import argparse
+import shutil
+from pathlib import Path
+from datetime import date
+
+# ── path bootstrap ─────────────────────────────────────────────────
+_SCRIPT = Path(__file__).resolve().parent
+_REPO   = _SCRIPT.parent
+_GGT    = _REPO / "ggt"
+for p in (_GGT, Path("/mnt/user-data/uploads")):
+    if p.exists() and str(p) not in sys.path:
+        sys.path.insert(0, str(p))
+
+_LANGUAGES_DIR = _GGT / "gobelo_grammar_toolkit" / "languages"
+_REGISTRY_PY   = _GGT / "gobelo_grammar_toolkit" / "core" / "registry.py"
+_TEMPLATE      = _REPO / "outputs" / "ggt-core" / "canonical_grammar_template.yaml"
+
+# Fall back to the copy in the outputs dir
+if not _TEMPLATE.exists():
+    _TEMPLATE = Path("/mnt/user-data/outputs/ggt-core/canonical_grammar_template.yaml")
+
+# ISO and Guthrie defaults for the 7 Zambian official languages
+_KNOWN = {
+    "chitonga":  dict(iso="toi", guthrie="M.64", display="chiTonga"),
+    "chibemba":  dict(iso="bem", guthrie="M.42", display="chiBemba"),
+    "chinyanja": dict(iso="nya", guthrie="N.44", display="chiNyanja"),
+    "silozi":    dict(iso="loz", guthrie="K.21", display="siLozi"),
+    "luvale":    dict(iso="lue", guthrie="K.14", display="Luvale"),
+    "lunda":     dict(iso="lun", guthrie="L.52", display="Lunda"),
+    "kaonde":    dict(iso="kqn", guthrie="L.41", display="Kaonde"),
+}
+
+
+def _ok(msg: str)  -> None: print(f"  \033[32m✓\033[0m  {msg}")
+def _err(msg: str) -> None: print(f"  \033[31m✗\033[0m  {msg}", file=sys.stderr)
+def _info(msg: str)-> None: print(f"  \033[36m→\033[0m  {msg}")
+
+
+def register_language(language: str, yaml_filename: str) -> bool:
+    """
+    Add a ``language: yaml_filename`` entry to the registry dict in registry.py.
+    Idempotent — does nothing if already registered.
+    """
+    if not _REGISTRY_PY.exists():
+        _err(f"Registry file not found: {_REGISTRY_PY}")
+        return False
+
+    src = _REGISTRY_PY.read_text(encoding="utf-8")
+
+    # Already registered?
+    if f'"{language}"' in src or f"'{language}'" in src:
+        _info(f"'{language}' already in registry — skipping registry edit.")
+        return True
+
+    # Find the dict literal and append
+    # Expected pattern:  "chitonga": "chitonga.yaml",
+    pattern = re.compile(
+        r'(_LANGUAGE_REGISTRY\s*=\s*\{[^}]*?)(\})',
+        re.DOTALL,
+    )
+    m = pattern.search(src)
+    if not m:
+        _err("Could not locate _LANGUAGE_REGISTRY dict in registry.py. "
+             "Add the entry manually:\n"
+             f'    "{language}": "{yaml_filename}",')
+        return False
+
+    new_entry = f'    "{language}": "{yaml_filename}",\n'
+    new_src = src[:m.start(2)] + new_entry + src[m.start(2):]
+    _REGISTRY_PY.write_text(new_src, encoding="utf-8")
+    return True
+
+
+def scaffold_grammar(
+    language: str,
+    iso_code: str,
+    guthrie: str,
+    display_name: str,
+    force: bool = False,
+) -> Path:
+    """
+    Copy the canonical template to languages/<language>.yaml and
+    substitute placeholder values.
+    """
+    if not _TEMPLATE.exists():
+        raise FileNotFoundError(f"Canonical template not found: {_TEMPLATE}")
+
+    _LANGUAGES_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = _LANGUAGES_DIR / f"{language}.yaml"
+
+    if out_path.exists() and not force:
+        raise FileExistsError(
+            f"{out_path} already exists.  Use --force to overwrite."
+        )
+
+    template = _TEMPLATE.read_text(encoding="utf-8")
+
+    # Substitute all placeholder values
+    replacements = {
+        '"chibemba"':    f'"{language}"',
+        '"bem"':         f'"{iso_code}"',
+        '"M.42"':        f'"{guthrie}"',
+        '"ChiBemba"':    f'"{display_name}"',
+        '"1.0.0"':       '"1.0.0"',             # version stays 1.0.0
+        "2025-01-01":    str(date.today()),
+    }
+    result = template
+    for old, new in replacements.items():
+        result = result.replace(old, new, 1)  # only first occurrence
+
+    # Prepend a comment block
+    header = (
+        f"# {'='*60}\n"
+        f"# {display_name} ({language}) — GGT Grammar YAML\n"
+        f"# Generated by scripts/add_language.py on {date.today()}\n"
+        f"# ISO 639-3: {iso_code}   Guthrie: {guthrie}\n"
+        f"#\n"
+        f"# NEXT STEPS FOR GRAMMAR AUTHOR:\n"
+        f"#   1. Fill in every REQUIRED field (search for TODO or empty strings)\n"
+        f"#   2. Replace VERIFY: placeholders with confirmed primary-source data\n"
+        f"#   3. Run: python scripts/validate_grammar.py languages/{language}.yaml\n"
+        f"#   4. Commit when all errors are resolved (VERIFY flags may remain)\n"
+        f"# {'='*60}\n\n"
+    )
+    out_path.write_text(header + result, encoding="utf-8")
+    return out_path
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Scaffold a new GGT grammar YAML and register it",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument("language",   help="Language identifier (e.g. chibemba)")
+    parser.add_argument("--iso",      default=None, help="ISO 639-3 code (e.g. bem)")
+    parser.add_argument("--guthrie",  default=None, help="Guthrie code (e.g. M.42)")
+    parser.add_argument("--display",  default=None, help="Display name (e.g. chiBemba)")
+    parser.add_argument("--force",    action="store_true", help="Overwrite if already exists")
+    parser.add_argument("--no-register", action="store_true",
+                        help="Skip editing registry.py")
+    args = parser.parse_args()
+
+    lang = args.language.lower().strip()
+
+    # Resolve ISO / Guthrie from known defaults if not supplied
+    known = _KNOWN.get(lang, {})
+    iso_code     = args.iso      or known.get("iso")
+    guthrie      = args.guthrie  or known.get("guthrie")
+    display_name = args.display  or known.get("display") or lang.capitalize()
+
+    if not iso_code:
+        _err("--iso is required for unknown languages (e.g. --iso bem)")
+        return 1
+    if not guthrie:
+        _err("--guthrie is required for unknown languages (e.g. --guthrie M.42)")
+        return 1
+
+    print(f"\nAdding language: {lang}")
+    print(f"  ISO 639-3:  {iso_code}")
+    print(f"  Guthrie:    {guthrie}")
+    print(f"  Display:    {display_name}")
+    print()
+
+    # Check not already a YAML
+    out_path = _LANGUAGES_DIR / f"{lang}.yaml"
+    if out_path.exists() and not args.force:
+        _err(f"{out_path} already exists.  Use --force to overwrite.")
+        return 1
+
+    # 1. Scaffold YAML
+    try:
+        created = scaffold_grammar(lang, iso_code, guthrie, display_name, force=args.force)
+        _ok(f"Created: {created}")
+    except Exception as e:
+        _err(str(e))
+        return 1
+
+    # 2. Register
+    if not args.no_register:
+        yaml_filename = f"{lang}.yaml"
+        ok = register_language(lang, yaml_filename)
+        if ok:
+            _ok(f"Registered '{lang}' → '{yaml_filename}' in registry.py")
+        else:
+            _err("Registry edit failed — add entry manually.")
+
+    # 3. Next steps
+    print()
+    print("Next steps:")
+    _info(f"Edit:     {_LANGUAGES_DIR / lang}.yaml")
+    _info(f"Validate: python scripts/validate_grammar.py languages/{lang}.yaml")
+    _info(f"Reload:   python -c \"from gobelo_grammar_toolkit.core.loader import GobeloGrammarLoader; "
+          f"from gobelo_grammar_toolkit.core.config import GrammarConfig; "
+          f"GobeloGrammarLoader(GrammarConfig(language='{lang}'))\"")
+    print()
+    print(f"Sections to fill in {lang}.yaml:")
+    print("  metadata           → language, iso_code, guthrie, grammar_version")
+    print("  phonology          → vowels, consonants, tone_system, sandhi_rules")
+    print("  noun_classes       → prefix, allomorphs, semantic_domain for each NC")
+    print("  concord_systems    → subject_concords, object_concords, possessive_concords")
+    print("  verb_system        → tam_markers, verb_extensions, verb_slots")
+    print("  tokenization       → word_boundary_pattern")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,116 @@
+# ==============================================================
+# tests/fixtures/stub_chibemba.yaml
+# Minimal valid chiBemba grammar for multi-language tests.
+#
+# Scope:   2 noun classes (NC1, NC2) — enough for comparison
+#          1 TAM marker  (PRES)
+#          2 extensions  (APPL, PASS)
+#          3 verb slots  (SLOT3, SLOT8, SLOT10)
+#
+# Key differences from chiTonga used in FeatureComparator tests:
+#   NC1.prefix:  mu- (chiTonga)  vs  u- (chiBemba)   → "different"
+#   NC2.prefix:  ba- (same)                           → "same"
+#   tone_system: two_level_HL (same)
+#   TAM_PRES.form: a (same)
+#
+# DO NOT add VERIFY: flags — this fixture loads with 0 flags.
+# ==============================================================
+
+metadata:
+  language: "chibemba"
+  iso_code: "bem"
+  guthrie: "M.42"
+  grammar_version: "1.0.0"
+  min_loader_version: "1.0.0"
+  max_loader_version: "999.0.0"
+
+phonology:
+  vowels: [a, e, i, o, u]
+  consonants: [b, c, d, f, g, h, j, k, l, m, n, p, s, sh, t, v, w, y, z]
+  tone_system: "two_level_HL"
+  nasal_prefixes: ["m-", "n-", "ng-", "ny-"]
+  sandhi_rules: ["SND.1", "SND.2"]
+  vowel_harmony_rules: []
+  notes: "Stub fixture for chiBemba M.42; two-level tone system"
+
+noun_classes:
+  NC1:
+    id: "NC1"
+    prefix: "u-"
+    allomorphs: ["w-"]
+    semantic_domain: "human_beings"
+    active: true
+    singular_counterpart: null
+    plural_counterpart: "NC2"
+    notes: "chiBemba NC1 uses u- (vs chiTonga mu-) — key difference for comparator tests"
+
+  NC2:
+    id: "NC2"
+    prefix: "ba-"
+    allomorphs: ["b-"]
+    semantic_domain: "human_beings"
+    active: true
+    singular_counterpart: "NC1"
+    plural_counterpart: null
+
+concord_systems:
+  subject_concords:
+    "1SG":  "ndi"
+    "2SG":  "u"
+    NC1:    "a"
+    NC2:    "ba"
+    notes: "chiBemba NC1 SM is 'a' (vs chiTonga 'u')"
+
+  object_concords:
+    "1SG":  "ndi"
+    "2SG":  "ku"
+    NC1:    "mu"
+    NC2:    "ba"
+
+verb_system:
+  tam_markers:
+    - id: "TAM_PRES"
+      form: "a"
+      tense: "present"
+      aspect: "imperfective"
+      mood: "indicative"
+      notes: "same surface form as chiTonga"
+
+  verb_extensions:
+    - id: "APPL"
+      canonical_form: "-il-"
+      allomorphs: ["-el-"]
+      zone: "Z1"
+      semantic_value: "applicative"
+
+    - id: "PASS"
+      canonical_form: "-w-"
+      allomorphs: ["-iw-"]
+      zone: "Z3"
+      semantic_value: "passive voice"
+
+  verb_slots:
+    - id: "SLOT3"
+      name: "subject_concord"
+      position: 3
+      obligatory: true
+      allowed_content_types: ["subject_concord"]
+      notes: ""
+
+    - id: "SLOT8"
+      name: "verb_root"
+      position: 8
+      obligatory: true
+      allowed_content_types: ["verb_root"]
+      notes: ""
+
+    - id: "SLOT10"
+      name: "final_vowel"
+      position: 10
+      obligatory: true
+      allowed_content_types: ["final_vowel"]
+      notes: ""
+
+tokenization:
+  word_boundary_pattern: '\s+'
+  notes: ""

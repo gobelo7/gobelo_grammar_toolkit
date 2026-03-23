@@ -1,0 +1,188 @@
+# ==============================================================
+# tests/fixtures/minimal_chitonga.yaml
+# A deliberately small but fully valid chiTonga grammar YAML.
+#
+# Purpose: fast unit tests that need a real loader without the
+#          overhead of the 4 236-line production grammar.
+#          Load time: < 50 ms vs ~200 ms for the full grammar.
+#
+# Scope:   4 noun classes (NC1, NC2, NC7, NC8)
+#          2 TAM markers  (PRES, PST)
+#          4 extensions   (APPL, CAUS, RECIP, PASS)
+#          6 verb slots   (SLOT1, SLOT3, SLOT5, SLOT8, SLOT9, SLOT10)
+#          3 concord types (subject, object, possessive)
+#
+# All field names, types, and values mirror the production grammar
+# exactly — this is not a mock, it is a valid subset.
+#
+# DO NOT add VERIFY: flags — this fixture must load with 0 flags.
+# ==============================================================
+
+metadata:
+  language: "chitonga"
+  iso_code: "toi"
+  guthrie: "M.64"
+  grammar_version: "1.0.0"
+  min_loader_version: "1.0.0"
+  max_loader_version: "999.0.0"
+
+phonology:
+  vowels: [a, e, i, o, u]
+  consonants: [b, c, d, f, g, h, j, k, l, m, n, p, r, s, t, v, w, y, z]
+  tone_system: "two_level_HL"
+  nasal_prefixes: ["m-", "n-", "ny-"]
+  sandhi_rules: ["SND.1", "SND.2", "SND.3", "SND.4"]
+  vowel_harmony_rules: ["VH.1"]
+  notes: "Minimal fixture — 5-vowel system, two-level tone"
+
+noun_classes:
+  NC1:
+    id: "NC1"
+    prefix: "mu-"
+    allomorphs: ["mw-"]
+    semantic_domain: "human_beings"
+    active: true
+    singular_counterpart: null
+    plural_counterpart: "NC2"
+
+  NC2:
+    id: "NC2"
+    prefix: "ba-"
+    allomorphs: ["b-"]
+    semantic_domain: "human_beings"
+    active: true
+    singular_counterpart: "NC1"
+    plural_counterpart: null
+
+  NC7:
+    id: "NC7"
+    prefix: "ci-"
+    allomorphs: ["chi-", "c-"]
+    semantic_domain: "things_diminutives"
+    active: true
+    singular_counterpart: null
+    plural_counterpart: "NC8"
+
+  NC8:
+    id: "NC8"
+    prefix: "zi-"
+    allomorphs: ["zy-", "z-"]
+    semantic_domain: "things_diminutives"
+    active: true
+    singular_counterpart: "NC7"
+    plural_counterpart: null
+
+concord_systems:
+  subject_concords:
+    "1SG":  "ndi"
+    "2SG":  "u"
+    "1PL":  "tu"
+    "2PL":  "mu"
+    NC1:    "u"
+    NC2:    "ba"
+    NC7:    "ci"
+    NC8:    "zi"
+
+  object_concords:
+    "1SG":  "ndi"
+    "2SG":  "ku"
+    "1PL":  "tu"
+    "2PL":  "mu"
+    NC1:    "mu"
+    NC2:    "ba"
+    NC7:    "ci"
+    NC8:    "zi"
+
+  possessive_concords:
+    NC1:    "wa"
+    NC2:    "ba"
+    NC7:    "ca"
+    NC8:    "zya"
+
+verb_system:
+  tam_markers:
+    - id: "TAM_PRES"
+      form: "a"
+      tense: "present"
+      aspect: "imperfective"
+      mood: "indicative"
+      notes: "present habitual; surface form 'a', low tone"
+
+    - id: "TAM_PST"
+      form: "aka"
+      tense: "immediate_past"
+      aspect: "perfective"
+      mood: "indicative"
+      notes: "general past; disambiguated from REM_PST by tone in full grammar"
+
+  verb_extensions:
+    - id: "APPL"
+      canonical_form: "-il-"
+      allomorphs: ["-el-"]
+      zone: "Z1"
+      semantic_value: "applicative — adds beneficiary or location argument"
+
+    - id: "CAUS"
+      canonical_form: "-is-"
+      allomorphs: ["-isy-", "-y-"]
+      zone: "Z1"
+      semantic_value: "causative — introduces a causer argument"
+
+    - id: "RECIP"
+      canonical_form: "-an-"
+      allomorphs: []
+      zone: "Z2"
+      semantic_value: "reciprocal — two or more participants act on each other"
+
+    - id: "PASS"
+      canonical_form: "-w-"
+      allomorphs: ["-iw-", "-ew-"]
+      zone: "Z3"
+      semantic_value: "passive voice — agent demotion"
+
+  verb_slots:
+    - id: "SLOT1"
+      name: "negation_pre"
+      position: 1
+      obligatory: false
+      allowed_content_types: ["negation_pre"]
+      notes: "pre-initial negation ta-"
+
+    - id: "SLOT3"
+      name: "subject_concord"
+      position: 3
+      obligatory: true
+      allowed_content_types: ["subject_concord"]
+      notes: "obligatory subject agreement marker"
+
+    - id: "SLOT5"
+      name: "tam_marker"
+      position: 5
+      obligatory: false
+      allowed_content_types: ["tam_marker"]
+      notes: "tense-aspect-mood prefix"
+
+    - id: "SLOT8"
+      name: "verb_root"
+      position: 8
+      obligatory: true
+      allowed_content_types: ["verb_root"]
+      notes: "obligatory lexical root"
+
+    - id: "SLOT9"
+      name: "verb_extension"
+      position: 9
+      obligatory: false
+      allowed_content_types: ["verb_extension"]
+      notes: "derivational suffix zones Z1–Z4"
+
+    - id: "SLOT10"
+      name: "final_vowel"
+      position: 10
+      obligatory: true
+      allowed_content_types: ["final_vowel"]
+      notes: "obligatory final vowel — mood-marking"
+
+tokenization:
+  word_boundary_pattern: '\s+'
+  notes: ""

@@ -1,0 +1,112 @@
+[build-system]
+requires      = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+# ── Project metadata ──────────────────────────────────────────
+[project]
+name            = "gobelo-grammar-toolkit"
+version         = "1.0.0"
+description     = "Grammar-driven NLP toolkit for the 7 official Zambian Bantu languages"
+readme          = "README.md"
+license         = { text = "MIT" }
+requires-python = ">=3.8"
+
+authors = [
+  { name = "Gobelo Contributors" },
+]
+
+keywords = [
+  "NLP", "morphology", "Bantu", "Zambia",
+  "chiTonga", "chiBemba", "chiNyanja",
+  "computational-linguistics", "FST",
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Education",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Text Processing :: Linguistic",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+]
+
+# ── Runtime dependencies ──────────────────────────────────────
+# Core library has only one required dependency.
+# Optional extras are listed below.
+dependencies = [
+  "pyyaml>=6.0",
+]
+
+# ── Optional extras ───────────────────────────────────────────
+[project.optional-dependencies]
+
+# Web API server
+web = [
+  "flask>=3.0",
+]
+
+# Development and testing
+dev = [
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+  "mypy>=1.0",
+  "ruff>=0.1",
+]
+
+# HFST integration (Phase 2)
+# hfst binaries are installed system-wide (not via pip); this extra
+# is a marker only — install hfst separately from https://hfst.github.io
+hfst = []
+
+# ── Entry points ──────────────────────────────────────────────
+[project.scripts]
+ggt = "gobelo_grammar_toolkit.cli.ggt_cli:main"
+
+# ── Package discovery ─────────────────────────────────────────
+[tool.setuptools.packages.find]
+where   = ["."]
+include = ["gobelo_grammar_toolkit*"]
+
+# CRITICAL: grammar YAML files must be bundled in the wheel.
+# Without this, grammars are absent from installed packages.
+[tool.setuptools.package-data]
+gobelo_grammar_toolkit = [
+  "languages/*.yaml",
+]
+
+# ── pytest ────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths     = ["tests"]
+python_files  = ["test_*.py"]
+python_classes= ["Test*"]
+python_functions = ["test_*"]
+addopts       = "-v --tb=short"
+
+# ── mypy ──────────────────────────────────────────────────────
+[tool.mypy]
+python_version         = "3.8"
+warn_return_any        = true
+warn_unused_ignores    = true
+ignore_missing_imports = true   # third-party stubs not always available
+
+# ── ruff ──────────────────────────────────────────────────────
+[tool.ruff]
+target-version = "py38"
+line-length    = 100
+select         = ["E", "F", "W", "I", "N"]
+ignore         = ["E501"]   # line-length is a guide, not a hard rule
+
+# ── coverage ──────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["gobelo_grammar_toolkit"]
+omit   = ["*/tests/*", "*/scripts/*"]
+
+[tool.coverage.report]
+show_missing   = true
+fail_under     = 70
