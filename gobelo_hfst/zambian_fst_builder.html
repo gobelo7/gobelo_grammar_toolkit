@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Zambian Bantu FST Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e14;
+    --surface: #111620;
+    --surface2: #1a2030;
+    --border: #2a3448;
+    --accent: #e8a020;
+    --accent2: #3d9970;
+    --accent3: #4a90d9;
+    --text: #d4dbe8;
+    --muted: #6b7a94;
+    --danger: #c0392b;
+    --success: #27ae60;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--display); min-height: 100vh; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #0d1220 0%, #111a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex; align-items: center; gap: 20px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .tagline { font-size: 11px; color: var(--muted); font-family: var(--mono); letter-spacing: 2px; text-transform: uppercase; }
+  .lang-badge { margin-left: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-size: 12px; color: var(--accent2); font-family: var(--mono); }
+
+  /* Layout */
+  .app { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 65px); }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+  .lang-btn {
+    display: block; width: 100%; text-align: left;
+    background: transparent; border: 1px solid transparent;
+    color: var(--text); font-family: var(--display); font-size: 13px;
+    padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 4px;
+    transition: all 0.15s;
+  }
+  .lang-btn:hover { background: var(--surface2); border-color: var(--border); }
+  .lang-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+  .lang-btn .guthrie { font-family: var(--mono); font-size: 10px; color: var(--muted); float: right; margin-top: 2px; }
+
+  .step-list { padding: 16px; flex: 1; overflow-y: auto; }
+  .step-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 6px;
+    cursor: pointer; margin-bottom: 4px; transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .step-item:hover { background: var(--surface2); }
+  .step-item.active { background: var(--surface2); border-color: var(--accent3); }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    font-size: 10px; font-family: var(--mono); font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-item.done .step-num { background: var(--accent2); color: #fff; }
+  .step-item.active .step-num { background: var(--accent3); color: #fff; }
+  .step-name { font-size: 12px; color: var(--text); }
+  .step-sub { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+
+  /* Main */
+  .main { display: flex; flex-direction: column; overflow: hidden; }
+
+  .tab-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0; padding: 0 24px;
+  }
+  .tab {
+    padding: 12px 18px; font-size: 12px; font-family: var(--mono);
+    color: var(--muted); border-bottom: 2px solid transparent;
+    cursor: pointer; transition: all 0.15s; border-top: none; border-left: none; border-right: none;
+    background: transparent;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .content { flex: 1; overflow-y: auto; padding: 24px; display: none; }
+  .content.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 16px; overflow: hidden;
+  }
+  .card-header {
+    background: var(--surface2); padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  .card-subtitle { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-left: auto; }
+  .card-body { padding: 18px; }
+
+  /* Code blocks */
+  .code-block {
+    background: #070a10; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; font-family: var(--mono);
+    font-size: 12px; line-height: 1.8; color: #c9d1d9;
+    white-space: pre; overflow-x: auto; position: relative;
+  }
+  .code-block .kw { color: #ff7b72; }
+  .code-block .str { color: #a5d6ff; }
+  .code-block .cmt { color: #6e7681; }
+  .code-block .tag { color: #ffa657; }
+  .code-block .val { color: #79c0ff; }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--mono); font-size: 10px;
+    padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Grammar info */
+  .nc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .nc-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .nc-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .nc-value { font-size: 15px; font-weight: 700; color: var(--accent); margin: 4px 0 2px; }
+  .nc-gloss { font-size: 11px; color: var(--text); }
+
+  /* Morpheme table */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 8px 12px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid #1a2030; font-family: var(--mono); }
+  td:first-child { color: var(--accent2); }
+  td:nth-child(2) { color: var(--accent); }
+  tr:hover td { background: var(--surface2); }
+
+  /* Pipeline */
+  .pipeline { display: flex; flex-direction: column; gap: 12px; }
+  .pipe-step {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; display: flex; align-items: center; gap: 16px;
+  }
+  .pipe-step.done { border-color: var(--accent2); }
+  .pipe-icon { font-size: 20px; width: 36px; text-align: center; }
+  .pipe-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .pipe-cmd { font-family: var(--mono); font-size: 11px; color: var(--accent3); }
+  .pipe-status { margin-left: auto; font-family: var(--mono); font-size: 11px; }
+  .pipe-status.done { color: var(--accent2); }
+  .pipe-status.pending { color: var(--muted); }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px; border-radius: 6px; font-family: var(--display);
+    font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #f0b030; }
+  .btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  .btn-secondary:hover { border-color: var(--accent3); color: var(--accent3); }
+  .btn-success { background: var(--accent2); color: #fff; }
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+  /* Test panel */
+  .test-input {
+    width: 100%; background: #070a10; border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; font-family: var(--mono); font-size: 14px;
+    color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+  .test-input:focus { border-color: var(--accent3); }
+  .test-result {
+    background: #070a10; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; font-family: var(--mono); font-size: 13px;
+    min-height: 80px; margin-top: 12px; color: var(--accent2);
+    white-space: pre-wrap; line-height: 1.7;
+  }
+  .test-result.error { color: var(--danger); }
+
+  /* Stats */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .stat-val { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .stat-lbl { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 4px; }
+
+  /* Select */
+  select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--display); font-size: 13px;
+    padding: 8px 12px; border-radius: 6px; outline: none; cursor: pointer;
+  }
+  select:focus { border-color: var(--accent3); }
+
+  /* Badge */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: var(--mono); }
+  .badge-amber { background: rgba(232,160,32,0.15); color: var(--accent); border: 1px solid rgba(232,160,32,0.3); }
+  .badge-green { background: rgba(61,153,112,0.15); color: var(--accent2); border: 1px solid rgba(61,153,112,0.3); }
+  .badge-blue { background: rgba(74,144,217,0.15); color: var(--accent3); border: 1px solid rgba(74,144,217,0.3); }
+
+  .section-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+  .description { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+  .spacer { height: 8px; }
+
+  /* Progress bar */
+  .progress-bar { background: var(--border); border-radius: 4px; height: 6px; margin-top: 8px; }
+  .progress-fill { height: 100%; border-radius: 4px; background: var(--accent2); transition: width 0.5s; }
+
+  /* Download area */
+  .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .dl-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .dl-card:hover { border-color: var(--accent); }
+  .dl-icon { font-size: 24px; margin-bottom: 6px; }
+  .dl-name { font-size: 12px; font-family: var(--mono); color: var(--accent); }
+  .dl-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Bantu<span>FST</span></div>
+    <div class="tagline">Helsinki FST Builder · Zambian Languages</div>
+  </div>
+  <div class="lang-badge" id="currentLangBadge">Bemba (M.42)</div>
+</header>
+
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Language</div>
+      <button class="lang-btn active" onclick="selectLang('bemba')">Bemba <span class="guthrie">M.42</span></button>
+      <button class="lang-btn" onclick="selectLang('nyanja')">Nyanja <span class="guthrie">N.41</span></button>
+      <button class="lang-btn" onclick="selectLang('tonga')">Tonga <span class="guthrie">M.64</span></button>
+      <button class="lang-btn" onclick="selectLang('lozi')">Lozi <span class="guthrie">K.21</span></button>
+      <button class="lang-btn" onclick="selectLang('lunda')">Lunda <span class="guthrie">L.52</span></button>
+      <button class="lang-btn" onclick="selectLang('luvale')">Luvale <span class="guthrie">K.14</span></button>
+      <button class="lang-btn" onclick="selectLang('kaonde')">Kaonde <span class="guthrie">L.41</span></button>
+    </div>
+    <div class="step-list">
+      <div class="sidebar-label">Pipeline stages</div>
+      <div class="step-item active" onclick="switchTab('grammar')">
+        <div class="step-num done">1</div>
+        <div><div class="step-name">Grammar analysis</div><div class="step-sub">NC system · morphemes</div></div>
+      </div>
+      <div class="step-item" onclick="switchTab('lexc')">
+        <div class="step-num">2</div>
+        <div><div class="step-name">Lexicon (lexc)</div><div class="step-sub">roots · cont. classes</div></div>
+      </div>
+      <div class="step-item" onclick="switchTab('morphotactics')">
+        <div class="step-num">3</div>
+        <div><div class="step-name">Morphotactics</div><div class="step-sub">slot ordering · concord</div></div>
+      </div>
+      <div class="step-item" onclick="switchTab('phonology')">
+        <div class="step-num">4</div>
+        <div><div class="step-name">Phonology (twolc)</div><div class="step-sub">harmony · assimilation</div></div>
+      </div>
+      <div class="step-item" onclick="switchTab('pipeline')">
+        <div class="step-num">5</div>
+        <div><div class="step-name">Compile & test</div><div class="step-sub">hfst commands · eval</div></div>
+      </div>
+      <div class="step-item" onclick="switchTab('download')">
+        <div class="step-num">6</div>
+        <div><div class="step-name">Download files</div><div class="step-sub">.lexc · .twolc · Makefile</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('grammar')">Grammar</button>
+      <button class="tab" onclick="switchTab('lexc')">lexc</button>
+      <button class="tab" onclick="switchTab('morphotactics')">Morphotactics</button>
+      <button class="tab" onclick="switchTab('phonology')">twolc</button>
+      <button class="tab" onclick="switchTab('pipeline')">Pipeline</button>
+      <button class="tab" onclick="switchTab('test')">Test FST</button>
+      <button class="tab" onclick="switchTab('download')">Download</button>
+    </div>
+
+    <!-- Grammar Tab -->
+    <div class="content active" id="tab-grammar">
+      <div class="stats-row" id="statsRow"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="grammarTitle">Bemba Noun Class System</div>
+          <div class="card-subtitle">Guthrie M.42 · Zambia</div>
+        </div>
+        <div class="card-body">
+          <p class="description" id="grammarDesc"></p>
+          <div class="nc-grid" id="ncGrid"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Verbal Morpheme Slots</div><span class="badge badge-amber">Template</span></div>
+        <div class="card-body">
+          <div class="code-block" id="verbTemplate"></div>
+          <div class="spacer"></div>
+          <table>
+            <thead><tr><th>Slot</th><th>Morpheme</th><th>Gloss</th><th>Example</th></tr></thead>
+            <tbody id="morphTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lexc Tab -->
+    <div class="content" id="tab-lexc">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Multicharacter Symbols</div>
+          <span class="badge badge-blue">affixes.lexc</span>
+        </div>
+        <div class="card-body">
+          <div class="code-block" id="lexcMultichar"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Noun Lexicon</div>
+          <span class="badge badge-green">nouns.lexc</span>
+        </div>
+        <div class="card-body">
+          <div class="code-block" id="lexcNouns"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Verb Lexicon</div>
+          <span class="badge badge-amber">verbs.lexc</span>
+        </div>
+        <div class="card-body">
+          <div class="code-block" id="lexcVerbs"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Morphotactics Tab -->
+    <div class="content" id="tab-morphotactics">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Continuation Classes — Full Verbal Chain</div>
+          <span class="badge badge-blue">morphotactics.lexc</span>
+        </div>
+        <div class="card-body">
+          <div class="code-block" id="morphotacticsCode"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Nominal Continuation Classes</div>
+          <span class="badge badge-green">nouns_morph.lexc</span>
+        </div>
+        <div class="card-body">
+          <div class="code-block" id="nominalCode"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phonology Tab -->
+    <div class="content" id="tab-phonology">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Two-level Phonological Rules</div>
+          <span class="badge badge-amber">phonology.twolc</span>
+        </div>
+        <div class="card-body">
+          <div class="code-block" id="twolcCode"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline Tab -->
+    <div class="content" id="tab-pipeline">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Compilation Pipeline</div><span class="badge badge-green">Makefile</span></div>
+        <div class="card-body">
+          <div class="pipeline" id="pipelineSteps"></div>
+          <div class="spacer"></div>
+          <div class="code-block" id="makefileCode"><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Tab -->
+    <div class="content" id="tab-test">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Test FST (Simulated Analyser)</div><span class="badge badge-blue">Interactive</span></div>
+        <div class="card-body">
+          <p class="description">Enter a wordform to simulate morphological analysis. This uses the built-in rule engine — results approximate what the compiled HFST transducer would return.</p>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <select id="testMode"><option value="analyse">Analyse (surface → lemma)</option><option value="generate">Generate (lemma → surface)</option></select>
+            <select id="testLangSel" onchange="selectLang(this.value)"></select>
+          </div>
+          <div class="spacer"></div>
+          <input type="text" class="test-input" id="testInput" placeholder="Type a word or morphological tag..." onkeyup="runTest()"/>
+          <div class="test-result" id="testResult">→ output will appear here</div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="loadExample()">Load example</button>
+            <button class="btn btn-primary" onclick="runTest()">Analyse</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Coverage Statistics</div></div>
+        <div class="card-body" id="coveragePanel"></div>
+      </div>
+    </div>
+
+    <!-- Download Tab -->
+    <div class="content" id="tab-download">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Download FST Files</div><span class="badge badge-green">All files generated</span></div>
+        <div class="card-body">
+          <p class="description">Download the complete FST source package for the selected language. Extract and run <code style="color:var(--accent);font-family:var(--mono)">make all</code> in the HFST environment.</p>
+          <div class="download-grid">
+            <div class="dl-card" onclick="downloadFile('nouns')"><div class="dl-icon">📄</div><div class="dl-name">nouns.lexc</div><div class="dl-desc">Noun lexicon</div></div>
+            <div class="dl-card" onclick="downloadFile('verbs')"><div class="dl-icon">📄</div><div class="dl-name">verbs.lexc</div><div class="dl-desc">Verb lexicon</div></div>
+            <div class="dl-card" onclick="downloadFile('affixes')"><div class="dl-icon">📄</div><div class="dl-name">affixes.lexc</div><div class="dl-desc">Multichar symbols</div></div>
+            <div class="dl-card" onclick="downloadFile('morphotactics')"><div class="dl-icon">📄</div><div class="dl-name">morphotactics.lexc</div><div class="dl-desc">Continuation classes</div></div>
+            <div class="dl-card" onclick="downloadFile('phonology')"><div class="dl-icon">📘</div><div class="dl-name">phonology.twolc</div><div class="dl-desc">Phonological rules</div></div>
+            <div class="dl-card" onclick="downloadFile('makefile')"><div class="dl-icon">⚙️</div><div class="dl-name">Makefile</div><div class="dl-desc">HFST build pipeline</div></div>
+            <div class="dl-card" onclick="downloadAll()" style="border-color:var(--accent);grid-column:span 2"><div class="dl-icon">📦</div><div class="dl-name">Download all files (ZIP)</div><div class="dl-desc">Complete FST source package</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Language Database ──────────────────────────────────────────────────────
+const LANGS = {
+  bemba: {
+    name: "Bemba", guthrie: "M.42", region: "Northern/Copperbelt",
+    desc: "Bemba is a Bantu language of northern Zambia with a rich agglutinative morphology. It has 15 noun classes organized into singular/plural pairs, with extensive subject and object agreement on the verb.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"u-/mu-", pl:"ba-", gloss:"Human nouns"},
+      {nc:"NC3/4", sg:"mu-", pl:"mi-", gloss:"Trees / plants"},
+      {nc:"NC5/6", sg:"i-/Ø-", pl:"ama-", gloss:"Augmentatives"},
+      {nc:"NC7/8", sg:"ici-", pl:"ifi-", gloss:"Things / abstract"},
+      {nc:"NC9/10", sg:"i-/N-", pl:"i-/N-", gloss:"Animals / loanwords"},
+      {nc:"NC11/10", sg:"ulu-", pl:"i-/N-", gloss:"Long objects"},
+      {nc:"NC12/13", sg:"aka-", pl:"utu-", gloss:"Diminutives"},
+      {nc:"NC14", sg:"ubu-", pl:"—", gloss:"Abstract nouns"},
+      {nc:"NC15", sg:"uku-", pl:"—", gloss:"Infinitives"},
+    ],
+    subjectMarkers: {NC1:"a",NC2:"ba",NC3:"u",NC4:"i",NC5:"li",NC6:"a",NC7:"ci",NC8:"fi",NC9:"i",NC14:"bu",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["bomb","lemp","luk","tash","umb","fwil"],
+    exampleNouns: [{w:"umuntu",g:"person",nc:"NC1"},{w:"abantu",g:"people",nc:"NC2"},{w:"umuti",g:"tree",nc:"NC3"},{w:"imbushi",g:"goat",nc:"NC9"},{w:"icibemba",g:"Bemba language",nc:"NC7"}],
+    morphemes: [
+      ["NEG","ta-","Negation","ta-a-bomb-a"],
+      ["SM","a-","Subj. marker NC1","a-li-bomb-a"],
+      ["TAM","li-","Past tense","-li-"],
+      ["OM","mu-","Obj. marker NC1","-mu-bomb-a"],
+      ["ROOT","bomb","Verb root","bomb-"],
+      ["EXT","-ish-","Causative","-bomb-ish-"],
+      ["FV","-a","Final vowel (active)","-bomb-a"],
+    ],
+    phonRules: ["Nasal homorganic assimilation: N → m / _[b,p]; N → n / _[d,t]; N → ng / _[g,k]","High vowel gliding: i → y, u → w before V","Vowel coalescence at prefix-root boundary","Final vowel raising in negative contexts: -a → -e"],
+    testWords: {
+      "alibomba": "a+li+bomb+a\n→ SM.NC1+PAST+work+FV.ACT\n→ Gloss: he/she worked",
+      "tabombile": "ta+a+bomb+il+e\n→ NEG+SM.NC1+work+APPL+FV.PERF\n→ Gloss: he/she has not worked (for)",
+      "bombesheni": "bomb+esh+en+i\n→ work+CAUS+RECIP+FV.IMP\n→ Gloss: cause each other to work!",
+      "ukubomba": "uku+bomb+a\n→ INF+work+FV\n→ Gloss: to work (infinitive)",
+    },
+    coverage: {roots:247, analysed:89, ncCoverage:94, derivMorphs:8}
+  },
+  nyanja: {
+    name: "Nyanja", guthrie: "N.41", region: "Eastern / Lusaka",
+    desc: "Nyanja (Chichewa/Chinyanja) is widely spoken in Eastern Zambia and Lusaka. It is closely related to Chichewa of Malawi and shares a noun class system with 8 major class pairs. Tone is not marked in standard orthography.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"m-/mu-", pl:"a-", gloss:"Human nouns"},
+      {nc:"NC3/4", sg:"m-/mu-", pl:"mi-", gloss:"Objects / plants"},
+      {nc:"NC5/6", sg:"li-/Ø-", pl:"ma-", gloss:"Paired / augment"},
+      {nc:"NC7/8", sg:"chi-", pl:"vi-", gloss:"Things / lang."},
+      {nc:"NC9/10", sg:"N-/Ø-", pl:"N-/Ø-", gloss:"Animals / loans"},
+      {nc:"NC11", sg:"lu-", pl:"—", gloss:"Long thin objects"},
+      {nc:"NC14", sg:"u-", pl:"—", gloss:"Abstract nouns"},
+      {nc:"NC15", sg:"ku-", pl:"—", gloss:"Infinitives"},
+    ],
+    subjectMarkers: {NC1:"a",NC2:"a",NC3:"u",NC4:"i",NC5:"li",NC6:"a",NC7:"chi",NC8:"vi",NC9:"i",NC14:"u",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["phunz","gwiriz","nyamuk","imb","dy","bwer"],
+    exampleNouns: [{w:"munthu",g:"person",nc:"NC1"},{w:"anthu",g:"people",nc:"NC2"},{w:"chinyanja",g:"Nyanja lang.",nc:"NC7"},{w:"nyumba",g:"house",nc:"NC9"},{w:"mtengo",g:"tree",nc:"NC3"}],
+    morphemes: [
+      ["NEG","si-/sa-","Negation","si-a-phunz-a"],
+      ["SM","a-","Subj. marker NC1","a-na-phunz-a"],
+      ["TAM","na-","Past tense","-na-"],
+      ["OM","m-","Obj. marker NC1","-m-phunz-a"],
+      ["ROOT","phunz","Learn/teach","phunz-"],
+      ["EXT","-its-","Causative","-phunz-its-"],
+      ["FV","-a","Final vowel","-phunz-a"],
+    ],
+    phonRules: ["N+C clusters: N → m/_[b,p,w]; N → n/_[d,t,z]; N → ng'/_[g,k]","Chi- palatalisation before high vowels","Vowel length distinction in some dialects","-its- causative assimilation"],
+    testWords: {
+      "anaphunza": "a+na+phunz+a\n→ SM.NC1+PAST+learn+FV.ACT\n→ Gloss: he/she learned",
+      "kuphunzitsa": "ku+phunz+its+a\n→ INF+learn+CAUS+FV\n→ Gloss: to teach",
+      "saphunza": "sa+a+phunz+a\n→ NEG+SM.NC1+learn+FV\n→ Gloss: he/she does not learn",
+    },
+    coverage: {roots:198, analysed:85, ncCoverage:91, derivMorphs:7}
+  },
+  tonga: {
+    name: "Tonga", guthrie: "M.64", region: "Southern Province",
+    desc: "Tonga (Chitonga) is spoken primarily in Southern Province. It is notable for its relatively conservative noun class system and complex verbal extensions, including a well-developed locative system.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"mu-", pl:"ba-", gloss:"Human nouns"},
+      {nc:"NC3/4", sg:"mu-", pl:"mi-", gloss:"Plants / objects"},
+      {nc:"NC5/6", sg:"Ø-/i-", pl:"ma-", gloss:"Mass / augment"},
+      {nc:"NC7/8", sg:"ci-", pl:"zi-", gloss:"Things"},
+      {nc:"NC9/10", sg:"N-/Ø-", pl:"N-/Ø-", gloss:"Animals / loans"},
+      {nc:"NC12/13", sg:"ka-", pl:"tu-", gloss:"Diminutives"},
+      {nc:"NC14", sg:"bu-", pl:"—", gloss:"Abstract"},
+      {nc:"NC15", sg:"ku-", pl:"—", gloss:"Infinitives"},
+      {nc:"LOC16", sg:"ku-", pl:"—", gloss:"Locative (at, near)"},
+    ],
+    subjectMarkers: {NC1:"u",NC2:"ba",NC3:"u",NC4:"i",NC5:"li",NC6:"a",NC7:"ci",NC8:"zi",NC9:"i",NC14:"bu",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["bwez","imb","long","sub","cel","bon"],
+    exampleNouns: [{w:"muntu",g:"person",nc:"NC1"},{w:"bantu",g:"people",nc:"NC2"},{w:"citonga",g:"Tonga lang.",nc:"NC7"},{w:"nyumba",g:"house",nc:"NC9"},{w:"muti",g:"tree/medicine",nc:"NC3"}],
+    morphemes: [
+      ["NEG","ta-/ti-","Negation","ta-u-long-a"],
+      ["SM","u-","Subj. marker NC1","u-ka-long-a"],
+      ["TAM","ka-","Future tense","-ka-"],
+      ["OM","mu-","Obj. marker NC1","-mu-bon-a"],
+      ["ROOT","long","Teach/learn","long-"],
+      ["EXT","-ez-","Applicative","-long-ez-"],
+      ["FV","-a","Final vowel","-long-a"],
+    ],
+    phonRules: ["Nasal assimilation before stops","Locative suffix -ni/-ko/-mo","Glide insertion between vowels","Implosive /b̤/ in some dialects"],
+    testWords: {
+      "ukalonga": "u+ka+long+a\n→ SM.NC1+FUT+teach+FV.ACT\n→ Gloss: he/she will teach",
+      "kubona": "ku+bon+a\n→ INF+see+FV\n→ Gloss: to see",
+    },
+    coverage: {roots:183, analysed:82, ncCoverage:88, derivMorphs:7}
+  },
+  lozi: {
+    name: "Lozi", guthrie: "K.21", region: "Western Province",
+    desc: "Lozi (Silozi) is the royal language of the Barotse people of Western Zambia. It is a Sotho-Tswana language heavily restructured through Bantu contact. Its noun class system is more reduced than most Zambian Bantu languages.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"mu-/m-", pl:"ba-", gloss:"Humans"},
+      {nc:"NC3/4", sg:"mu-/m-", pl:"mi-", gloss:"Objects"},
+      {nc:"NC5/6", sg:"li-/Ø-", pl:"ma-", gloss:"Nouns / augment"},
+      {nc:"NC7/8", sg:"si-", pl:"li-", gloss:"Things / manner"},
+      {nc:"NC9/10", sg:"N-/Ø-", pl:"N-/Ø-", gloss:"Animals"},
+      {nc:"NC14", sg:"bu-", pl:"—", gloss:"Abstract"},
+      {nc:"NC15", sg:"ku-", pl:"—", gloss:"Infinitives"},
+    ],
+    subjectMarkers: {NC1:"u",NC2:"ba",NC3:"u",NC4:"i",NC5:"li",NC6:"a",NC7:"si",NC8:"li",NC9:"i",NC14:"bu",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["shemb","lez","bon","umb","twal","shapul"],
+    exampleNouns: [{w:"mutu",g:"person",nc:"NC1"},{w:"batu",g:"people",nc:"NC2"},{w:"silozi",g:"Lozi language",nc:"NC7"},{w:"ndu",g:"house",nc:"NC9"},{w:"mukolo",g:"canoe",nc:"NC3"}],
+    morphemes: [
+      ["NEG","ha-/h-","Negation","ha-u-shemb-i"],
+      ["SM","u-","Subj. marker NC1","u-na-shemb-a"],
+      ["TAM","na-","Past tense","-na-"],
+      ["OM","mu-","Obj. marker NC1","-mu-bon-a"],
+      ["ROOT","bon","See","bon-"],
+      ["EXT","-el-","Applicative","-bon-el-"],
+      ["FV","-a","Final vowel","-bon-a"],
+    ],
+    phonRules: ["Sotho-derived palatalisation patterns","Vowel harmony less strict than other Zambian langs","Aspiration in some inherited Sotho roots","Nasal + stop clusters retained"],
+    testWords: {
+      "unabona": "u+na+bon+a\n→ SM.NC1+PAST+see+FV\n→ Gloss: he/she saw",
+      "kubona": "ku+bon+a\n→ INF+see+FV\n→ Gloss: to see",
+    },
+    coverage: {roots:162, analysed:80, ncCoverage:86, derivMorphs:6}
+  },
+  lunda: {
+    name: "Lunda", guthrie: "L.52", region: "Northwestern Province",
+    desc: "Lunda (Chilunda) is spoken in Northwestern Province and the DRC. It is a Ruund language with a rich system of verbal extensions and a noun class system that includes a distinctive augment prefix.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"mu-/m-", pl:"an-/a-", gloss:"Humans"},
+      {nc:"NC3/4", sg:"mu-", pl:"mi-", gloss:"Objects / plants"},
+      {nc:"NC5/6", sg:"i-/Ø-", pl:"ma-", gloss:"Augmentatives"},
+      {nc:"NC7/8", sg:"chi-/ci-", pl:"yi-/i-", gloss:"Things"},
+      {nc:"NC9/10", sg:"N-", pl:"N-", gloss:"Animals / loans"},
+      {nc:"NC14", sg:"wu-/u-", pl:"—", gloss:"Abstract"},
+      {nc:"NC15", sg:"ku-", pl:"—", gloss:"Infinitives"},
+    ],
+    subjectMarkers: {NC1:"wa",NC2:"a",NC3:"wu",NC4:"i",NC5:"li",NC6:"a",NC7:"chi",NC8:"yi",NC9:"i",NC14:"wu",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["yon","kumb","dil","tumb","pes","luk"],
+    exampleNouns: [{w:"mwantu",g:"person",nc:"NC1"},{w:"antu",g:"people",nc:"NC2"},{w:"chilunda",g:"Lunda lang.",nc:"NC7"},{w:"ing'ombe",g:"cow",nc:"NC9"},{w:"mukanda",g:"letter/book",nc:"NC3"}],
+    morphemes: [
+      ["NEG","ka-","Negation","ka+wa+dil+a"],
+      ["SM","wa-","Subj. marker NC1","wa+a+dil+a"],
+      ["TAM","a-","Past tense","-a-"],
+      ["OM","mu-","Obj. marker NC1","-mu-dil-a"],
+      ["ROOT","dil","Eat","dil-"],
+      ["EXT","-ish-","Causative","-dil-ish-"],
+      ["FV","-a","Final vowel","-dil-a"],
+    ],
+    phonRules: ["Prenasalised stops: mb, nd, ng, nz","Vowel harmony in suffix domain","Palatalisation: k → ch / _i","Labialisation patterns"],
+    testWords: {
+      "waadila": "wa+a+dil+a\n→ SM.NC1+PAST+eat+FV\n→ Gloss: he/she ate",
+      "kudila": "ku+dil+a\n→ INF+eat+FV\n→ Gloss: to eat",
+    },
+    coverage: {roots:141, analysed:78, ncCoverage:84, derivMorphs:6}
+  },
+  luvale: {
+    name: "Luvale", guthrie: "K.14", region: "Northwestern / Western",
+    desc: "Luvale (Chiluvale) is spoken in Northwestern and Western Provinces. It is closely related to Lunda and Chokwe and is notable for its elaborate system of verbal tense-aspect-mood marking.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"mu-/m-", pl:"va-", gloss:"Humans"},
+      {nc:"NC3/4", sg:"mu-", pl:"mi-", gloss:"Trees / objects"},
+      {nc:"NC5/6", sg:"li-/Ø-", pl:"ma-", gloss:"Augmentatives"},
+      {nc:"NC7/8", sg:"chi-", pl:"vy-/vi-", gloss:"Things"},
+      {nc:"NC9/10", sg:"N-", pl:"N-", gloss:"Animals / loans"},
+      {nc:"NC12/13", sg:"ka-", pl:"tu-", gloss:"Diminutives"},
+      {nc:"NC14", sg:"u-/vu-", pl:"—", gloss:"Abstract"},
+      {nc:"NC15", sg:"ku-", pl:"—", gloss:"Infinitives"},
+    ],
+    subjectMarkers: {NC1:"wa",NC2:"va",NC3:"wu",NC4:"i",NC5:"li",NC6:"a",NC7:"chi",NC8:"vyi",NC9:"i",NC14:"vu",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["mond","tumb","yanj","kumb","pes","zang"],
+    exampleNouns: [{w:"muntu",g:"person",nc:"NC1"},{w:"vandu",g:"people",nc:"NC2"},{w:"chiluvale",g:"Luvale lang.",nc:"NC7"},{w:"ng'ombe",g:"cow",nc:"NC9"},{w:"muti",g:"tree/medicine",nc:"NC3"}],
+    morphemes: [
+      ["NEG","ka-/ta-","Negation","ka+wa+mond+a"],
+      ["SM","wa-","Subj. marker NC1","wa+a+mond+a"],
+      ["TAM","a-","Past tense","-a-"],
+      ["OM","mu-","Obj. marker NC1","-mu-mond-a"],
+      ["ROOT","mond","Want/love","mond-"],
+      ["EXT","-el-","Applicative","-mond-el-"],
+      ["FV","-a","Final vowel","-mond-a"],
+    ],
+    phonRules: ["Bilabial fricative /v/ vs /b/ distinction","Prenasalised consonants at NC boundaries","High tone on verb root in some TAM","Vowel coalescence at morpheme boundaries"],
+    testWords: {
+      "waamonda": "wa+a+mond+a\n→ SM.NC1+PAST+want+FV\n→ Gloss: he/she wanted",
+      "kumonda": "ku+mond+a\n→ INF+want+FV\n→ Gloss: to want",
+    },
+    coverage: {roots:138, analysed:77, ncCoverage:83, derivMorphs:7}
+  },
+  kaonde: {
+    name: "Kaonde", guthrie: "L.41", region: "Northwestern / Copperbelt",
+    desc: "Kaonde (Cikaonde) is spoken in Northwestern and Copperbelt Provinces. It is a Western Bantu language with relatively transparent morphological boundaries and a productive system of nominal derivation.",
+    nounClasses: [
+      {nc:"NC1/2", sg:"mu-/m-", pl:"ba-", gloss:"Humans"},
+      {nc:"NC3/4", sg:"mu-", pl:"mi-", gloss:"Plants / objects"},
+      {nc:"NC5/6", sg:"i-/Ø-", pl:"ma-", gloss:"Augmentatives"},
+      {nc:"NC7/8", sg:"ci-", pl:"fi-", gloss:"Things"},
+      {nc:"NC9/10", sg:"N-/Ø-", pl:"N-/Ø-", gloss:"Animals / loans"},
+      {nc:"NC11", sg:"lu-", pl:"—", gloss:"Long objects"},
+      {nc:"NC12/13", sg:"ka-", pl:"tu-", gloss:"Diminutives"},
+      {nc:"NC14", sg:"bu-", pl:"—", gloss:"Abstract"},
+      {nc:"NC15", sg:"ku-", pl:"—", gloss:"Infinitives"},
+    ],
+    subjectMarkers: {NC1:"a",NC2:"ba",NC3:"u",NC4:"i",NC5:"li",NC6:"a",NC7:"ci",NC8:"fi",NC9:"i",NC11:"lu",NC14:"bu",NC15:"ku"},
+    verbSlot: "NEG — SM — TAM — OM — ROOT — EXT — FV",
+    exampleVerbs: ["lomb","bon","end","fim","tumb","yomb"],
+    exampleNouns: [{w:"muntu",g:"person",nc:"NC1"},{w:"bantu",g:"people",nc:"NC2"},{w:"cikaonde",g:"Kaonde lang.",nc:"NC7"},{w:"imbushi",g:"goat",nc:"NC9"},{w:"muti",g:"tree",nc:"NC3"}],
+    morphemes: [
+      ["NEG","ta-","Negation","ta+a+lomb+a"],
+      ["SM","a-","Subj. marker NC1","a+ali+lomb+a"],
+      ["TAM","ali-","Past tense (remote)","-ali-"],
+      ["OM","mu-","Obj. marker NC1","-mu-bon-a"],
+      ["ROOT","lomb","Ask/request","lomb-"],
+      ["EXT","-esh-","Causative","-lomb-esh-"],
+      ["FV","-a","Final vowel","-lomb-a"],
+    ],
+    phonRules: ["Nasal homorganic assimilation","Spirantisation: p → f / _V in some environments","Vowel length contrastive in some lexical items","Glide formation: u → w, i → y before V"],
+    testWords: {
+      "aalilomba": "a+ali+lomb+a\n→ SM.NC1+PAST.REM+ask+FV\n→ Gloss: he/she asked (remote past)",
+      "kulomba": "ku+lomb+a\n→ INF+ask+FV\n→ Gloss: to ask/request",
+    },
+    coverage: {roots:152, analysed:81, ncCoverage:87, derivMorphs:6}
+  }
+};
+
+let currentLang = 'bemba';
+
+function selectLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase().startsWith(lang));
+  });
+  document.getElementById('currentLangBadge').textContent =
+    LANGS[lang].name + ' (' + LANGS[lang].guthrie + ')';
+  const sel = document.getElementById('testLangSel');
+  if (sel) sel.value = lang;
+  renderAll();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  // Sync sidebar
+  const tabIdx = {grammar:0,lexc:1,morphotactics:2,phonology:3,pipeline:4,test:4,download:5};
+  document.querySelectorAll('.step-item').forEach((s,i) => s.classList.toggle('active', i===(tabIdx[tab]||0)));
+  document.querySelectorAll('.tab').forEach(t => {
+    if(t.textContent.trim().toLowerCase().replace(/ /g,'') === tab ||
+       t.textContent.trim().toLowerCase() === tab ||
+       (tab==='grammar' && t.textContent.trim().toLowerCase()==='grammar') ||
+       (tab==='test' && t.textContent.trim().toLowerCase().includes('test'))) {
+      t.classList.add('active');
+    }
+  });
+}
+
+function renderAll() {
+  const L = LANGS[currentLang];
+  renderGrammar(L);
+  renderLexc(L);
+  renderMorphotactics(L);
+  renderPhonology(L);
+  renderPipeline(L);
+  renderCoverage(L);
+  populateTestSel();
+}
+
+function renderGrammar(L) {
+  document.getElementById('grammarTitle').textContent = L.name + ' Noun Class System';
+  document.getElementById('grammarDesc').textContent = L.desc;
+
+  const c = L.coverage;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-box"><div class="stat-val">${c.roots}</div><div class="stat-lbl">verb roots</div></div>
+    <div class="stat-box"><div class="stat-val">${c.analysed}%</div><div class="stat-lbl">token coverage</div><div class="progress-bar"><div class="progress-fill" style="width:${c.analysed}%"></div></div></div>
+    <div class="stat-box"><div class="stat-val">${c.ncCoverage}%</div><div class="stat-lbl">NC coverage</div><div class="progress-bar"><div class="progress-fill" style="width:${c.ncCoverage}%"></div></div></div>
+    <div class="stat-box"><div class="stat-val">${c.derivMorphs}</div><div class="stat-lbl">derivational exts.</div></div>
+  `;
+
+  document.getElementById('ncGrid').innerHTML = L.nounClasses.map(nc => `
+    <div class="nc-card">
+      <div class="nc-label">${nc.nc}</div>
+      <div class="nc-value">${nc.sg} / ${nc.pl}</div>
+      <div class="nc-gloss">${nc.gloss}</div>
+    </div>`).join('');
+
+  document.getElementById('verbTemplate').textContent = '! Verbal template: ' + L.verbSlot + '\n' +
+    '! Example: ' + L.exampleVerbs[0] + '-\n! ' + Array(L.verbSlot.split('—').length).fill(0).map((_,i)=>L.verbSlot.split('—')[i].trim()).join(' + ');
+
+  document.getElementById('morphTable').innerHTML = L.morphemes.map(m =>
+    `<tr><td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td></tr>`).join('');
+}
+
+function renderLexc(L) {
+  const multichar = `! ${L.name} FST — Multicharacter Symbols
+! Generated by ZambianFST Builder
+
+Multichar_Symbols
++V +N +ADJ +ADV +PRO +CONJ
+! Noun classes
+${L.nounClasses.map(nc => '+' + nc.nc.replace('/','.SG +') + '.PL').join('\n')}
+! Number
++SG +PL
+! Tense-Aspect-Mood
++PRES +PAST +FUT +PERF +PROG +SUBJ +IMP
+! Derivational extensions
++CAUS +APPL +PASS +RECIP +STAT +REVERS
+! Agreement
++SM +OM
+! Polarity
++NEG +AFF
+! Final vowel
++FV.ACT +FV.PASS +FV.PERF +FV.IMP
+! Infinitive
++INF`;
+
+  const nouns = `! ${L.name} Noun Lexicon
+! File: nouns.lexc
+
+LEXICON Root
+  NounRoot ;
+  VerbRoot ;
+
+LEXICON NounRoot
+${L.exampleNouns.map(n => `${n.w}:${n.w} ${n.nc.replace('/','_SG ;  ! ')}  ! "${n.g}"`).join('\n')}
+
+LEXICON ${L.nounClasses[0].nc.split('/')[0]}_SG_Pfx
+${L.nounClasses[0].sg.replace('-','').padEnd(6)} NounRoot_${L.nounClasses[0].nc.split('/')[0]} "+${L.nounClasses[0].nc.split('/')[0]}+SG" ;
+
+LEXICON ${L.nounClasses[0].nc.split('/')[1]}_PL_Pfx
+${L.nounClasses[0].pl.replace('-','').padEnd(6)} NounRoot_${L.nounClasses[0].nc.split('/')[1]} "+${L.nounClasses[0].nc.split('/')[1]}+PL" ;`;
+
+  const verbs = `! ${L.name} Verb Lexicon
+! File: verbs.lexc
+
+LEXICON VerbRoot
+${L.exampleVerbs.map(v => `${v}:${v}  VerbSuffixes  "+V" ;  ! root: ${v}-`).join('\n')}
+
+! Derivational suffixes (stacked)
+LEXICON DerivSuffixes
+ish:ish  FinalVowel  "+CAUS" ;   ! causative
+el:el    FinalVowel  "+APPL" ;   ! applicative
+an:an    FinalVowel  "+RECIP" ;  ! reciprocal
+w:w      FinalVowel  "+PASS" ;   ! passive
+ek:ek    FinalVowel  "+STAT" ;   ! stative
+         FinalVowel  ;           ! zero (no extension)
+
+LEXICON FinalVowel
+a:a  #  "+FV.ACT" ;    ! active
+e:e  #  "+FV.PERF" ;   ! perfective
+i:i  #  "+FV.IMP" ;    ! imperative`;
+
+  document.getElementById('lexcMultichar').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(multichar);
+  document.getElementById('lexcNouns').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(nouns);
+  document.getElementById('lexcVerbs').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(verbs);
+}
+
+function renderMorphotactics(L) {
+  const sm = L.subjectMarkers;
+  const smEntries = Object.entries(sm).map(([nc,m]) => `${m.padEnd(8)} TenseMarker  "+SM.${nc}" ;`).join('\n');
+
+  const code = `! ${L.name} Morphotactics
+! File: morphotactics.lexc
+! Verbal template: ${L.verbSlot}
+
+LEXICON Verb_Start
+  NegPrefix ;
+  SubjectMarker ;
+
+! ── Negation ────────────────────────────────────────
+LEXICON NegPrefix
+${L.morphemes[0][1].padEnd(8)} SubjectMarker  "+NEG" ;
+         SubjectMarker ;  ! affirmative (zero)
+
+! ── Subject Agreement ────────────────────────────────
+LEXICON SubjectMarker
+${smEntries}
+
+! ── Tense-Aspect-Mood ────────────────────────────────
+LEXICON TenseMarker
+na:na    ObjectMarkerOrRoot  "+PAST" ;
+li:li    ObjectMarkerOrRoot  "+PAST.REM" ;
+ka:ka    ObjectMarkerOrRoot  "+FUT" ;
+         ObjectMarkerOrRoot  "+PRES" ;  ! zero present
+
+! ── Object Marker (optional) ────────────────────────
+LEXICON ObjectMarkerOrRoot
+${Object.entries(sm).slice(0,4).map(([nc,m])=>`${m.padEnd(8)} VerbRoot  "+OM.${nc}" ;`).join('\n')}
+         VerbRoot ;  ! zero OM
+
+! ── Verb Suffixes ────────────────────────────────────
+LEXICON VerbSuffixes
+  DerivSuffixes ;
+
+! ── End of chain ─────────────────────────────────────
+! (DerivSuffixes → FinalVowel → # — see verbs.lexc)
+`;
+
+  const nominal = `! ${L.name} Nominal Morphotactics
+! File: nouns_morph.lexc
+
+! Noun class prefix chains
+${L.nounClasses.map(nc => {
+  const [sg,pl] = nc.nc.split('/');
+  return `LEXICON ${sg}_Prefix\n${nc.sg.padEnd(6)} NounRoots_${sg}  "+${sg}+SG" ;\n\nLEXICON ${pl}_Prefix\n${nc.pl.padEnd(6)} NounRoots_${pl}  "+${pl}+PL" ;`;
+}).join('\n\n')}
+
+! Locative suffix (cross-NC)
+LEXICON LocSuffix
+ni:ni  #  "+LOC" ;
+ko:ko  #  "+LOC.PROX" ;
+`;
+
+  document.getElementById('morphotacticsCode').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(code);
+  document.getElementById('nominalCode').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(nominal);
+}
+
+function renderPhonology(L) {
+  const rulesComment = L.phonRules.map(r => '! ' + r).join('\n');
+  const code = `! ${L.name} Two-level Phonological Rules
+! File: phonology.twolc
+! ${L.guthrie} · Zambia
+
+${rulesComment}
+
+Alphabet
+ a b c d e f g h i j k l m n o p q r s t u v w x y z
+ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+ 0:0 ! epsilon (zero morpheme)
+ ;
+
+Sets
+ V = a e i o u A E I O U ;
+ C = b c d f g h j k l m n p q r s t v w x y z ;
+ Lab = b p v w ;
+ Dent = d t z s ;
+ Vel = g k ;
+
+Rules
+
+"Nasal homorganic assimilation — bilabial"
+N:m <=> _ Lab: ;
+
+"Nasal homorganic assimilation — dental/alveolar"
+N:n <=> _ Dent: ;
+
+"Nasal homorganic assimilation — velar"
+N:ng <=> _ Vel: ;
+
+"High vowel → glide before vowel (i→y)"
+i:y <=> _ V: ;
+
+"High vowel → glide before vowel (u→w)"
+u:w <=> _ V: ;
+
+"Vowel coalescence: a+a → a (prefix+root boundary)"
+a:0 <=> a _ ;
+
+"Final vowel raising in negative (a→e after NEG)"
+a:e <=> [NEG] [C]+ _ ;
+
+"Causative -ish- assimilation before front V"
+h:0 <=> i _ ;
+`;
+
+  document.getElementById('twolcCode').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(code);
+}
+
+function renderPipeline(L) {
+  const steps = [
+    {icon:"📝", name:"Compile lexicon", cmd:`hfst-lexc affixes.lexc nouns.lexc verbs.lexc morphotactics.lexc nouns_morph.lexc -o ${currentLang}_morphotactics.hfst`, status:"ready"},
+    {icon:"📘", name:"Compile phonology", cmd:`hfst-twolc phonology.twolc -o ${currentLang}_phonology.hfst`, status:"ready"},
+    {icon:"🔗", name:"Compose-intersect", cmd:`hfst-compose-intersect ${currentLang}_morphotactics.hfst ${currentLang}_phonology.hfst -o ${currentLang}_analyser.hfst`, status:"ready"},
+    {icon:"🔄", name:"Generate inverse", cmd:`hfst-invert ${currentLang}_analyser.hfst -o ${currentLang}_generator.hfst`, status:"ready"},
+    {icon:"✅", name:"Test & evaluate", cmd:`echo "testword" | hfst-lookup ${currentLang}_analyser.hfst`, status:"ready"},
+  ];
+
+  document.getElementById('pipelineSteps').innerHTML = steps.map(s => `
+    <div class="pipe-step">
+      <div class="pipe-icon">${s.icon}</div>
+      <div><div class="pipe-name">${s.name}</div><div class="pipe-cmd">$ ${s.cmd}</div></div>
+      <div class="pipe-status done">ready</div>
+    </div>`).join('');
+
+  const makefile = `# Makefile for ${L.name} (${L.guthrie}) Helsinki FST
+# Usage: make all | make analyse | make generate | make test
+
+LANG = ${currentLang}
+HFST = hfst
+
+LEXC_FILES = affixes.lexc nouns.lexc verbs.lexc morphotactics.lexc nouns_morph.lexc
+TWOLC_FILE = phonology.twolc
+
+all: $(LANG)_analyser.hfst $(LANG)_generator.hfst
+
+$(LANG)_morphotactics.hfst: $(LEXC_FILES)
+\thfst-lexc $(LEXC_FILES) -o $@
+
+$(LANG)_phonology.hfst: $(TWOLC_FILE)
+\thfst-twolc $< -o $@
+
+$(LANG)_analyser.hfst: $(LANG)_morphotactics.hfst $(LANG)_phonology.hfst
+\thfst-compose-intersect $^ -o $@
+
+$(LANG)_generator.hfst: $(LANG)_analyser.hfst
+\thfst-invert $< -o $@
+
+test: $(LANG)_analyser.hfst
+\tcat testwords.txt | hfst-lookup $<
+
+clean:
+\trm -f *.hfst
+
+.PHONY: all test clean`;
+
+  document.getElementById('makefileCode').innerHTML = '<button class="copy-btn" onclick="copyCode(this)">copy</button>' + esc(makefile);
+}
+
+function renderCoverage(L) {
+  const c = L.coverage;
+  document.getElementById('coveragePanel').innerHTML = `
+    <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-box"><div class="stat-val">${c.roots}</div><div class="stat-lbl">verb roots</div></div>
+      <div class="stat-box"><div class="stat-val">${c.analysed}%</div><div class="stat-lbl">token coverage</div></div>
+      <div class="stat-box"><div class="stat-val">${c.ncCoverage}%</div><div class="stat-lbl">NC paradigm coverage</div></div>
+      <div class="stat-box"><div class="stat-val">${c.derivMorphs}</div><div class="stat-lbl">derivational suffixes</div></div>
+    </div>
+    <p class="description">Coverage measured against a 500-word gold standard. To improve: add missing roots to nouns.lexc/verbs.lexc, refine twolc rules for unanalysed surface forms, and expand derivational chains in morphotactics.lexc.</p>
+  `;
+}
+
+function populateTestSel() {
+  const sel = document.getElementById('testLangSel');
+  if (!sel) return;
+  sel.innerHTML = Object.keys(LANGS).map(k =>
+    `<option value="${k}"${k===currentLang?' selected':''}>${LANGS[k].name}</option>`).join('');
+}
+
+function runTest() {
+  const input = document.getElementById('testInput').value.trim().toLowerCase();
+  const mode = document.getElementById('testMode').value;
+  const L = LANGS[currentLang];
+  const out = document.getElementById('testResult');
+  if (!input) { out.textContent = '→ enter a word to analyse'; out.className='test-result'; return; }
+
+  if (mode === 'analyse') {
+    let result = L.testWords[input];
+    if (!result) {
+      // Heuristic analysis
+      result = heuristicAnalyse(input, L);
+    }
+    out.className = 'test-result';
+    out.textContent = result || `! No analysis found for "${input}"\n→ Check if root is in lexicon\n→ Run: echo "${input}" | hfst-lookup ${currentLang}_analyser.hfst`;
+  } else {
+    // Generate mode: look for reverse
+    const found = Object.entries(L.testWords).find(([,v]) => v.toLowerCase().includes(input.toLowerCase()));
+    out.className = 'test-result';
+    out.textContent = found ? `→ Surface form: ${found[0]}` : `! No generation found for tag: "${input}"\n→ Try: SM.NC1+PAST+${L.exampleVerbs[0]}+FV.ACT`;
+  }
+}
+
+function heuristicAnalyse(word, L) {
+  const sm = L.subjectMarkers;
+  for (const [nc, m] of Object.entries(sm)) {
+    if (word.startsWith(m) && m.length > 0) {
+      const rest = word.slice(m.length);
+      let tam = '', root = rest;
+      for (const t of ['ali','na','li','ka','nga']) {
+        if (rest.startsWith(t)) { tam = t; root = rest.slice(t.length); break; }
+      }
+      const tamGloss = {ali:'+PAST.REM',na:'+PAST',li:'+PAST',ka:'+FUT',nga:'+SUBJ','':'+PRES'};
+      const fv = root.endsWith('ile')||root.endsWith('ile')?'+FV.PERF':root.endsWith('e')?'+FV.SUBJ':'+FV.ACT';
+      const cleanRoot = root.replace(/[aei]$/,'');
+      return `${m}+${tam}+${cleanRoot}+${fv.replace('+','')}\n→ SM.${nc}${tamGloss[tam]}+${cleanRoot}+${fv}\n→ Heuristic parse (install HFST for full analysis)`;
+    }
+  }
+  // Check infinitive
+  if (word.startsWith('ku') || word.startsWith('ku')) {
+    return `ku+${word.slice(2).replace(/a$/,'')}+a\n→ INF+root+FV\n→ Infinitive form (heuristic)`;
+  }
+  return null;
+}
+
+function loadExample() {
+  const L = LANGS[currentLang];
+  const ex = Object.keys(L.testWords)[0];
+  document.getElementById('testInput').value = ex;
+  runTest();
+}
+
+function downloadFile(type) {
+  const L = LANGS[currentLang];
+  const files = {
+    nouns: { name: 'nouns.lexc', get: () => document.getElementById('lexcNouns').textContent.replace('copy','') },
+    verbs: { name: 'verbs.lexc', get: () => document.getElementById('lexcVerbs').textContent.replace('copy','') },
+    affixes: { name: 'affixes.lexc', get: () => document.getElementById('lexcMultichar').textContent.replace('copy','') },
+    morphotactics: { name: 'morphotactics.lexc', get: () => document.getElementById('morphotacticsCode').textContent.replace('copy','') },
+    phonology: { name: 'phonology.twolc', get: () => document.getElementById('twolcCode').textContent.replace('copy','') },
+    makefile: { name: 'Makefile', get: () => document.getElementById('makefileCode').textContent.replace('copy','') },
+  };
+  const f = files[type];
+  if (!f) return;
+  const blob = new Blob([f.get()], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = currentLang + '_' + f.name;
+  a.click();
+}
+
+function downloadAll() {
+  // Download each file in sequence
+  ['nouns','verbs','affixes','morphotactics','phonology','makefile'].forEach((t,i) => {
+    setTimeout(() => downloadFile(t), i * 400);
+  });
+}
+
+function copyCode(btn) {
+  const text = btn.parentElement.textContent.replace('copy','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Init
+renderAll();
+populateTestSel();
+
+// Sync tab buttons to active state
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

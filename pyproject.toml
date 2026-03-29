@@ -78,6 +78,8 @@ include = ["gobelo_grammar_toolkit*"]
 [tool.setuptools.package-data]
 gobelo_grammar_toolkit = [
   "languages/*.yaml",
+  "hfst/*.lexc",
+  "hfst/*.twolc"
 ]
 
 # ── pytest ────────────────────────────────────────────────────
@@ -110,3 +112,10 @@ omit   = ["*/tests/*", "*/scripts/*"]
 [tool.coverage.report]
 show_missing   = true
 fail_under     = 70
+
+# ── hatch ──────────────────────────────────────────────────
+[tool.hatch.build.targets.wheel]
+include = [
+    "langkit/**/*.py",
+    "langkit/langs/data/*.yaml",   # ← embeds YAML as package data
+]

@@ -11,6 +11,9 @@ dist/
 .installed.cfg
 *.egg
 MANIFEST
+node_modules/
+
+
 
 # ── Virtual environments ──────────────────────────────────────
 .venv/
@@ -93,5 +96,6 @@ grammars/
 ffiles/
 temp/
 *.zip
+zipfiles/
 temp_docs/
 

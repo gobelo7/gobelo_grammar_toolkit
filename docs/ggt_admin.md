@@ -1,0 +1,1 @@
+This is a specialized React-based admin dashboard designed to manage linguistic data (Bantu grammar systems) in YAML format. It uses lodash for data manipulation and js-yaml for parsing.

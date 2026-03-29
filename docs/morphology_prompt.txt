@@ -1,0 +1,26 @@
+Verbal slot system is not respected, analysis ignores  slot6-slot7 (strctural issue) - they are not entered into the hypothesis lattice. Verbal Analysis is hardcoded to a limited prefix chain
+Ignores morphophonology/phology rules and constraints, which are only recorded as warnings (pipelne issue). replace hardcoded  pipeline with implementation of slot-driven matching
+
+Current segmentation is pattern driven not slot driven. solution : slot automation
+
+Phonology: Although sandhi rules and vowel harmony rules  are correctly loaded,there is no rule engine,no forward application nor reverse mapping.Missing underlying representation,rule trace and reversebility. Output is only surface-based (representational issue)
+
+Right now morphology ignores phonology, and phology ingores the verbal slots, hence the analyzer is essentially perforing morphological sementation without phonological ntelligence. This is a critical architechural gap. Need slot-aware phonology
+Scoring must include phonology. 
+
+capabilities desired
+✔ Boundary-aware phonology (no raw string hacks)
+✔  Feature-based rule compilation
+✔ Full slot parser (extensible SLOT1–SLOT11)
+✔ Constraint engine (prevents invalid analyses)
+✔ Structured internal representation (no '+' strings)
+✔ Better scoring + pruning
+
+Need a 3-layred analysis pipeline:
+SURFace FORM ->(reverse phonology) ->   UNDERLYNG morph FORM ->(slot parsing) -> STRUCTURE MORH ANALYSIS
+And for generation : FEATURE BUNDLE -> (SLOT FILLING) -> (forward phonology) -> SURFACE FORM
+
+CORE SHIFT
+----------
+FROM: string-based processing
+TO:   structured morph + boundary-aware phonology

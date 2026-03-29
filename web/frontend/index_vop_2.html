@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gobelo Grammar Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── tokens ──────────────────────────────────── */
+:root{
+  --ink:#1a1614;--ink2:#3d3530;--ink3:#7a6e68;--ink4:#b5ada8;
+  --paper:#f5f0ea;--paper2:#ede6dc;--paper3:#e0d6c8;
+  --terra:#b85c38;--terra2:#d4825f;--terra3:#8a3f22;
+  --teal:#2a6b69;--teal2:#4a8f8d;--teal3:#1a4a48;
+  --gold:#b89340;--gold2:#d4b060;
+  --line:#d8cebf;--r:6px;--rl:12px;
+  --ff:'DM Sans',system-ui,sans-serif;
+  --fd:'Playfair Display',Georgia,serif;
+  --fm:'DM Mono','Courier New',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--paper);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.6}
+
+/* ── shell ───────────────────────────────────── */
+.app{display:grid;grid-template-rows:52px 1fr;grid-template-columns:220px 1fr;
+     grid-template-areas:"hd hd""sb mn";height:100vh}
+
+/* ── header ──────────────────────────────────── */
+header{grid-area:hd;background:var(--ink);display:flex;align-items:center;
+       border-bottom:2px solid var(--terra);z-index:10}
+.hbrand{display:flex;align-items:center;gap:10px;padding:0 20px;
+        border-right:1px solid #333;height:100%;text-decoration:none}
+.bmark{width:26px;height:26px;background:var(--terra);border-radius:4px;
+       display:flex;align-items:center;justify-content:center;
+       font-family:var(--fd);font-weight:900;font-size:14px;color:var(--paper);flex-shrink:0}
+.bname{font-family:var(--fd);font-weight:700;font-size:15px;color:var(--paper);line-height:1.2}
+.bsub{font-size:10px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
+.roles{display:flex;align-items:center;gap:4px;padding:0 20px;height:100%}
+.rbtn{padding:5px 14px;border-radius:var(--r);border:1px solid transparent;background:transparent;
+      color:var(--ink3);font-family:var(--ff);font-size:12px;font-weight:500;letter-spacing:.04em;
+      cursor:pointer;transition:all .15s;text-transform:uppercase}
+.rbtn:hover{color:var(--paper);background:#2a2420}
+.rbtn.active{background:var(--terra);color:var(--paper);border-color:var(--terra)}
+.rdiv{width:1px;height:20px;background:#333;margin:0 4px}
+.lsel-wrap{margin-left:auto;padding:0 20px;display:flex;align-items:center;gap:8px}
+.llab{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+select.lsel{background:#2a2420;border:1px solid #444;color:var(--paper);font-family:var(--ff);
+            font-size:13px;padding:4px 10px;border-radius:var(--r);cursor:pointer;outline:none}
+select.lsel:focus{border-color:var(--terra)}
+.pip{width:7px;height:7px;border-radius:50%;background:var(--teal2);
+     animation:pip 2.5s ease-in-out infinite}
+@keyframes pip{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── sidebar ─────────────────────────────────── */
+.sidebar{grid-area:sb;background:var(--paper2);border-right:1px solid var(--line);
+         display:flex;flex-direction:column;overflow-y:auto;padding:16px 0}
+.nlab{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;
+      color:var(--ink4);padding:0 16px 6px;margin-top:16px}
+.nlab:first-child{margin-top:0}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;
+    border-left:2px solid transparent;transition:all .12s;color:var(--ink2);
+    font-size:13px;user-select:none}
+.ni:hover{background:var(--paper3);color:var(--ink)}
+.ni.active{background:var(--paper3);border-left-color:var(--terra);color:var(--terra);font-weight:500}
+.ni svg{width:16px;height:16px;opacity:.7;flex-shrink:0}
+.ni.active svg{opacity:1}
+.sgc{margin:16px;padding:12px;background:var(--ink);border-radius:var(--rl);color:var(--paper)}
+.sgc-ln{font-family:var(--fd);font-weight:700;font-size:15px;margin-bottom:4px}
+.sgc-m{font-size:11px;color:var(--ink3);line-height:1.7;font-family:var(--fm)}
+.sgc-v{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;
+       font-family:var(--fm);margin-top:8px;background:var(--terra);color:white}
+
+/* ── main ────────────────────────────────────── */
+main{grid-area:mn;overflow-y:auto;background:var(--paper)}
+.view{display:none;flex-direction:column;padding:28px 32px;min-height:100%}
+.view.active{display:flex}
+.ptitle{font-family:var(--fd);font-size:26px;font-weight:700;margin-bottom:4px;line-height:1.2}
+.pdesc{color:var(--ink3);font-size:13px;margin-bottom:24px}
+
+/* ── cards ───────────────────────────────────── */
+.card{background:white;border:1px solid var(--line);border-radius:var(--rl);overflow:hidden}
+.ch{padding:14px 18px 12px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ct{font-family:var(--fd);font-size:15px;font-weight:700}
+.cs{font-size:11px;color:var(--ink3);margin-top:1px}
+.cb{padding:16px 18px}
+
+/* ── grid helpers ────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:1100px){.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}}
+
+/* ── inputs ──────────────────────────────────── */
+.fl{display:block;font-size:11px;font-weight:500;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--ink3);margin-bottom:5px}
+input[type=text],input[type=search],textarea,select.ctrl{
+  width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--paper);font-family:var(--ff);font-size:13px;color:var(--ink);
+  outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=search]:focus,textarea:focus,select.ctrl:focus{
+  border-color:var(--terra);background:white}
+.irow{display:flex;gap:8px;align-items:flex-end}
+.irow input{flex:1}
+
+/* ── buttons ─────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+     padding:8px 18px;border:none;border-radius:var(--r);font-family:var(--ff);
+     font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.btn-p{background:var(--terra);color:white}.btn-p:hover{background:var(--terra3)}
+.btn-s{background:var(--paper2);color:var(--ink);border:1px solid var(--line)}.btn-s:hover{background:var(--paper3)}
+.btn-t{background:var(--teal);color:white}.btn-t:hover{background:var(--teal3)}
+.btn-sm{padding:5px 12px;font-size:12px}
+
+/* ── pills ───────────────────────────────────── */
+.cp{display:flex;flex-wrap:wrap;gap:8px}
+.cpill{display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--line);
+       border-radius:99px;font-size:12px;font-family:var(--fm);cursor:pointer;
+       user-select:none;transition:all .12s;color:var(--ink2)}
+.cpill input{display:none}
+.cpill.on{background:var(--teal);border-color:var(--teal);color:white}
+.cpill:hover{border-color:var(--ink3)}
+
+/* ── loading / empty ─────────────────────────── */
+.loading{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);padding:16px 0}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--terra);
+           animation:dot 1.2s ease-in-out infinite;margin:0 1px}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+       padding:48px 24px;text-align:center;color:var(--ink4)}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:.5}
+.empty-ttl{font-size:14px;font-weight:500;color:var(--ink3)}
+.empty-hint{font-size:12px;margin-top:4px}
+
+/* ── badges ──────────────────────────────────── */
+.bdg{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;
+     font-size:10px;font-family:var(--fm);font-weight:500;white-space:nowrap}
+.bt{background:#fae0d8;color:var(--terra3)}.bt2{background:#d8eeec;color:var(--teal3)}
+.bg{background:#f5ecd0;color:#6b5010}.bk{background:var(--paper2);color:var(--ink2)}
+.berr{background:#fae0d8;color:var(--terra3)}
+
+/* ── stat cards ──────────────────────────────── */
+.sc{background:white;border:1px solid var(--line);border-radius:var(--rl);padding:14px 16px}
+.sv{font-family:var(--fd);font-size:28px;font-weight:900;line-height:1}
+.sl{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em}
+.ss{font-size:11px;color:var(--ink4);font-family:var(--fm)}
+
+/* ── tables ──────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:5px 8px;font-size:10px;font-weight:500;letter-spacing:.06em;
+        text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--line)}
+.tbl td{padding:5px 8px;border-bottom:1px solid var(--paper2);font-family:var(--fm)}
+
+/* ── paradigm table ──────────────────────────── */
+.pwrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--line);margin-top:16px}
+table.pt{border-collapse:collapse;min-width:100%;font-size:12px}
+table.pt th{background:var(--ink);color:var(--paper);padding:8px 12px;text-align:left;
+            font-family:var(--fm);font-size:11px;font-weight:500;white-space:nowrap;
+            border-right:1px solid #333;position:sticky;top:0}
+table.pt th.tch{background:var(--teal3);font-size:10px;text-align:center}
+table.pt td{padding:7px 12px;border-right:1px solid var(--paper2);
+            border-bottom:1px solid var(--paper2);vertical-align:middle}
+table.pt td.rk{background:var(--paper2);font-family:var(--fm);font-size:11px;
+               color:var(--ink2);font-weight:500;white-space:nowrap;
+               position:sticky;left:0;min-width:80px}
+.psurf{font-family:var(--fm);font-weight:500;color:var(--ink);font-size:13px}
+.pseg{font-family:var(--fm);font-size:10px;color:var(--ink3)}
+table.pt tr:nth-child(even) td{background:#fdf9f5}
+table.pt tr:nth-child(even) td.rk{background:var(--paper3)}
+table.pt tr:hover td{background:#f0e8de}
+table.pt tr:hover td.rk{background:var(--paper3)}
+
+/* ── concord matrix ──────────────────────────── */
+table.cm{border-collapse:collapse;font-size:12px;width:100%}
+table.cm th{background:var(--ink);color:var(--paper);padding:7px 10px;font-family:var(--fm);
+            font-size:10px;font-weight:500;text-align:center;white-space:nowrap;border-right:1px solid #333}
+table.cm th.nch{background:var(--terra3);text-align:left}
+table.cm td{padding:6px 10px;border-right:1px solid var(--paper2);border-bottom:1px solid var(--paper2);
+            text-align:center;font-family:var(--fm);font-size:12px}
+table.cm td.nci{text-align:left;font-weight:500;color:var(--ink2);background:var(--paper2)}
+table.cm .fp{color:var(--ink)}.fa{color:var(--ink4);font-style:italic}.ff{color:var(--gold)}
+table.cm tr:nth-child(even) td{background:#fdf9f5}
+table.cm tr:nth-child(even) td.nci{background:var(--paper3)}
+
+/* ── morpheme ribbon ─────────────────────────── */
+.ribbon{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:12px;align-items:flex-end}
+.mb{display:flex;flex-direction:column;align-items:center}
+.mf{font-family:var(--fm);font-size:14px;font-weight:500;padding:5px 10px;border-radius:var(--r);
+    color:white;min-width:28px;text-align:center}
+.mlb{font-size:9px;font-family:var(--fm);color:var(--ink3);text-align:center;margin-top:3px;
+     text-transform:uppercase;letter-spacing:.05em;max-width:60px;overflow:hidden;
+     text-overflow:ellipsis;white-space:nowrap}
+.msep{font-size:18px;color:var(--ink4);padding-bottom:8px;margin:0 -1px}
+/* slot colours */
+.sn{background:#7b3f5e}.ss_{background:var(--terra)}.st{background:var(--gold);color:var(--ink)!important}
+.so{background:var(--teal)}.sr{background:var(--ink)}.se{background:#4a7a4e}
+.sf{background:var(--ink3)}.snc{background:#6a4fa8}.sp{background:var(--ink4);color:var(--ink)!important}
+.sx{background:var(--ink2)}
+/* v2: override morpheme (extra_slots caller-supplied fill) */
+.sov{background:#5a5a5a;border:2px dashed rgba(255,255,255,.35)}
+
+/* ── hyp tabs ────────────────────────────────── */
+.htabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.htab{padding:4px 10px;border-radius:99px;font-size:11px;font-family:var(--fm);
+      cursor:pointer;border:1px solid var(--line);background:white;color:var(--ink3);transition:all .12s}
+.htab.active{background:var(--ink);color:white;border-color:var(--ink)}
+.cbar{height:3px;background:var(--teal);border-radius:99px;margin-top:3px;transition:width .3s}
+
+/* ── UD feature tags ─────────────────────────── */
+.udtag{display:inline-block;padding:1px 6px;border-radius:4px;font-family:var(--fm);font-size:11px;font-weight:500}
+.ud-t{background:#fde8d0;color:#6b3a1f}.ud-a{background:#d0ede8;color:#1a4a48}
+.ud-m{background:#e8d8f5;color:#4a2280}.ud-v{background:#d5e8d4;color:#2a5530}
+.ud-n{background:#f5e0d0;color:#7b3520}.ud-nb{background:#e0e8f5;color:#1a3a6a}
+.ud-p{background:#faf0c0;color:#6b5510}.ud-neg{background:#fde0e0;color:#8a1010}
+
+/* ── CoNLL-U output ──────────────────────────── */
+.conllu{font-family:var(--fm);font-size:11px;line-height:1.8;background:var(--ink);color:#cdc4b8;
+        padding:16px;border-radius:var(--r);overflow-x:auto;white-space:pre;margin-top:12px;
+        max-height:320px;overflow-y:auto}
+.c-cmt{color:#6b8c5a}.c-id{color:var(--ink4)}.c-form{color:#d4b060}
+.c-upos{color:#84b8d4}.c-feats{color:#c48cb8}
+
+/* ── diff / compare ──────────────────────────── */
+.drow{display:flex;border-bottom:1px solid var(--paper2);font-size:12px}
+.drow:last-child{border-bottom:none}
+.dc{flex:1;padding:7px 12px;font-family:var(--fm)}
+.dkey{font-weight:500;color:var(--ink2);width:130px;flex-shrink:0;font-size:11px}
+.dsame{color:var(--ink3)}.dadded{background:#edf7f6;color:var(--teal3)}
+.dremoved{background:#fdf0ec;color:var(--terra3)}.dchanged{background:#fdf8e8;color:#7a5a10}
+
+/* ── quiz ────────────────────────────────────── */
+.qcard{background:white;border:1px solid var(--line);border-radius:var(--rl);padding:28px;max-width:560px}
+.qprog{height:4px;background:var(--paper2);border-radius:99px;margin-bottom:24px;overflow:hidden}
+.qbar{height:100%;background:var(--teal);border-radius:99px;transition:width .3s}
+.qq{font-family:var(--fd);font-size:20px;font-weight:700;margin-bottom:6px;line-height:1.3}
+.qprompt{font-family:var(--fm);font-size:13px;color:var(--teal);margin-bottom:22px;
+         padding:8px 12px;background:var(--paper);border-radius:var(--r);border-left:3px solid var(--teal)}
+.qopts{display:flex;flex-direction:column;gap:10px}
+.qopt{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--line);
+      border-radius:var(--r);cursor:pointer;transition:all .15s;background:white;text-align:left}
+.qopt:hover{border-color:var(--teal);background:var(--paper)}
+.qopt.ok{border-color:var(--teal);background:#edf7f6}
+.qopt.ng{border-color:var(--terra);background:#fdf0ec}
+.qopt.dis{pointer-events:none;opacity:.7}
+.qlet{width:26px;height:26px;border-radius:50%;background:var(--paper2);display:flex;align-items:center;
+      justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;font-family:var(--fm)}
+.qopt.ok .qlet{background:var(--teal);color:white}.qopt.ng .qlet{background:var(--terra);color:white}
+.qfb{margin-top:14px;padding:10px 14px;border-radius:var(--r);font-size:12px;display:none}
+.qfb.show{display:block}
+.qfb.ok{background:#edf7f6;color:var(--teal3);border-left:3px solid var(--teal)}
+.qfb.ng{background:#fdf0ec;color:var(--terra3);border-left:3px solid var(--terra)}
+.qnav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.qcnt{font-size:11px;color:var(--ink3);font-family:var(--fm)}
+
+/* ── vocab cards ─────────────────────────────── */
+.vcard{background:white;border:1px solid var(--line);border-radius:var(--rl);
+       overflow:hidden;cursor:pointer;transition:all .15s}
+.vcard:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);transform:translateY(-1px)}
+
+/* ── export bar ──────────────────────────────── */
+.ebar{display:flex;gap:6px;align-items:center}
+.ediv{width:1px;height:20px;background:var(--line)}
+
+/* ── paradigm underlying (v2) ────────────────── */
+.pund{font-family:var(--fm);font-size:9px;color:var(--teal3);opacity:.85;margin-top:1px}
+
+/* ── phonology provenance (v2) ───────────────── */
+.phon-row{display:flex;align-items:baseline;gap:8px;margin-top:8px;font-size:11px;
+          color:var(--ink3);font-family:var(--fm);border-top:1px dashed var(--line);padding-top:8px}
+.phon-lbl{text-transform:uppercase;letter-spacing:.07em;font-size:9px;color:var(--ink4);flex-shrink:0;width:68px}
+.phon-val{color:var(--ink2);font-weight:500}
+.phon-bdg{display:inline-flex;align-items:center;padding:1px 7px;border-radius:99px;
+          background:var(--teal3);color:white;font-size:10px;font-family:var(--fm);cursor:default}
+
+/* ── CoNLL-U MISC / phon highlighting (v2) ───── */
+.c-misc{color:#94c4a8}.c-phon{color:var(--teal2)}
+
+/* ── misc ────────────────────────────────────── */
+.sep{border:none;border-top:1px solid var(--line);margin:20px 0}
+.gap{margin-top:24px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--paper3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--ink4)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.view.active>*{animation:fadeUp .22s ease both}
+.view.active>*:nth-child(2){animation-delay:.04s}
+.view.active>*:nth-child(3){animation-delay:.08s}
+.view.active>*:nth-child(4){animation-delay:.12s}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header>
+  <a class="hbrand" href="#">
+    <div class="bmark">G</div>
+    <div><div class="bname">Gobelo</div><div class="bsub">Grammar Toolkit</div></div>
+  </a>
+  <div class="roles">
+    <span style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px">View as</span>
+    <button class="rbtn active" id="btn-t" onclick="setRole('teacher')">Teacher</button>
+    <div class="rdiv"></div>
+    <button class="rbtn" id="btn-s" onclick="setRole('student')">Student</button>
+  </div>
+  <div class="lsel-wrap">
+    <div class="pip"></div>
+    <span class="llab">Language</span>
+    <select class="lsel" id="glang" onchange="onLangChange()">
+      <option value="chitonga">chiTonga</option>
+      <option value="chibemba">chiBemba</option>
+      <option value="chinyanja">chiNyanja</option>
+      <option value="silozi">siLozi</option>
+      <option value="luvale">Luvale</option>
+      <option value="lunda">Lunda</option>
+      <option value="kaonde">Kaonde</option>
+    </select>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div id="nav-t">
+    <div class="nlab">Grammar</div>
+    <div class="ni active" onclick="showV('t-info')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>Grammar Info</div>
+    <div class="ni" onclick="showV('t-para')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/><path d="M2 6h12M6 2v12"/></svg>Verb Paradigms</div>
+    <div class="ni" onclick="showV('t-conc')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>Concord Matrix</div>
+    <div class="nlab">Analysis</div>
+    <div class="ni" onclick="showV('t-ana')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="m11 11 3 3"/></svg>Morpheme Analysis</div>
+    <div class="ni" onclick="showV('t-corp')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="10" height="12" rx="1"/><path d="M5 6h6M5 9h6M5 12h3"/></svg>Corpus Annotator</div>
+    <div class="nlab">Tools</div>
+    <div class="ni" onclick="showV('t-cmp')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h4M9 8h4M8 3v4M8 9v4"/></svg>Language Compare</div>
+    <div class="ni" onclick="showV('t-vfy')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 7l2 2 4-4"/><rect x="2" y="2" width="12" height="12" rx="2"/></svg>Verify Flags</div>
+  </div>
+  <div id="nav-s" style="display:none">
+    <div class="nlab">Learn</div>
+    <div class="ni active" onclick="showV('s-ana')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="m11 11 3 3"/></svg>Analyse a Word</div>
+    <div class="ni" onclick="showV('s-quiz')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6a2 2 0 1 1 2.5 2L8 10M8 12v1"/></svg>Grammar Quiz</div>
+    <div class="ni" onclick="showV('s-vocab')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h8v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zM4 4V2h8v2"/></svg>Vocab Cards</div>
+    <div class="nlab">Reference</div>
+    <div class="ni" onclick="showV('s-nc')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Noun Classes</div>
+    <div class="ni" onclick="showV('s-conc')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="11" r="2"/><path d="M6 8h2M10 5.5L6.5 7.5M10 10.5L6.5 8.5"/></svg>Concords Table</div>
+  </div>
+  <div style="flex:1"></div>
+  <div class="sgc">
+    <div class="sgc-ln" id="sgc-name">chiTonga</div>
+    <div class="sgc-m" id="sgc-meta">ISO: toi · Guthrie: M.64<br>— loading —</div>
+    <div class="sgc-v" id="sgc-ver">v—</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+<!-- T: Grammar Info -->
+<section class="view active" id="view-t-info">
+  <div class="ptitle">Grammar Overview</div>
+  <div class="pdesc">Summary statistics and metadata for the loaded grammar.</div>
+  <div class="g4" id="stat-row">
+    <div class="sc"><div class="sv">—</div><div class="sl">Noun Classes</div><div class="ss">loading…</div></div>
+    <div class="sc"><div class="sv">—</div><div class="sl">TAM Markers</div><div class="ss">loading…</div></div>
+    <div class="sc"><div class="sv">—</div><div class="sl">Concord Types</div><div class="ss">loading…</div></div>
+    <div class="sc"><div class="sv">—</div><div class="sl">Verb Extensions</div><div class="ss">loading…</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Metadata</div><div class="cs">Grammar file identity</div></div></div>
+      <div class="cb"><table class="tbl"><tbody id="meta-tbody"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">TAM Markers</div><div class="cs">Tense-aspect-mood inventory</div></div></div>
+      <div class="cb" id="tam-body"><div class="loading"><div class="dots"><span></span><span></span><span></span></div> Loading…</div></div>
+    </div>
+  </div>
+  <div class="card gap" style="overflow:hidden">
+    <div class="ch"><div><div class="ct">Noun Classes</div><div class="cs" id="nc-count-sub">loading…</div></div></div>
+    <div class="cb"><div id="nc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
+      <div class="loading"><div class="dots"><span></span><span></span><span></span></div></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- T: Verb Paradigms -->
+<section class="view" id="view-t-para">
+  <div class="ptitle">Verb Paradigm Generator</div>
+  <div class="pdesc">Generate a full SM × TAM inflection table for any verb root.</div>
+  <div class="card">
+    <div class="ch">
+      <div class="ct">Parameters</div>
+      <div class="ebar">
+        <button class="btn btn-s btn-sm" onclick="expPara('csv')">CSV</button>
+        <button class="btn btn-s btn-sm" onclick="expPara('markdown')">Markdown</button>
+        <div class="ediv"></div>
+        <button class="btn btn-t btn-sm" onclick="genPara()">Generate</button>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="g2" style="gap:16px;align-items:start">
+        <div>
+          <label class="fl">Verb root</label>
+          <div class="irow">
+            <input type="text" id="para-root" value="lya" placeholder="e.g. lya, bona, lila">
+            <button class="btn btn-p" onclick="genPara()">Run</button>
+          </div>
+          <div style="margin-top:5px;font-size:11px;color:var(--ink3)">Bare root — no affixes or hyphens</div>
+        </div>
+        <div>
+          <label class="fl">Extensions (optional)</label>
+          <div class="cp" id="ext-pills">
+            <label class="cpill" onclick="tog(this)"><input type="checkbox" value="APPL"> APPL</label>
+            <label class="cpill" onclick="tog(this)"><input type="checkbox" value="CAUS"> CAUS</label>
+            <label class="cpill" onclick="tog(this)"><input type="checkbox" value="PASS"> PASS</label>
+            <label class="cpill" onclick="tog(this)"><input type="checkbox" value="RECIP"> RECIP</label>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <label class="fl">Polarity</label>
+        <div class="cp">
+          <label class="cpill on" onclick="tog(this)"><input type="checkbox" value="affirmative" checked> Affirmative</label>
+          <label class="cpill" onclick="tog(this)"><input type="checkbox" value="negative"> Negative</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="para-result"></div>
+</section>
+
+<!-- T: Concord Matrix -->
+<section class="view" id="view-t-conc">
+  <div class="ptitle">Concord Agreement Matrix</div>
+  <div class="pdesc">All concord paradigms across all noun classes — the full agreement system at a glance.</div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="cb" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div><label class="fl">Noun class</label>
+        <select class="ctrl" id="cm-nc" style="width:120px" onchange="updCM()">
+          <option value="all">All classes</option>
+        </select></div>
+      <div><label class="fl">Paradigm type</label>
+        <select class="ctrl" id="cm-type" style="width:210px" onchange="updCM()">
+          <option value="all">All paradigms</option>
+        </select></div>
+      <button class="btn btn-s btn-sm" onclick="window.open(API+'/api/concords/'+LANG+'?format=csv','_blank')">Export CSV</button>
+    </div>
+  </div>
+  <div class="card" style="overflow:hidden">
+    <div style="overflow-x:auto"><table class="cm" id="cm-table">
+      <thead id="cm-head"></thead><tbody id="cm-body"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- T: Morpheme Analysis -->
+<section class="view" id="view-t-ana">
+  <div class="ptitle">Morpheme Analysis</div>
+  <div class="pdesc">Segment any word into morpheme slots with Universal Dependencies feature annotation.</div>
+  <div class="card">
+    <div class="cb">
+      <label class="fl">Word to analyse</label>
+      <div class="irow">
+        <input type="text" id="t-inp" placeholder="e.g. balya, cilya, tabalyi, muntu…"
+               onkeydown="if(event.key==='Enter')ana('t')">
+        <button class="btn btn-p" onclick="ana('t')">Analyse</button>
+      </div>
+    </div>
+  </div>
+  <div id="t-result" style="margin-top:16px;display:none">
+    <div class="g2" style="gap:16px">
+      <div class="card">
+        <div class="ch">
+          <div><div class="ct">Segmentation</div><div class="cs" id="t-conf"></div></div>
+          <button class="btn btn-s btn-sm" onclick="copyGloss()">Copy gloss</button>
+        </div>
+        <div class="cb">
+          <div style="font-family:var(--fd);font-size:30px;font-weight:900;margin-bottom:2px" id="t-tok"></div>
+          <div style="font-size:11px;color:var(--ink3);font-family:var(--fm);margin-bottom:4px" id="t-seg"></div>
+          <!-- v2: underlying form row -->
+          <div style="font-size:11px;color:var(--teal3);font-family:var(--fm);margin-bottom:12px;display:none" id="t-und"></div>
+          <div class="htabs" id="t-tabs"></div>
+          <div class="ribbon" id="t-ribbon"></div>
+          <!-- v2: phon provenance rows injected here by renderPhonProv() -->
+          <div id="t-phon"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">UD Features</div></div>
+        <div class="cb">
+          <table class="tbl"><thead><tr><th>Feature</th><th>Value</th><th>Source</th></tr></thead>
+          <tbody id="t-ud"></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div class="card gap">
+      <div class="ch"><div class="ct">All Hypotheses</div><div class="cs" id="t-hyp-count"></div></div>
+      <div class="cb" id="t-hyps"></div>
+    </div>
+  </div>
+</section>
+
+<!-- T: Corpus Annotator -->
+<section class="view" id="view-t-corp">
+  <div class="ptitle">Corpus Annotator</div>
+  <div class="pdesc">Enter plain text to produce CoNLL-U morphological annotation.</div>
+  <div class="g2" style="gap:16px;align-items:start">
+    <div class="card">
+      <div class="ch"><div class="ct">Input Text</div><button class="btn btn-p btn-sm" onclick="annotate()">Annotate</button></div>
+      <div class="cb">
+        <textarea id="corp-in" rows="9"
+          style="resize:vertical;font-family:var(--fm);font-size:13px"
+          placeholder="Enter sentences here…&#10;&#10;Balya muntu.&#10;Cilya cintu.">Balya muntu.
+Cilya cintu.
+Twalya bana.</textarea>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <label class="fl" style="margin:0;align-self:center">Options:</label>
+          <label class="cpill on" onclick="tog(this)"><input type="checkbox" value="ud" checked> UD FEATS</label>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div><div class="ct">CoNLL-U Output</div><div class="cs" id="corp-stats"></div></div>
+        <div class="ebar">
+          <button class="btn btn-s btn-sm" onclick="copyConllu()">Copy</button>
+          <button class="btn btn-t btn-sm" onclick="dlConllu()">Download</button>
+        </div>
+      </div>
+      <div class="cb"><div class="conllu" id="corp-out"><span class="c-cmt"># Click Annotate to generate CoNLL-U</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- T: Language Compare -->
+<section class="view" id="view-t-cmp">
+  <div class="ptitle">Language Comparator</div>
+  <div class="pdesc">Compare morphological features across two languages side by side.</div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="cb" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div><label class="fl">Language A</label>
+        <select class="ctrl" id="cmp-a" style="width:150px">
+          <option value="chitonga">chiTonga</option><option value="chibemba">chiBemba</option>
+          <option value="chinyanja">chiNyanja</option><option value="silozi">siLozi</option>
+          <option value="luvale">Luvale</option><option value="lunda">Lunda</option>
+        </select></div>
+      <div style="padding-bottom:8px;color:var(--ink3);font-weight:700">vs</div>
+      <div><label class="fl">Language B</label>
+        <select class="ctrl" id="cmp-b" style="width:150px">
+          <option value="chibemba">chiBemba</option><option value="chitonga">chiTonga</option>
+          <option value="chinyanja">chiNyanja</option><option value="silozi">siLozi</option>
+          <option value="luvale">Luvale</option><option value="lunda">Lunda</option>
+        </select></div>
+      <div><label class="fl">Feature</label>
+        <select class="ctrl" id="cmp-feat" style="width:150px">
+          <option value="noun_classes">Noun classes</option>
+          <option value="tam">TAM markers</option>
+          <option value="extensions">Extensions</option>
+          <option value="concords">Concord types</option>
+        </select></div>
+      <button class="btn btn-p" onclick="cmpRun()">Compare</button>
+    </div>
+  </div>
+  <div class="card" id="cmp-card">
+    <div class="ch"><div class="ct" id="cmp-title">Comparison</div><div id="cmp-summ"></div></div>
+    <div id="cmp-body">
+      <div class="empty"><div class="empty-icon">⟺</div><div class="empty-ttl">Select languages and click Compare</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- T: Verify Flags -->
+<section class="view" id="view-t-vfy">
+  <div class="ptitle">VERIFY Flags</div>
+  <div class="pdesc">Unresolved annotation flags requiring primary-source verification.</div>
+  <div class="card">
+    <div class="cb" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px"><label class="fl">Filter by field path</label>
+        <input type="search" id="vfy-filter" placeholder="e.g. phonology, concord_systems…" oninput="vfyLoad()"></div>
+      <button class="btn btn-s btn-sm" onclick="window.open(API+'/api/verify-flags/'+LANG,'_blank')">Export JSON</button>
+    </div>
+  </div>
+  <div class="card gap">
+    <div class="ch"><div class="ct">Flag List</div><span class="bdg bt2" id="vfy-badge">—</span></div>
+    <div class="cb" id="vfy-body"><div class="loading"><div class="dots"><span></span><span></span><span></span></div> Loading…</div></div>
+  </div>
+</section>
+
+<!-- S: Analyse a Word -->
+<section class="view" id="view-s-ana">
+  <div class="ptitle">Analyse a Word</div>
+  <div class="pdesc">Type any word to see how it is built from morpheme parts.</div>
+  <div class="card" style="max-width:600px">
+    <div class="cb">
+      <label class="fl">Enter a word</label>
+      <div class="irow">
+        <input type="text" id="s-inp" placeholder="e.g. balya, cilya, muntu…"
+               style="font-size:16px;padding:10px 14px"
+               onkeydown="if(event.key==='Enter')ana('s')">
+        <button class="btn btn-p" onclick="ana('s')">Analyse →</button>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--ink3);align-self:center">Try:</span>
+        <button class="btn btn-s btn-sm" onclick="qa('s','balya')">balya</button>
+        <button class="btn btn-s btn-sm" onclick="qa('s','cilya')">cilya</button>
+        <button class="btn btn-s btn-sm" onclick="qa('s','tabalyi')">tabalyi</button>
+        <button class="btn btn-s btn-sm" onclick="qa('s','muntu')">muntu</button>
+        <button class="btn btn-s btn-sm" onclick="qa('s','cintu')">cintu</button>
+        <button class="btn btn-s btn-sm" onclick="qa('s','kulya')">kulya</button>
+      </div>
+    </div>
+  </div>
+  <div id="s-result" style="margin-top:16px;display:none;max-width:700px">
+    <div class="card">
+      <div class="cb">
+        <div style="font-family:var(--fd);font-size:40px;font-weight:900;margin-bottom:2px" id="s-tok"></div>
+        <div style="font-size:11px;color:var(--ink3);font-family:var(--fm);margin-bottom:4px" id="s-seg"></div>
+        <!-- v2: underlying form row -->
+        <div style="font-size:11px;color:var(--teal3);font-family:var(--fm);margin-bottom:12px;display:none" id="s-und"></div>
+        <div class="htabs" id="s-tabs"></div>
+        <div class="ribbon" id="s-ribbon" style="margin-bottom:20px"></div>
+        <hr class="sep">
+        <div id="s-explain" style="font-size:14px;color:var(--ink2);line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S: Grammar Quiz -->
+<section class="view" id="view-s-quiz">
+  <div class="ptitle">Grammar Quiz</div>
+  <div class="pdesc">Test your knowledge of noun classes and verb morphology.</div>
+  <div class="qcard" id="quiz-card">
+    <div class="qprog"><div class="qbar" id="qbar" style="width:10%"></div></div>
+    <div class="qq" id="qq">Loading…</div>
+    <div class="qprompt" id="qprompt"></div>
+    <div class="qopts" id="qopts"></div>
+    <div class="qfb" id="qfb"></div>
+    <div class="qnav">
+      <div><div class="qcnt" id="qcnt">Q 1 of 10</div><div id="qscore" style="font-size:11px;font-family:var(--fm)"></div></div>
+      <button class="btn btn-p btn-sm" id="qnext" onclick="qNext()" style="display:none">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- S: Vocab Cards -->
+<section class="view" id="view-s-vocab">
+  <div class="ptitle">Vocabulary Cards</div>
+  <div class="pdesc" id="vocab-desc">Core vocabulary organised by noun class.</div>
+  <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <select class="ctrl" id="vc-nc" style="width:150px" onchange="renderVocab()">
+      <option value="all">All classes</option>
+    </select>
+    <input type="search" id="vc-q" placeholder="Search…" style="width:180px" oninput="renderVocab()">
+    <span class="bdg bk" id="vc-cnt">— words</span>
+  </div>
+  <div id="vc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px"></div>
+</section>
+
+<!-- S: Noun Classes -->
+<section class="view" id="view-s-nc">
+  <div class="ptitle">Noun Classes</div>
+  <div class="pdesc">Every noun belongs to one class, and that class controls agreement on verbs, adjectives, and possessives.</div>
+  <div class="card" style="overflow:hidden">
+    <div style="overflow-x:auto"><table class="cm" id="nc-tbl">
+      <thead><tr>
+        <th class="nch">Class</th><th>Prefix</th><th>Allomorphs</th>
+        <th>Domain</th><th>Pair</th>
+      </tr></thead>
+      <tbody id="nc-tbody">
+        <tr><td colspan="5" style="padding:20px;text-align:center;color:var(--ink3)">Loading…</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- S: Concords -->
+<section class="view" id="view-s-conc">
+  <div class="ptitle">Agreement (Concords)</div>
+  <div class="pdesc">The verb prefix must agree with the noun class of its subject. Select a class to see all its agreement forms.</div>
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <div><label class="fl">Noun class</label>
+      <select class="ctrl" id="sc-nc" style="width:120px" onchange="scLoad()">
+        <option>NC1</option><option>NC2</option><option>NC3</option><option>NC4</option>
+        <option>NC5</option><option>NC6</option><option value="NC7" selected>NC7</option>
+        <option>NC8</option><option>NC9</option><option>NC10</option>
+        <option>NC11</option><option>NC12</option><option>NC13</option>
+        <option>NC14</option><option>NC15</option>
+      </select></div>
+  </div>
+  <div id="sc-body"></div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════════════
+// Use same-origin when served by Flask (any port).
+// Fall back to localhost:5000 only when opening index.html directly from disk.
+const API = (location.protocol === 'file:') ? 'http://localhost:5000' : '';
+let LANG = 'chitonga';
+let ROLE = 'teacher';
+let VIEW = 't-info';
+let _cache = {};
+let _lastConllu = '';
+const NCPAL = ['#b85c38','#2a6b69','#b89340','#7b3f5e','#4a7a4e',
+               '#3a6aaa','#7a5a20','#5a3a7a','#2a8a6a','#8a4a20'];
+const SLOTCLS = {
+  subject_concord:'ss_', negation:'sn', negation_pre:'sn', negation_infix:'sn',
+  tam_marker:'st', object_concord:'so', verb_root:'sr', verb_extension:'se',
+  final_vowel:'sf', noun_prefix:'snc', pos:'sp', pre_initial:'sx',
+  modal:'sx', post_final:'sx', special_case:'sx',
+  override:'sov',  // v2: extra_slots caller-supplied slot fill
+};
+
+// TAM badge colour derived from tense field (not hardcoded ID)
+function tamBadgeCls(tenseVal) {
+  if (!tenseVal || tenseVal === 'none') return 'bk';
+  if (tenseVal.includes('future')) return 'bt2';
+  if (tenseVal.includes('past'))   return 'bg';
+  return 'bt';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  API CLIENT
+// ═══════════════════════════════════════════════════════════════════
+async function apiFetch(method, path, body) {
+  const opts = {method, headers:{'Content-Type':'application/json'}};
+  if (body) opts.body = JSON.stringify(body);
+  let r;
+  try {
+    r = await fetch(API + path, opts);
+  } catch(networkErr) {
+    const base = API || (location.origin);
+    throw new Error(
+      `Cannot reach the GGT server at ${base}.\n` +
+      `Make sure app.py is running: python app.py --port ${location.port||5000}`
+    );
+  }
+  const j = await r.json();
+  if (j.status === 'error') throw new Error(j.message || 'API error');
+  return j.data;
+}
+const GET  = path       => apiFetch('GET',  path);
+const POST = (path, b)  => apiFetch('POST', path, b);
+
+async function cached(key, fn) {
+  if (!_cache[key]) _cache[key] = await fn();
+  return _cache[key];
+}
+
+function bust() { _cache = {}; }
+
+// ═══════════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function spin(id, msg='Loading…') {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = `<div class="loading"><div class="dots"><span></span><span></span><span></span></div> ${msg}</div>`;
+}
+function err(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = `<div class="empty"><div class="empty-icon" style="font-size:22px">⚠</div><div class="empty-ttl" style="color:var(--terra)">${msg}</div></div>`;
+}
+function tog(el) { el.classList.toggle('on'); }
+function $id(id) { return document.getElementById(id); }
+
+// ═══════════════════════════════════════════════════════════════════
+//  ROLE + NAV
+// ═══════════════════════════════════════════════════════════════════
+function setRole(role) {
+  ROLE = role;
+  $id('btn-t').classList.toggle('active', role==='teacher');
+  $id('btn-s').classList.toggle('active', role==='student');
+  $id('nav-t').style.display = role==='teacher' ? 'block' : 'none';
+  $id('nav-s').style.display = role==='student' ? 'block' : 'none';
+  showV(role==='teacher' ? 't-info' : 's-ana');
+}
+
+function showV(id) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el = $id('view-'+id);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.toggle('active', (n.getAttribute('onclick')||'').includes("'"+id+"'")));
+  VIEW = id;
+  ({
+    't-info': loadInfo,
+    't-conc': loadCM,
+    't-vfy':  vfyLoad,
+    's-nc':   loadNcTable,
+    's-conc': scLoad,
+    's-quiz': qInit,
+    's-vocab':renderVocab,
+  }[id] || (()=>{}))();
+}
+
+async function onLangChange() {
+  LANG = $id('glang').value;
+  bust();
+  await updateSidebar();
+  const refresh = {'t-info':loadInfo,'t-conc':loadCM,'t-vfy':vfyLoad,'s-nc':loadNcTable,'s-conc':scLoad};
+  if (refresh[VIEW]) refresh[VIEW]();
+}
+
+async function updateSidebar() {
+  try {
+    const m = await cached('meta:'+LANG, ()=>GET(`/api/metadata/${LANG}`));
+    const names = {chitonga:'chiTonga',chibemba:'chiBemba',chinyanja:'chiNyanja',
+                   silozi:'siLozi',luvale:'Luvale',lunda:'Lunda',kaonde:'Kaonde'};
+    $id('sgc-name').textContent = names[LANG] || LANG;
+    $id('sgc-meta').innerHTML = `ISO: ${m.iso_code} · Guthrie: ${m.guthrie}<br>${m.noun_class_count} classes · ${m.tam_count} TAM · ${m.extension_count} ext`;
+    $id('sgc-ver').textContent = 'v' + m.grammar_version;
+  } catch(e) {
+    $id('sgc-meta').innerHTML = `<span style="color:#d4825f;font-size:10px">⚠ ${e.message.split('\n')[0]}</span>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  T: GRAMMAR INFO
+// ═══════════════════════════════════════════════════════════════════
+const TAMCLS = {PRES:'bt',PST:'bg',REC_PST:'bg',REM_PST:'bg',
+                FUT_NEAR:'bt2',FUT_REM:'bt2',HAB:'bk',PERF:'bk'};
+
+async function loadInfo() {
+  try {
+    const [meta, ncs, tams, exts] = await Promise.all([
+      cached('meta:'+LANG, ()=>GET(`/api/metadata/${LANG}`)),
+      cached('ncs:'+LANG,  ()=>GET(`/api/noun-classes/${LANG}`).then(d=>d.noun_classes)),
+      cached('tam:'+LANG,  ()=>GET(`/api/tam/${LANG}`).then(d=>d.tam_markers)),
+      cached('ext:'+LANG,  ()=>GET(`/api/extensions/${LANG}`).then(d=>d.extensions||d)),
+    ]);
+
+    // stat cards
+    $id('stat-row').innerHTML = [
+      [meta.noun_class_count, 'Noun Classes',   meta.noun_class_count+' total'],
+      [meta.tam_count,        'TAM Markers',    'tense · aspect · mood'],
+      [meta.concord_type_count,'Concord Types', 'subj · obj · poss…'],
+      [meta.extension_count,  'Verb Extensions','Z1–Z4 zones'],
+    ].map(([v,l,s])=>`<div class="sc"><div class="sv">${v}</div><div class="sl">${l}</div><div class="ss">${s}</div></div>`).join('');
+
+    // metadata table
+    const vfy = meta.unresolved_flags===0
+      ? `<span class="bdg bt2">0 unresolved</span>`
+      : `<span class="bdg bt">${meta.unresolved_flags} unresolved</span>`;
+    $id('meta-tbody').innerHTML = [
+      ['language',      `<span class="bdg bt">${meta.language}</span>`],
+      ['iso_code',      meta.iso_code],
+      ['guthrie',       meta.guthrie],
+      ['grammar_version', meta.grammar_version],
+      ['loader_range',  `${meta.min_loader_version} – ${meta.max_loader_version}`],
+      ['verify_flags',  vfy],
+    ].map(([k,v])=>`<tr>
+      <td style="color:var(--ink3);font-size:11px;font-family:var(--fm);width:140px">${k}</td>
+      <td style="font-family:var(--fm);font-size:12px">${v}</td></tr>`).join('');
+
+    // TAM badges — colour derived from tense field, not hardcoded ID
+    // Detect shared surface forms across TAM entries
+    const formCount = {};
+    tams.forEach(t => { formCount[t.form] = (formCount[t.form]||0)+1; });
+    const sharedForms = Object.entries(formCount).filter(([,c])=>c>1).map(([f])=>f);
+
+    $id('tam-body').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:10px">${
+      tams.map(t=>{
+        const short = t.id.replace('TAM_','');
+        const cls   = tamBadgeCls(t.tense);
+        const shared = sharedForms.includes(t.form) ? ' ‡' : '';
+        return `<div style="display:flex;flex-direction:column;gap:2px;align-items:center">
+          <span class="bdg ${cls}" style="font-size:11px">${short}</span>
+          <span style="font-family:var(--fm);font-size:10px;color:var(--ink3)">${t.form||'Ø'}${shared}</span>
+        </div>`;
+      }).join('')
+    }</div>${
+      sharedForms.length
+        ? `<div style="margin-top:10px;font-size:11px;color:var(--ink3)">‡ Some TAM markers share a surface form — tone or context disambiguates</div>`
+        : ''
+    }`;
+
+    // NC grid
+    $id('nc-count-sub').textContent = ncs.length + ' classes';
+    $id('nc-grid').innerHTML = ncs.map((nc,i)=>`
+      <div style="border:1px solid var(--line);border-radius:8px;overflow:hidden">
+        <div style="background:${NCPAL[i%NCPAL.length]};padding:8px 12px;display:flex;align-items:baseline;gap:8px">
+          <span style="font-family:var(--fd);font-weight:900;color:white;font-size:16px">${nc.id}</span>
+          <span style="font-family:var(--fm);color:rgba(255,255,255,.75);font-size:13px">${nc.prefix}</span>
+        </div>
+        <div style="padding:8px 12px">
+          <div style="font-size:11px;color:var(--ink2);margin-bottom:3px">${(nc.semantic_domain||'').replace(/_/g,' ')}</div>
+          <div style="font-size:11px;font-family:var(--fm);color:var(--ink3)">${nc.plural_counterpart?'→ '+nc.plural_counterpart:nc.singular_counterpart?'← '+nc.singular_counterpart:'—'}</div>
+        </div>
+      </div>`).join('');
+
+    // Rebuild extension pills from API data (replaces hardcoded APPL/CAUS/PASS/RECIP)
+    const pillsEl = $id('ext-pills');
+    if (pillsEl && Array.isArray(exts) && exts.length) {
+      pillsEl.innerHTML = exts.map(e => {
+        const id = e.id || e;
+        return `<label class="cpill" onclick="tog(this)"><input type="checkbox" value="${id}"> ${id}</label>`;
+      }).join('');
+    }
+
+    // Rebuild student NC concords select from noun classes
+    const scNcSel = $id('sc-nc');
+    if (scNcSel) {
+      scNcSel.innerHTML = ncs.map((nc,i) =>
+        `<option${i===0?' selected':''}>${nc.id}</option>`
+      ).join('');
+    }
+
+    // Rebuild student vocab NC filter from noun classes
+    const vcNcSel = $id('vc-nc');
+    if (vcNcSel) {
+      vcNcSel.innerHTML = '<option value="all">All classes</option>' +
+        ncs.map(nc=>`<option value="${nc.id}">${nc.id}${nc.semantic_domain?' – '+(nc.semantic_domain||'').replace(/_/g,' '):''}</option>`).join('');
+    }
+
+    // Update student vocab description
+    const vd = $id('vocab-desc');
+    const names={chitonga:'chiTonga',chibemba:'chiBemba',chinyanja:'chiNyanja',
+                 silozi:'siLozi',luvale:'Luvale',lunda:'Lunda',kaonde:'Kaonde'};
+    if (vd) vd.textContent = `Core ${names[LANG]||LANG} vocabulary organised by noun class.`;
+
+  } catch(e) {
+    // Show error in every loading panel so the user sees it clearly
+    const msg = e.message || 'Unknown error';
+    const html = `<div class="empty"><div class="empty-icon" style="font-size:22px">⚠</div>
+      <div class="empty-ttl" style="color:var(--terra)">${msg.split('\n')[0]}</div>
+      ${msg.includes('\n') ? `<div class="empty-hint" style="white-space:pre-line;font-size:11px;margin-top:6px">${msg.split('\n').slice(1).join('\n')}</div>` : ''}
+    </div>`;
+    ['nc-grid','tam-body','meta-tbody','stat-row'].forEach(id => {
+      const el = $id(id); if (el) el.innerHTML = html;
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  T: VERB PARADIGM
+// ═══════════════════════════════════════════════════════════════════
+async function genPara() {
+  const root = ($id('para-root').value||'lya').trim();
+  const exts = [...document.querySelectorAll('#ext-pills .on')].map(el=>el.querySelector('input').value);
+  const pols = [...document.querySelectorAll('#view-t-para .cpill.on')]
+    .map(el=>el.querySelector('input').value)
+    .filter(v=>v==='affirmative'||v==='negative');
+  const polQ = (pols.length?pols:['affirmative']).join(',');
+  const extQ = exts.length ? '&extensions='+encodeURIComponent(exts.join(',')) : '';
+
+  spin('para-result', `Generating paradigm for "${root}"…`);
+  try {
+    const t = await GET(`/api/paradigm/${LANG}/${root}?polarity=${polQ}${extQ}`);
+    const cols = t.columns;
+    const rows = t.rows;
+    let html = `<div class="card"><div class="ch">
+      <div><div class="ct">Paradigm: <em>${t.root}</em></div>
+      <div class="cs">${t.language} · ${rows.length} SC × ${cols.length} TAM · ${Object.keys(t.cells).length} cells</div></div>
+      <div class="ebar">
+        <button class="btn btn-s btn-sm" onclick="window.open('${API}/api/paradigm/${LANG}/${root}?format=csv','_blank')">CSV</button>
+        <button class="btn btn-s btn-sm" onclick="window.open('${API}/api/paradigm/${LANG}/${root}?format=markdown','_blank')">MD</button>
+      </div>
+    </div><div class="pwrap"><table class="pt"><thead><tr><th>SC</th>`;
+    cols.forEach(c=>{ html+=`<th class="tch">${c.replace('TAM_','')}</th>`; });
+    html += '</tr></thead><tbody>';
+    rows.forEach(row=>{
+      html += `<tr><td class="rk">${row}</td>`;
+      cols.forEach(col=>{
+        const cell=t.cells[`${row}|${col}`];
+        if(cell && cell.surface!=='ERROR'){
+          // v2: show underlying when it differs from surface (phonological alternation occurred)
+          const und = cell.underlying && cell.underlying !== cell.surface
+            ? `<div class="pund">↓ ${cell.underlying}</div>` : '';
+          html+=`<td data-underlying="${cell.underlying||''}" data-rules="${(cell.rule_trace||[]).length}">
+            <div class="psurf">${cell.surface}</div>
+            <div class="pseg">${cell.segmented}</div>${und}</td>`;
+        } else {
+          html+=`<td style="color:var(--ink4);font-size:11px">—</td>`;
+        }
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div></div>';
+    $id('para-result').innerHTML = html;
+  } catch(e) { err('para-result', e.message); }
+}
+
+function expPara(fmt) {
+  const root=($id('para-root').value||'lya').trim();
+  window.open(`${API}/api/paradigm/${LANG}/${root}?format=${fmt}`,'_blank');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  T: CONCORD MATRIX
+// ═══════════════════════════════════════════════════════════════════
+let _cmData = null;
+
+async function loadCM() {
+  spin('cm-body', 'Loading concord matrix…');
+  try {
+    _cmData = await cached('cm:'+LANG, ()=>GET(`/api/concords/${LANG}`));
+
+    // populate selects
+    const ncSel = $id('cm-nc');
+    const typeSel = $id('cm-type');
+    ncSel.innerHTML = '<option value="all">All classes</option>' +
+      _cmData.rows.map(r=>`<option value="${r.nc_id}">${r.nc_id}</option>`).join('');
+    typeSel.innerHTML = '<option value="all">All paradigms</option>' +
+      _cmData.concord_types.map(t=>`<option value="${t}">${t.replace(/_concords$/,'').replace(/_/g,' ')}</option>`).join('');
+
+    renderCM();
+  } catch(e) { err('cm-body', e.message); }
+}
+
+function updCM() { if (_cmData) renderCM(); }
+
+function renderCM() {
+  const ncFilter   = $id('cm-nc')?.value || 'all';
+  const typeFilter = $id('cm-type')?.value || 'all';
+  const d = _cmData;
+  const types = typeFilter==='all' ? d.concord_types : d.concord_types.filter(t=>t===typeFilter);
+  const rows  = ncFilter==='all'   ? d.rows           : d.rows.filter(r=>r.nc_id===ncFilter);
+
+  $id('cm-head').innerHTML = `<tr><th class="nch">NC</th>${types.map(t=>`<th>${t.replace(/_concords$/,'').replace(/_/g,' ')}</th>`).join('')}</tr>`;
+  $id('cm-body').innerHTML = rows.map(row=>{
+    const cells = types.map(t=>{
+      const form = row.forms[t];
+      const cls  = form ? (row.fallback_types.includes(t)?'ff':'fp') : 'fa';
+      return `<td class="${cls}">${form||'—'}</td>`;
+    }).join('');
+    return `<tr><td class="nci">${row.nc_id}</td>${cells}</tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ANALYSIS  (shared teacher + student)
+// ═══════════════════════════════════════════════════════════════════
+async function ana(mode) {
+  const inp = $id(mode+'-inp').value.trim();
+  if (!inp) return;
+  const resEl = $id(mode+'-result');
+  resEl.style.display='none';
+  try {
+    const data = await POST('/api/analyze', {language:LANG, token:inp});
+    renderAna(mode, data);
+    resEl.style.display = 'block';
+  } catch(e) {
+    resEl.style.display = 'block';
+    resEl.innerHTML = `<div class="card"><div class="cb" style="color:var(--terra)">Analysis failed: ${e.message}</div></div>`;
+  }
+}
+
+function qa(mode, word) {
+  $id(mode+'-inp').value = word;
+  ana(mode);
+}
+
+function renderAna(mode, data) {
+  const b = data.best;
+  $id(mode+'-tok').textContent = data.token;
+  const pct = b ? Math.round(b.confidence*100) : 0;
+
+  // Surface segmentation line
+  const segEl = $id(mode+'-seg');
+  if (segEl) segEl.textContent = b ? b.segmented + ' · ' + b.gloss_line : '';
+
+  // v2: underlying form row — show only when it differs from surface
+  const undEl = $id(mode+'-und');
+  if (undEl && b) {
+    const und = b.underlying || '';
+    const surface = (b.segmented||'').replace(/-/g,'');
+    if (und && und !== surface) {
+      undEl.textContent = '↓ underlying: ' + und;
+      undEl.style.display = 'block';
+    } else {
+      undEl.style.display = 'none';
+    }
+  }
+
+  const confEl = $id('t-conf');
+  if (confEl && b) {
+    const rules = b.rule_trace?.length || 0;
+    const rulesPart = rules ? ` · ${rules} phon rule${rules!==1?'s':''}` : '';
+    confEl.textContent = `${data.hypothesis_count} hypothesis${data.hypothesis_count!==1?'es':''} · conf ${pct}%${rulesPart}`;
+  }
+
+  // tabs
+  const tabsEl = $id(mode+'-tabs');
+  if (tabsEl) {
+    tabsEl.innerHTML = data.all_hypotheses.slice(0,5).map((h,i)=>
+      `<div class="htab ${i===0?'active':''}" onclick="swHyp('${mode}',${i},${JSON.stringify(JSON.stringify(data))})"
+            data-seg="${h.segmented.replace(/"/g,'&quot;')}">
+         ${h.segmented}
+         <div class="cbar" style="width:${Math.round(h.confidence*100)}%"></div>
+       </div>`
+    ).join('');
+  }
+
+  if (b) renderRibbon(mode+'-ribbon', b.morphemes);
+
+  // v2: phon provenance section (teacher only)
+  if (mode === 't') {
+    renderUD(data.ud_features);
+    renderPhonProv('t-phon', b);
+  }
+  if (mode === 's') renderSExplain(data);
+
+  // all hyps (teacher only)
+  const hypsEl = $id('t-hyps');
+  if (hypsEl) {
+    const hc = $id('t-hyp-count');
+    if (hc) hc.textContent = data.hypothesis_count + ' hypothesis' + (data.hypothesis_count!==1?'es':'');
+    hypsEl.innerHTML = data.all_hypotheses.map((h,i)=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--paper2);${i===data.all_hypotheses.length-1?'border-bottom:none':''}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-family:var(--fm);font-weight:500;font-size:13px;color:var(--ink)">${h.segmented}</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--ink3)">${h.gloss_line}</span>
+          ${h.underlying && h.underlying!==(h.segmented||'').replace(/-/g,'')
+            ? `<span style="font-family:var(--fm);font-size:11px;color:var(--teal3)">↓ ${h.underlying}</span>`
+            : ''}
+          <span class="bdg bk" style="margin-left:auto">${Math.round(h.confidence*100)}%</span>
+        </div>
+        <div class="ribbon">${morphRibbonHtml(h.morphemes)}</div>
+      </div>`
+    ).join('');
+  }
+}
+
+function swHyp(mode, idx, dataJson) {
+  try {
+    const data = JSON.parse(JSON.parse(dataJson));
+    document.querySelectorAll(`#${mode}-tabs .htab`).forEach((t,i)=>t.classList.toggle('active',i===idx));
+    const hyp = data.all_hypotheses[idx];
+    if (!hyp) return;
+
+    renderRibbon(mode+'-ribbon', hyp.morphemes);
+
+    // v2: update underlying row
+    const undEl = $id(mode+'-und');
+    if (undEl) {
+      const und = hyp.underlying || '';
+      const surface = (hyp.segmented||'').replace(/-/g,'');
+      if (und && und !== surface) {
+        undEl.textContent = '↓ underlying: ' + und;
+        undEl.style.display = 'block';
+      } else {
+        undEl.style.display = 'none';
+      }
+    }
+
+    // v2: update phon provenance (teacher only)
+    if (mode === 't') renderPhonProv('t-phon', hyp);
+
+    if (mode === 's') renderSExplain({...data, best:hyp});
+  } catch(e) {}
+}
+
+function morphRibbonHtml(morphemes) {
+  const ms = morphemes.filter(m=>m.form);
+  return ms.map((m,i)=>`
+    <div class="mb">
+      <div class="mf ${SLOTCLS[m.content_type]||'sx'}">${m.form}</div>
+      <div class="mlb">${m.gloss||m.slot_id||''}</div>
+    </div>
+    ${i<ms.length-1?'<span class="msep">·</span>':''}`
+  ).join('');
+}
+
+function renderRibbon(id, morphemes) {
+  const el = $id(id);
+  if (el) el.innerHTML = morphRibbonHtml(morphemes);
+}
+
+function renderUD(ud) {
+  const tbody = $id('t-ud');
+  if (!tbody) return;
+  const rows = [
+    ['Tense',    ud.tense,     'ud-t',   'map_tam()'],
+    ['Aspect',   ud.aspect,    'ud-a',   'map_tam()'],
+    ['Mood',     ud.mood,      'ud-m',   'map_tam()'],
+    ['Voice',    ud.voice,     'ud-v',   'map_extension()'],
+    ['Nounclass',ud.nounclass, 'ud-n',   'map_nc()'],
+    ['Number',   ud.number,    'ud-nb',  'map_concord_key()'],
+    ['Person',   ud.person,    'ud-p',   'map_concord_key()'],
+    ['Polarity', ud.polarity,  'ud-neg', 'negation'],
+  ].filter(([,v])=>v);
+  tbody.innerHTML = rows.map(([name,val,cls,src])=>`
+    <tr>
+      <td style="font-family:var(--fm);font-size:11px;color:var(--ink3)">${name}</td>
+      <td><span class="udtag ${cls}">${val}</span></td>
+      <td style="font-size:11px;color:var(--ink3)">${src}</td>
+    </tr>`).join('') + (ud.feats_string ? `
+    <tr style="border-top:2px solid var(--line)">
+      <td colspan="2" style="font-family:var(--fm);font-size:11px;color:var(--teal3);padding-top:8px">${ud.feats_string}</td>
+      <td style="font-size:10px;color:var(--ink3);padding-top:8px">CoNLL-U FEATS</td>
+    </tr>` : '');
+  if (!rows.length) tbody.innerHTML = '<tr><td colspan="3" style="color:var(--ink3);font-size:12px">No UD features derived</td></tr>';
+}
+
+function renderSExplain(data) {
+  const el = $id('s-explain');
+  if (!el || !data.best) return;
+  const names = {
+    subject_concord:'Subject marker', negation:'Negation prefix', negation_pre:'Negation prefix',
+    tam_marker:'Tense marker', object_concord:'Object marker', verb_root:'Verb root',
+    verb_extension:'Extension', final_vowel:'Final vowel', noun_prefix:'Noun class prefix', pos:'POS',
+  };
+  const notes = {
+    subject_concord:'shows who is doing the action',
+    negation:'makes the verb negative', negation_pre:'makes the verb negative',
+    tam_marker:'tells you <em>when</em> the action happens',
+    object_concord:'identifies the object of the verb',
+    verb_root:'the core lexical meaning',
+    verb_extension:'modifies the verb (e.g. applicative, passive)',
+    final_vowel:'closes the verb form; signals mood',
+    noun_prefix:'marks the noun class',
+  };
+  const ud = data.ud_features;
+  const feats = [
+    ud.tense    ? 'Tense: '+ud.tense  : null,
+    ud.aspect && ud.aspect!=='Imp' ? 'Aspect: '+ud.aspect : null,
+    ud.nounclass ? 'Noun class: '+ud.nounclass : null,
+    ud.number    ? 'Number: '+ud.number : null,
+    ud.person    ? 'Person: '+ud.person : null,
+  ].filter(Boolean);
+  el.innerHTML = `<div style="font-size:13px;line-height:2">
+    <div style="font-weight:500;margin-bottom:10px;color:var(--ink2)">How this word is built:</div>
+    ${data.best.morphemes.filter(m=>m.form).map(m=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+      <span class="mf ${SLOTCLS[m.content_type]||'sx'}" style="display:inline-block;min-width:38px;text-align:center">${m.form}</span>
+      <span style="font-weight:500;color:var(--ink2);min-width:130px">${names[m.content_type]||m.slot_name||m.content_type}</span>
+      <span style="color:var(--ink3);font-size:12px">— ${notes[m.content_type]||'grammatical morpheme'}</span>
+    </div>`).join('')}
+    ${feats.length ? `<div style="margin-top:14px;padding:10px 14px;background:var(--paper);border-radius:var(--r);border-left:3px solid var(--teal)">
+      <div style="font-size:11px;color:var(--teal3);font-weight:500;margin-bottom:4px">Grammatical features</div>
+      <div style="font-family:var(--fm);font-size:12px;color:var(--teal3)">${feats.join(' · ')}</div>
+    </div>` : ''}
+  </div>`;
+}
+
+// v2: Phonology provenance — underlying form + rule trace (teacher mode)
+function renderPhonProv(containerId, hyp) {
+  const el = $id(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  if (!hyp) return;
+
+  const und     = hyp.underlying || '';
+  const surface = (hyp.segmented || '').replace(/-/g, '');
+  const rules   = hyp.rule_trace || [];
+
+  // Underlying row — only when phonological alternation occurred
+  if (und && und !== surface) {
+    const row = document.createElement('div');
+    row.className = 'phon-row';
+    row.innerHTML = `<span class="phon-lbl">Underlying</span>
+      <span class="phon-val">${und}</span>`;
+    el.appendChild(row);
+  }
+
+  // Rule trace row — one badge per rule ID
+  if (rules.length > 0) {
+    const row = document.createElement('div');
+    row.className = 'phon-row';
+    const badges = rules.map(r => {
+      const id = r.split(':')[0].trim();
+      return `<span class="phon-bdg" title="${r.replace(/"/g,'&quot;')}">${id}</span>`;
+    }).join(' ');
+    row.innerHTML = `<span class="phon-lbl">Phon rules</span>
+      <span style="display:flex;gap:4px;flex-wrap:wrap">${badges}</span>`;
+    el.appendChild(row);
+  }
+}
+
+function copyGloss() {
+  const forms = [...document.querySelectorAll('#t-ribbon .mf')].map(e=>e.textContent).join('-');
+  navigator.clipboard?.writeText(forms);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  T: CORPUS ANNOTATOR
+// ═══════════════════════════════════════════════════════════════════
+async function annotate() {
+  const text = $id('corp-in').value.trim();
+  if (!text) return;
+  spin('corp-out', 'Annotating…');
+  $id('corp-stats').textContent = '';
+  try {
+    const data = await POST('/api/annotate', {language:LANG, text});
+    _lastConllu = data.conllu;
+    $id('corp-stats').textContent = data.summary;
+    $id('corp-out').innerHTML = data.conllu.split('\n').map(line=>{
+      if (line.startsWith('#')) return `<span class="c-cmt">${line}</span>`;
+      const cols = line.split('\t');
+      if (cols.length >= 6) {
+        // v2: MISC column (col 9) — parse key=value pairs, highlight Underlying= and PhonRules=
+        const miscRaw = cols[9] || '_';
+        const miscHtml = miscRaw === '_' ? '_' : miscRaw.split('|').map(pair => {
+          if (pair.startsWith('Underlying=') || pair.startsWith('PhonRules=')) {
+            return `<span class="c-phon">${pair}</span>`;
+          }
+          return `<span class="c-misc">${pair}</span>`;
+        }).join('<span style="color:#555">|</span>');
+        return `<span class="c-id">${cols[0]}</span>\t` +
+               `<span class="c-form">${cols[1]}</span>\t` +
+               `${cols[2]}\t` +
+               `<span class="c-upos">${cols[3]}</span>\t` +
+               `${cols[4]}\t` +
+               `<span class="c-feats">${cols[5]}</span>\t` +
+               `${cols[6]||'_'}\t${cols[7]||'_'}\t${cols[8]||'_'}\t${miscHtml}`;
+      }
+      return line;
+    }).join('\n');
+  } catch(e) { err('corp-out', e.message); }
+}
+
+function copyConllu() { navigator.clipboard?.writeText(_lastConllu); }
+function dlConllu() {
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([_lastConllu],{type:'text/plain'}));
+  a.download=`${LANG}_annotated.conllu`; a.click();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  T: LANGUAGE COMPARE
+// ═══════════════════════════════════════════════════════════════════
+async function cmpRun() {
+  const la=$id('cmp-a').value, lb=$id('cmp-b').value, feat=$id('cmp-feat').value;
+  $id('cmp-title').textContent = `${feat.replace(/_/g,' ')}: ${la} vs ${lb}`;
+  $id('cmp-body').innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div> Comparing…</div>';
+  $id('cmp-summ').innerHTML = '';
+  try {
+    const d = await GET(`/api/compare?lang_a=${la}&lang_b=${lb}&feature=${feat}`);
+    const c = d.counts;
+    $id('cmp-summ').innerHTML = `
+      <span class="bdg bt2" style="margin-right:4px">${c.lang_b_only||0} only in ${lb}</span>
+      <span class="bdg bt"  style="margin-right:4px">${c.lang_a_only||0} only in ${la}</span>
+      <span class="bdg bg">${c.different||0} different</span>`;
+    const header = `<div class="drow" style="background:var(--paper2)">
+      <div class="dc dkey" style="font-size:10px;text-transform:uppercase;color:var(--ink3)">Feature</div>
+      <div class="dc" style="font-size:10px;text-transform:uppercase;color:var(--ink3)">${la}</div>
+      <div class="dc" style="font-size:10px;text-transform:uppercase;color:var(--ink3)">${lb}</div>
+    </div>`;
+    const rowsHtml = d.rows.map(r=>{
+      const cA = r.status==='lang_a_only' ? 'dadded' : r.status==='different'?'dchanged':'dsame';
+      const cB = r.status==='lang_b_only' ? 'dadded' : r.status==='different'?'dchanged':'dsame';
+      return `<div class="drow">
+        <div class="dc dkey">${r.key}</div>
+        <div class="dc ${r.value_a==='—'?'dremoved':cA}">${r.value_a}</div>
+        <div class="dc ${r.value_b==='—'?'dremoved':cB}">${r.value_b}</div>
+      </div>`;
+    }).join('');
+    $id('cmp-body').innerHTML = `<div style="overflow-y:auto;max-height:400px">${header}${rowsHtml}</div>`;
+  } catch(e) {
+    $id('cmp-body').innerHTML = `<div class="empty"><div class="empty-ttl" style="color:var(--terra)">${e.message}</div></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  T: VERIFY FLAGS
+// ═══════════════════════════════════════════════════════════════════
+async function vfyLoad() {
+  const prefix = ($id('vfy-filter')?.value||'').trim();
+  spin('vfy-body', 'Loading verify flags…');
+  try {
+    const data = await GET(`/api/verify-flags/${LANG}${prefix?'?field='+encodeURIComponent(prefix):''}`);
+    $id('vfy-badge').textContent = data.unresolved_count + ' unresolved';
+    $id('vfy-badge').className = 'bdg ' + (data.unresolved_count===0?'bt2':'bt');
+    if (data.flags.length===0) {
+      $id('vfy-body').innerHTML = `<div class="empty"><div class="empty-icon">✓</div>
+        <div class="empty-ttl">No unresolved VERIFY flags</div>
+        <div class="empty-hint">The ${LANG} grammar is fully verified.</div></div>`;
+      return;
+    }
+    $id('vfy-body').innerHTML = data.flags.map(f=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--paper2);display:grid;
+                  grid-template-columns:180px 1fr auto;gap:12px;align-items:start;font-size:12px">
+        <div style="font-family:var(--fm);color:var(--terra);font-size:11px">${f.field_path}</div>
+        <div style="color:var(--ink2);line-height:1.5">${f.note||'—'}</div>
+        <div style="font-family:var(--fm);font-size:10px;color:var(--ink3);white-space:nowrap">${f.suggested_source||'—'}</div>
+      </div>`).join('');
+  } catch(e) { err('vfy-body', e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  S: NOUN CLASS TABLE
+// ═══════════════════════════════════════════════════════════════════
+async function loadNcTable() {
+  const tbody = $id('nc-tbody');
+  tbody.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--ink3)">Loading…</td></tr>';
+  try {
+    const ncs = await cached('ncs:'+LANG, ()=>GET(`/api/noun-classes/${LANG}`).then(d=>d.noun_classes));
+    tbody.innerHTML = ncs.map((nc,i)=>
+      `<tr>
+        <td class="nci" style="border-left:3px solid ${NCPAL[i%NCPAL.length]}">${nc.id}</td>
+        <td style="font-family:var(--fm);font-weight:500">${nc.prefix}</td>
+        <td style="font-family:var(--fm);font-size:11px;color:var(--ink3)">${nc.allomorphs?.join(', ')||'—'}</td>
+        <td style="font-size:12px">${(nc.semantic_domain||'').replace(/_/g,' ')}</td>
+        <td style="font-family:var(--fm);font-size:11px">${nc.plural_counterpart||nc.singular_counterpart||'—'}</td>
+      </tr>`
+    ).join('');
+  } catch(e) {
+    tbody.innerHTML=`<tr><td colspan="5" style="color:var(--terra)">${e.message}</td></tr>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  S: STUDENT CONCORDS
+// ═══════════════════════════════════════════════════════════════════
+async function scLoad() {
+  const nc = $id('sc-nc')?.value || 'NC7';
+  spin('sc-body', `Loading concords for ${nc}…`);
+  try {
+    const data = await GET(`/api/concords/${LANG}/${nc}`);
+    const ncs  = await cached('ncs:'+LANG, ()=>GET(`/api/noun-classes/${LANG}`).then(d=>d.noun_classes));
+    const ncObj= ncs.find(n=>n.id===nc)||{};
+    const PRIO = ['subject_concords','object_concords','possessive_concords','adjectival_concords'];
+    const entries = Object.entries(data.forms).sort(([a],[b])=>{
+      const ai=PRIO.indexOf(a),bi=PRIO.indexOf(b);
+      if(ai>=0&&bi>=0) return ai-bi; if(ai>=0) return -1; if(bi>=0) return 1;
+      return a.localeCompare(b);
+    });
+    $id('sc-body').innerHTML = `<div class="card"><div class="ch">
+      <div><div class="ct">${nc} — Agreement forms</div>
+      <div class="cs">${(ncObj.semantic_domain||'').replace(/_/g,' ')}</div></div>
+    </div><div class="cb">
+      <table class="tbl"><thead><tr><th>Paradigm</th><th>Form</th><th>Notes</th></tr></thead><tbody>
+        ${entries.map(([type,form])=>{
+          const label=type.replace(/_concords$/,'').replace(/_/g,' ');
+          const fb=data.fallback_types.includes(type);
+          return `<tr><td style="color:var(--ink2)">${label}</td>
+            <td><span class="bdg bt">${form}</span></td>
+            <td style="font-size:11px;color:var(--ink3)">${fb?'inherited from base class':'direct'}</td></tr>`;
+        }).join('')}
+        ${data.absent_types.length?`<tr><td colspan="3" style="font-size:11px;color:var(--ink4);padding-top:8px">
+          Absent: ${data.absent_types.slice(0,6).map(t=>t.replace(/_concords$/,'')).join(', ')}
+          ${data.absent_types.length>6?`+${data.absent_types.length-6} more`:''}
+        </td></tr>`:''}
+      </tbody></table>
+    </div></div>`;
+  } catch(e) { err('sc-body', e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  S: VOCAB CARDS
+// ═══════════════════════════════════════════════════════════════════
+const VOCAB = [
+  {t:'muntu',  nc:'NC1', pl:'bantu',  g:'person'},
+  {t:'bantu',  nc:'NC2', sg:'muntu',  g:'people'},
+  {t:'cintu',  nc:'NC7', pl:'zintu',  g:'thing'},
+  {t:'zintu',  nc:'NC8', sg:'cintu',  g:'things'},
+  {t:'musamu', nc:'NC3', pl:'misamu', g:'tree'},
+  {t:'misamu', nc:'NC4', sg:'musamu', g:'trees'},
+  {t:'mwana',  nc:'NC1', pl:'bana',   g:'child'},
+  {t:'bana',   nc:'NC2', sg:'mwana',  g:'children'},
+  {t:'nkuku',  nc:'NC9', pl:'zikuku', g:'chicken'},
+  {t:'mbwa',   nc:'NC9', pl:'zibwa',  g:'dog'},
+  {t:'nsomba',  nc:'NC9', pl:'zisomba', g:'fish'},
+  {t:'bulelo', nc:'NC14',             g:'rulership'},
+  {t:'kulya',  nc:'NC15',             g:'to eat'},
+  {t:'kubona', nc:'NC15',             g:'to see'},
+  {t:'kumba',  nc:'NC15',             g:'to dig'},
+  {t:'munzi',  nc:'NC18',             g:'village (inside)'},
+];
+const VCCOL={NC1:'#b85c38',NC2:'#7a3a18',NC3:'#2a6b69',NC4:'#1a4a48',
+             NC7:'#5a3a7a',NC8:'#3a2060',NC9:'#b89340',NC14:'#4a7a4e',
+             NC15:'#2a5a3e',NC18:'#3a5a8a'};
+
+function renderVocab() {
+  const ncF=($id('vc-nc')?.value||'all'), q=($id('vc-q')?.value||'').toLowerCase();
+  const filtered=VOCAB.filter(v=>{
+    if(ncF!=='all'&&v.nc!==ncF) return false;
+    if(q&&!v.t.includes(q)&&!v.g.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  $id('vc-cnt').textContent=filtered.length+' words';
+  $id('vc-grid').innerHTML=filtered.map(v=>{
+    const col=VCCOL[v.nc]||'#888';
+    const pair=v.pl?`pl: ${v.pl}`:v.sg?`sg: ${v.sg}`:'';
+    return `<div class="vcard" onclick="qa('s','${v.t}');setRole('student');showV('s-ana')">
+      <div style="background:${col};padding:16px 20px">
+        <div style="font-family:var(--fd);font-weight:900;color:white;font-size:28px">${v.t}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.65);font-family:var(--fm)">${v.nc}${pair?' · '+pair:''}</div>
+      </div>
+      <div style="padding:12px 16px">
+        <div style="font-size:13px;color:var(--ink2)">${v.g}</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:3px;font-style:italic">tap to analyse</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  S: QUIZ
+// ═══════════════════════════════════════════════════════════════════
+const QBANK=[
+  {q:'What noun class does <strong>muntu</strong> (person) belong to?',p:'muntu',a:'NC1',
+   o:['NC1','NC7','NC3','NC14'],e:'Muntu belongs to NC1 — the human singular class with prefix <em>mu-</em>.'},
+  {q:'What is the NC7 subject concord in chiTonga?',p:'NC7 (things singular)',a:'ci-',
+   o:['ci-','mu-','ba-','ka-'],e:'NC7 nouns use <em>ci-</em> as their subject marker: <em>ci</em>-lya — it eats.'},
+  {q:'Which TAM marker signals the <em>present habitual</em> tense?',p:'TAM_PRES',a:'a',
+   o:['a','aka','ali','yo'],e:'The present habitual uses bare <em>a</em> (low tone). The perfect also uses <em>a</em> but is distinguished by the final vowel <em>-ide</em>.'},
+  {q:'What is the plural counterpart of NC3 (trees/plants singular)?',p:'NC3 → ?',a:'NC4',
+   o:['NC4','NC6','NC8','NC2'],e:'NC3 (<em>mu-</em>, trees singular) pairs with NC4 (<em>mi-</em>, trees plural).'},
+  {q:'In the word <strong>balya</strong>, what does <em>ba-</em> signal?',p:'ba-lya',
+   a:'NC2 subject (3PL human)',o:['NC2 subject (3PL human)','1PL exclusive','NC14 subject','negative prefix'],
+   e:'<em>ba-</em> is the NC2 subject marker — it agrees with a human plural subject (bantu — people).'},
+  {q:'Which extension adds an applicative meaning (beneficiary/location)?',p:'verb + ___',
+   a:'APPL (-il-/-el-)',o:['APPL (-il-/-el-)','PASS (-w-)','CAUS (-is-)','RECIP (-an-)'],
+   e:'APPL adds a beneficiary or location argument. -il- after high/low vowels, -el- after mid vowels (vowel harmony VH.1).'},
+  {q:'What is the negative final vowel in chiTonga?',p:'Requires ta- in SLOT1',a:'-i',
+   o:['-i','-a','-e','-ide'],e:'The negative final vowel is <em>-i</em>. It requires the pre-initial negation <em>ta-</em> in SLOT1 (enforced by the flag diacritic @R.NEG.ON@).'},
+  {q:'What is the NC1 possessive concord?',p:'NC1 (muntu) + possessive',a:'wa',
+   o:['wa','ba','ca','lwa'],e:'NC1 possessive is <em>wa</em> — e.g. muntu <em>wa</em>ngu (my person).'},
+  {q:'Before a bilabial consonant, the NC9 nasal prefix becomes…',p:'N + b/p/m',a:'m-',
+   o:['m-','n-','ng-','ny-'],e:'Before bilabials (b, p, m, v) the nasal assimilates to <em>m-</em>: N + bwa → mbwa (dog). This is sandhi rule SND.3a.'},
+  {q:'Which slot in the chiTonga verb template is OBLIGATORY?',p:'SLOT1…SLOT11',
+   a:'SLOT3 (subject concord)',o:['SLOT1 (negation)','SLOT3 (subject concord)','SLOT7 (object concord)','SLOT9 (extensions)'],
+   e:'SLOT3 (subject concord), SLOT8 (root), and SLOT10 (final vowel) are obligatory. SLOT1 negation is optional.'},
+];
+let QS={qs:[],idx:0,score:0,ans:false};
+
+function qInit() {
+  if(QS.qs.length) return;
+  QS.qs=[...QBANK].sort(()=>Math.random()-.5).slice(0,8);
+  QS.idx=0; QS.score=0; QS.ans=false;
+  qRender();
+}
+
+function qRender() {
+  const q=QS.qs[QS.idx], tot=QS.qs.length;
+  $id('qbar').style.width=(QS.idx/tot*100)+'%';
+  $id('qcnt').textContent=`Q ${QS.idx+1} of ${tot}`;
+  $id('qscore').innerHTML=QS.score?`<span style="color:var(--teal)">✓ ${QS.score} correct</span>`:'';
+  $id('qq').innerHTML=q.q;
+  $id('qprompt').textContent=q.p;
+  $id('qfb').className='qfb';
+  $id('qnext').style.display='none';
+  QS.ans=false;
+  const L=['A','B','C','D'];
+  $id('qopts').innerHTML=q.o.map((opt,i)=>
+    `<button class="qopt" onclick="qSel(this,'${opt.replace(/'/g,"\\'")}')">
+      <span class="qlet">${L[i]}</span><span>${opt}</span>
+    </button>`).join('');
+}
+
+function qSel(el,chosen) {
+  if(QS.ans) return; QS.ans=true;
+  const q=QS.qs[QS.idx]; const ok=chosen===q.a;
+  if(ok) QS.score++;
+  document.querySelectorAll('.qopt').forEach(b=>{
+    b.classList.add('dis');
+    if(b.querySelector('span:last-child').textContent===q.a) b.classList.add('ok');
+    if(b===el&&!ok) b.classList.add('ng');
+  });
+  const fb=$id('qfb');
+  fb.className='qfb show '+(ok?'ok':'ng');
+  fb.innerHTML=(ok?'<strong>Correct!</strong> ':'<strong>Not quite.</strong> ')+q.e;
+  $id('qnext').style.display='flex';
+  if(QS.idx===QS.qs.length-1) $id('qnext').textContent='See results →';
+}
+
+function qNext() {
+  QS.idx++;
+  if(QS.idx>=QS.qs.length){ qResults(); return; }
+  qRender();
+}
+
+function qResults() {
+  const tot=QS.qs.length, sc=QS.score, pct=Math.round(sc/tot*100);
+  const msg=pct===100?'Perfect!':pct>=80?'Excellent!':pct>=60?'Good work!':'Keep practising!';
+  $id('quiz-card').innerHTML=`<div style="text-align:center;padding:20px 0">
+    <div style="font-size:64px;font-family:var(--fd);font-weight:900;color:${pct>=60?'var(--teal)':'var(--terra)'};">${pct}%</div>
+    <div style="font-family:var(--fd);font-size:22px;font-weight:700;margin:8px 0 4px">${msg}</div>
+    <div style="color:var(--ink3);font-size:13px;margin-bottom:24px">${sc} of ${tot} correct</div>
+    <button class="btn btn-p" onclick="QS={qs:[],idx:0,score:0,ans:false};$id('quiz-card').innerHTML='';qInit()">Try again</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  BOOTSTRAP
+// ═══════════════════════════════════════════════════════════════════
+(async ()=>{
+  try {
+    const d=await GET('/api/languages');
+    const sel=$id('glang'); const have=[...sel.options].map(o=>o.value);
+    d.languages.forEach(l=>{ if(!have.includes(l)) sel.add(new Option(l,l)); });
+  } catch(e){}
+  setRole('teacher');
+  await updateSidebar();
+  loadInfo();
+})();
+</script>
+</body>
+</html>

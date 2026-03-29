@@ -1,0 +1,51 @@
+
+:root {
+  --primary: #7A3E1D;
+  --secondary: #A0522D;
+  --accent: #D97706;
+  --community: #2E7D32;
+
+  --bg-main: #FDF6F0;
+  --bg-card: #FFFFFF;
+
+  --text-primary: #2B2B2B;
+  --text-secondary: #6B7280;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: system-ui, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.logo {
+  height: 44px;
+}
+
+.button-primary {
+  background: var(--primary);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+}
+
+.button-primary:hover {
+  background: var(--secondary);
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
