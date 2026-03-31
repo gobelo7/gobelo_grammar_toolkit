@@ -1,0 +1,45 @@
+/* src/styles/debugger.css
+   ──────────────────────────────────────────────────────────────────────────
+   Supplementary classes for the debug / parser tab.
+   Only include styles that cannot be expressed as Tailwind utility classes.
+   Component structure and layout use Tailwind className throughout.
+   ──────────────────────────────────────────────────────────────────────────
+*/
+
+/* Slot pipeline — horizontal scroll on small viewports */
+.slot-flow {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+/* Colour-coded slot card top border is set via inline style
+   (the colour is dynamic from the parser response — unavoidable) */
+.slot-card {
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Timeline step click area */
+.timeline-step {
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+.timeline-step:hover { opacity: 0.8; }
+
+/* Phonological rule trace badge */
+.phon-badge {
+  display: inline-block;
+  cursor: help;
+  user-select: none;
+}
+
+/* Content-type colour coding for morpheme rows */
+.ct-subject_concord  { border-left: 3px solid #3b82f6; }
+.ct-verb_root        { border-left: 3px solid #10b981; }
+.ct-final_vowel      { border-left: 3px solid #f59e0b; }
+.ct-object_concord   { border-left: 3px solid #06b6d4; }
+.ct-tam_marker       { border-left: 3px solid #8b5cf6; }
+.ct-verb_extension   { border-left: 3px solid #84cc16; }
+.ct-negation         { border-left: 3px solid #ef4444; }

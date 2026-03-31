@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gobelo Grammar Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --ink:       #1a1614;
+  --ink-2:     #3d3530;
+  --ink-3:     #7a6e68;
+  --ink-4:     #b5ada8;
+  --paper:     #f5f0ea;
+  --paper-2:   #ede6dc;
+  --paper-3:   #e0d6c8;
+  --terracotta:#b85c38;
+  --terra-lt:  #d4825f;
+  --terra-dk:  #8a3f22;
+  --teal:      #2a6b69;
+  --teal-lt:   #4a8f8d;
+  --teal-dk:   #1a4a48;
+  --gold:      #b89340;
+  --gold-lt:   #d4b060;
+  --cream-line:#d8cebf;
+  --radius:    6px;
+  --radius-lg: 12px;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════════════ */
+.app {
+  display: grid;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 220px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+  height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════ */
+header {
+  grid-area: header;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  border-bottom: 2px solid var(--terracotta);
+  z-index: 10;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-right: 1px solid #333;
+  height: 100%;
+  text-decoration: none;
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  background: var(--terracotta);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--paper);
+  flex-shrink: 0;
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--paper);
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+.brand-sub {
+  font-size: 10px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Role switcher in header */
+.role-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 20px;
+  height: 100%;
+}
+.role-btn {
+  padding: 5px 14px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.role-btn:hover { color: var(--paper); background: #2a2420; }
+.role-btn.active {
+  background: var(--terracotta);
+  color: var(--paper);
+  border-color: var(--terracotta);
+}
+.role-divider {
+  width: 1px; height: 20px;
+  background: #333;
+  margin: 0 4px;
+}
+
+/* Language selector */
+.lang-select-wrap {
+  margin-left: auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lang-label {
+  font-size: 11px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+select.lang-select {
+  background: #2a2420;
+  border: 1px solid #444;
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  outline: none;
+}
+select.lang-select:focus { border-color: var(--terracotta); }
+
+/* Status pip */
+.status-pip {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--teal-lt);
+  margin-right: 4px;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sidebar {
+  grid-area: sidebar;
+  background: var(--paper-2);
+  border-right: 1px solid var(--cream-line);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 16px 0 16px;
+}
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-4);
+  padding: 0 16px 6px;
+  margin-top: 16px;
+}
+.nav-section-label:first-child { margin-top: 0; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 400;
+  user-select: none;
+}
+.nav-item:hover {
+  background: var(--paper-3);
+  color: var(--ink);
+}
+.nav-item.active {
+  background: var(--paper-3);
+  border-left-color: var(--terracotta);
+  color: var(--terracotta);
+  font-weight: 500;
+}
+.nav-item .nav-icon {
+  width: 16px; height: 16px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+.nav-item.active .nav-icon { opacity: 1; }
+
+.sidebar-grammar-card {
+  margin: 16px;
+  padding: 12px;
+  background: var(--ink);
+  border-radius: var(--radius-lg);
+  color: var(--paper);
+}
+.sgc-lang {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.sgc-meta {
+  font-size: 11px;
+  color: var(--ink-4);
+  line-height: 1.7;
+  font-family: var(--font-mono);
+}
+.sgc-pill {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  margin-top: 8px;
+  background: var(--terracotta);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════ */
+main {
+  grid-area: main;
+  overflow-y: auto;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Views (shown/hidden) ─── */
+.view { display: none; flex-direction: column; flex: 1; padding: 28px 32px; }
+.view.active { display: flex; }
+
+/* ─── Page header ─── */
+.page-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.page-desc {
+  color: var(--ink-3);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+/* ─── Two-column layout ─── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.card {
+  background: white;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--cream-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.card-subtitle {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
+.card-body { padding: 16px 18px; }
+
+/* ═══════════════════════════════════════════════
+   INPUTS & CONTROLS
+═══════════════════════════════════════════════ */
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  margin-bottom: 5px;
+}
+input[type="text"],
+input[type="search"],
+textarea,
+select.ctrl {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+input[type="text"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select.ctrl:focus {
+  border-color: var(--terracotta);
+  background: white;
+}
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.input-row input { flex: 1; }
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-primary {
+  background: var(--terracotta);
+  color: white;
+}
+.btn-primary:hover { background: var(--terra-dk); }
+.btn-secondary {
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1px solid var(--cream-line);
+}
+.btn-secondary:hover { background: var(--paper-3); }
+.btn-teal {
+  background: var(--teal);
+  color: white;
+}
+.btn-teal:hover { background: var(--teal-dk); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-icon {
+  padding: 6px;
+  background: transparent;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex; align-items: center;
+  color: var(--ink-3);
+  transition: all 0.15s;
+}
+.btn-icon:hover { background: var(--paper-2); color: var(--ink); }
+
+/* ─── Checkbox / Toggle ─── */
+.check-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.check-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--cream-line);
+  border-radius: 99px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s;
+  color: var(--ink-2);
+}
+.check-pill input { display: none; }
+.check-pill.checked {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: white;
+}
+.check-pill:hover { border-color: var(--ink-3); }
+
+/* ═══════════════════════════════════════════════
+   ANALYSIS RESULT  (StudentView & shared)
+═══════════════════════════════════════════════ */
+.analysis-result {
+  margin-top: 16px;
+  display: none;
+}
+.analysis-result.visible { display: block; }
+
+.token-display {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.token-meta { font-size: 12px; color: var(--ink-3); margin-bottom: 16px; font-family: var(--font-mono); }
+
+/* Morpheme ribbon */
+.morpheme-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+.morpheme-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.morph-form {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  color: white;
+  min-width: 28px;
+  text-align: center;
+}
+.morph-label {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--ink-3);
+  text-align: center;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.morph-sep {
+  font-size: 18px;
+  color: var(--ink-4);
+  padding-bottom: 8px;
+  margin: 0 -1px;
+}
+
+/* Slot colours */
+.slot-neg      { background: #7b3f5e; }
+.slot-sm       { background: var(--terracotta); }
+.slot-tam      { background: var(--gold); color: var(--ink) !important; }
+.slot-om       { background: var(--teal); }
+.slot-root     { background: var(--ink); }
+.slot-ext      { background: #4a7a4e; }
+.slot-fv       { background: var(--ink-3); }
+.slot-nc       { background: #6a4fa8; }
+.slot-pos      { background: var(--ink-4); color: var(--ink) !important; }
+.slot-other    { background: var(--ink-2); }
+/* v2: caller-supplied extra_slots override (negation, relative tense, post-final, etc.) */
+.slot-override { background: #5a5a5a; border: 2px dashed rgba(255,255,255,0.35); }
+
+/* Hypothesis tabs */
+.hyp-tabs {
+  display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.hyp-tab {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: 1px solid var(--cream-line);
+  background: white;
+  color: var(--ink-3);
+  transition: all 0.12s;
+}
+.hyp-tab.active {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+.conf-bar {
+  height: 3px;
+  background: var(--teal);
+  border-radius: 99px;
+  margin-top: 3px;
+  transition: width 0.3s;
+}
+
+/* UD Features table */
+.ud-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 12px;
+}
+.ud-table th {
+  text-align: left;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--cream-line);
+}
+.ud-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--paper-2);
+  font-family: var(--font-mono);
+}
+.ud-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+.ud-tense  { background: #fde8d0; color: #6b3a1f; }
+.ud-aspect { background: #d0ede8; color: #1a4a48; }
+.ud-mood   { background: #e8d8f5; color: #4a2280; }
+.ud-voice  { background: #d5e8d4; color: #2a5530; }
+.ud-nc     { background: #f5e0d0; color: #7b3520; }
+.ud-num    { background: #e0e8f5; color: #1a3a6a; }
+.ud-person { background: #faf0c0; color: #6b5510; }
+.ud-neg    { background: #fde0e0; color: #8a1010; }
+
+/* ═══════════════════════════════════════════════
+   PARADIGM TABLE
+═══════════════════════════════════════════════ */
+.paradigm-wrap {
+  overflow-x: auto;
+  margin-top: 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--cream-line);
+}
+table.paradigm {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 12px;
+}
+table.paradigm th {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8px 12px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-right: 1px solid #333;
+  position: sticky;
+  top: 0;
+}
+table.paradigm th.tam-header {
+  background: var(--teal-dk);
+  font-size: 10px;
+  text-align: center;
+}
+table.paradigm td {
+  padding: 7px 12px;
+  border-right: 1px solid var(--paper-2);
+  border-bottom: 1px solid var(--paper-2);
+  vertical-align: middle;
+}
+table.paradigm td.row-key {
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  font-weight: 500;
+  white-space: nowrap;
+  position: sticky;
+  left: 0;
+  min-width: 80px;
+}
+.para-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.para-surface {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 13px;
+}
+.para-seg {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-3);
+}
+table.paradigm tr:nth-child(even) td { background: #fdf9f5; }
+table.paradigm tr:nth-child(even) td.row-key { background: var(--paper-3); }
+table.paradigm tr:hover td { background: #f0e8de; }
+table.paradigm tr:hover td.row-key { background: var(--paper-3); }
+
+/* ═══════════════════════════════════════════════
+   CONCORD MATRIX
+═══════════════════════════════════════════════ */
+table.concord-matrix {
+  border-collapse: collapse;
+  font-size: 12px;
+  width: 100%;
+}
+table.concord-matrix th {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  border-right: 1px solid #333;
+}
+table.concord-matrix th.nc-header { background: var(--terra-dk); text-align: left; }
+table.concord-matrix td {
+  padding: 6px 10px;
+  border-right: 1px solid var(--paper-2);
+  border-bottom: 1px solid var(--paper-2);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+table.concord-matrix td.nc-id {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  white-space: nowrap;
+}
+table.concord-matrix .form-present { color: var(--ink); }
+table.concord-matrix .form-absent { color: var(--ink-4); font-style: italic; }
+table.concord-matrix .form-fallback { color: var(--gold); }
+table.concord-matrix tr:nth-child(even) td { background: #fdf9f5; }
+table.concord-matrix tr:nth-child(even) td.nc-id { background: var(--paper-3); }
+
+/* ═══════════════════════════════════════════════
+   QUIZ (StudentView)
+═══════════════════════════════════════════════ */
+.quiz-card {
+  background: white;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 560px;
+}
+.quiz-progress {
+  height: 4px;
+  background: var(--paper-2);
+  border-radius: 99px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.quiz-progress-bar {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 99px;
+  transition: width 0.3s;
+}
+.quiz-question {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.quiz-prompt {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--teal);
+  margin-bottom: 22px;
+  padding: 8px 12px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--teal);
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: white;
+  text-align: left;
+}
+.quiz-option:hover { border-color: var(--teal); background: var(--paper); }
+.quiz-option.correct { border-color: var(--teal); background: #edf7f6; }
+.quiz-option.wrong { border-color: var(--terracotta); background: #fdf0ec; }
+.quiz-option.disabled { pointer-events: none; opacity: 0.7; }
+.option-letter {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--paper-2);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  transition: all 0.15s;
+}
+.quiz-option.correct .option-letter { background: var(--teal); color: white; }
+.quiz-option.wrong .option-letter { background: var(--terracotta); color: white; }
+.option-text {
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct { background: #edf7f6; color: var(--teal-dk); border-left: 3px solid var(--teal); }
+.quiz-feedback.wrong { background: #fdf0ec; color: var(--terra-dk); border-left: 3px solid var(--terracotta); }
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.quiz-counter { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); }
+.quiz-score { font-size: 11px; font-family: var(--font-mono); }
+.score-good { color: var(--teal); }
+.score-bad { color: var(--terracotta); }
+
+/* ═══════════════════════════════════════════════
+   CONLL-U OUTPUT
+═══════════════════════════════════════════════ */
+.conllu-out {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.8;
+  background: var(--ink);
+  color: #cdc4b8;
+  padding: 16px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  white-space: pre;
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.conllu-comment { color: #6b8c5a; }
+.conllu-id      { color: var(--ink-4); }
+.conllu-form    { color: #d4b060; }
+.conllu-upos    { color: #84b8d4; }
+.conllu-feats   { color: #c48cb8; }
+
+/* ═══════════════════════════════════════════════
+   DIFF / COMPARE
+═══════════════════════════════════════════════ */
+.diff-row {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--paper-2);
+  font-size: 12px;
+}
+.diff-row:last-child { border-bottom: none; }
+.diff-cell {
+  flex: 1;
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+}
+.diff-key {
+  font-weight: 500;
+  color: var(--ink-2);
+  width: 140px;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.diff-same  { color: var(--ink-3); }
+.diff-added   { background: #edf7f6; color: var(--teal-dk); }
+.diff-removed { background: #fdf0ec; color: var(--terra-dk); }
+.diff-changed { background: #fdf8e8; color: #7a5a10; }
+
+/* ═══════════════════════════════════════════════
+   EMPTY / LOADING STATES
+═══════════════════════════════════════════════ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--ink-4);
+}
+.empty-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+.empty-title { font-size: 14px; font-weight: 500; color: var(--ink-3); }
+.empty-hint { font-size: 12px; margin-top: 4px; }
+
+.loading {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--ink-3); padding: 12px 0;
+}
+.loading-dots span {
+  display: inline-block; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--terracotta);
+  animation: dot 1.2s ease-in-out infinite;
+  margin: 0 1px;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+/* ═══════════════════════════════════════════════
+   STAT CARDS (teacher dashboard)
+═══════════════════════════════════════════════ */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: white;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ink);
+}
+.stat-label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-sub { font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); }
+
+/* ═══════════════════════════════════════════════
+   EXPORT TOOLBAR
+═══════════════════════════════════════════════ */
+.export-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.export-bar .divider { width: 1px; height: 20px; background: var(--cream-line); }
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--paper-3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-4); }
+
+/* ═══════════════════════════════════════════════
+   PILLS / BADGES
+═══════════════════════════════════════════════ */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 7px; border-radius: 99px;
+  font-size: 10px; font-family: var(--font-mono);
+  font-weight: 500; white-space: nowrap;
+}
+.badge-terra  { background: #fae0d8; color: var(--terra-dk); }
+.badge-teal   { background: #d8eeec; color: var(--teal-dk); }
+.badge-gold   { background: #f5ecd0; color: #6b5010; }
+.badge-ink    { background: var(--paper-2); color: var(--ink-2); }
+
+/* ═══════════════════════════════════════════════
+   SECTION DIVIDER
+═══════════════════════════════════════════════ */
+.section-gap { margin-top: 24px; }
+.sep {
+  border: none;
+  border-top: 1px solid var(--cream-line);
+  margin: 20px 0;
+}
+
+/* ═══════════════════════════════════════════════
+   TOOLTIP
+═══════════════════════════════════════════════ */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 99;
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* ═══════════════════════════════════════════════
+   STUDENT — VOCABULARY CARD
+═══════════════════════════════════════════════ */
+.vocab-card {
+  background: white;
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.vocab-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+.vocab-front, .vocab-back {
+  padding: 20px;
+}
+.vocab-tonga {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--terracotta);
+  margin-bottom: 4px;
+}
+.vocab-nc { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); margin-bottom: 8px; }
+.vocab-gloss { font-size: 13px; color: var(--ink-2); }
+
+/* ═══════════════════════════════════════════════
+   TEACHER — VERIFY FLAGS
+═══════════════════════════════════════════════ */
+.flag-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--paper-2);
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  font-size: 12px;
+}
+.flag-path { font-family: var(--font-mono); color: var(--terracotta); font-size: 11px; }
+.flag-note { color: var(--ink-2); line-height: 1.5; }
+.flag-src  { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); white-space: nowrap; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE HIDING FOR NARROW CONTENT
+═══════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .stat-row { grid-template-columns: 1fr 1fr; }
+  .two-col  { grid-template-columns: 1fr; }
+  .three-col{ grid-template-columns: 1fr 1fr; }
+}
+
+/* ═══════════════════════════════════════════════
+   v2: PHONOLOGY PROVENANCE (underlying form + rule trace)
+═══════════════════════════════════════════════ */
+.phon-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  border-top: 1px dashed var(--cream-line);
+  padding-top: 8px;
+}
+.phon-label {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 9px;
+  color: var(--ink-4);
+  flex-shrink: 0;
+  width: 72px;
+}
+.phon-value {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.phon-rules-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: var(--teal-dk);
+  color: white;
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+/* Paradigm cell: underlying form line (v2) */
+.para-underlying {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--teal-dk);
+  opacity: 0.8;
+}
+
+/* CoNLL-U MISC column highlighted differently when it carries PhonRules */
+.conllu-misc    { color: #94c4a8; }
+.conllu-phon    { color: var(--teal-lt); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.view.active > * { animation: fadeUp 0.25s ease both; }
+.view.active > *:nth-child(2) { animation-delay: 0.04s; }
+.view.active > *:nth-child(3) { animation-delay: 0.08s; }
+.view.active > *:nth-child(4) { animation-delay: 0.12s; }
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header>
+  <a class="header-brand" href="#">
+    <div class="brand-mark">G</div>
+    <div>
+      <div class="brand-name">Gobelo</div>
+      <div class="brand-sub">Grammar Toolkit</div>
+    </div>
+  </a>
+
+  <div class="role-switcher">
+    <span style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px;">View as</span>
+    <button class="role-btn" id="btn-teacher" onclick="setRole('teacher')">Teacher</button>
+    <div class="role-divider"></div>
+    <button class="role-btn" id="btn-student" onclick="setRole('student')">Student</button>
+  </div>
+
+  <div class="lang-select-wrap">
+    <div class="status-pip"></div>
+    <span class="lang-label">Language</span>
+    <select class="lang-select" id="global-lang" onchange="onLangChange()">
+      <option value="chitonga">chiTonga (toi)</option>
+      <option value="chibemba">chiBemba (bem)</option>
+      <option value="chinyanja">chiNyanja (nya)</option>
+      <option value="silozi">siLozi (loz)</option>
+      <option value="luvale">Luvale (lue)</option>
+      <option value="lunda">Lunda (lun)</option>
+      <option value="kaonde">Kaonde (kqn)</option>
+    </select>
+  </div>
+</header>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<nav class="sidebar" id="sidebar">
+  <!-- Teacher nav — shown when role=teacher -->
+  <div id="nav-teacher">
+    <div class="nav-section-label">Grammar</div>
+    <div class="nav-item active" onclick="showView('t-info')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+      Grammar Info
+    </div>
+    <div class="nav-item" onclick="showView('t-paradigm')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/><path d="M2 6h12M6 2v12"/></svg>
+      Verb Paradigms
+    </div>
+    <div class="nav-item" onclick="showView('t-concords')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+      Concord Matrix
+    </div>
+
+    <div class="nav-section-label">Analysis</div>
+    <div class="nav-item" onclick="showView('t-analyze')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="m11 11 3 3"/></svg>
+      Morpheme Analysis
+    </div>
+    <div class="nav-item" onclick="showView('t-corpus')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="10" height="12" rx="1"/><path d="M5 6h6M5 9h6M5 12h3"/></svg>
+      Corpus Annotator
+    </div>
+
+    <div class="nav-section-label">Tools</div>
+    <div class="nav-item" onclick="showView('t-compare')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h4M9 8h4M8 3v4M8 9v4"/></svg>
+      Language Compare
+    </div>
+    <div class="nav-item" onclick="showView('t-verify')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 7l2 2 4-4"/><rect x="2" y="2" width="12" height="12" rx="2"/></svg>
+      Verify Flags
+    </div>
+  </div>
+
+  <!-- Student nav — shown when role=student -->
+  <div id="nav-student" style="display:none;">
+    <div class="nav-section-label">Learn</div>
+    <div class="nav-item active" onclick="showView('s-analyze')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="m11 11 3 3"/></svg>
+      Analyse a Word
+    </div>
+    <div class="nav-item" onclick="showView('s-quiz')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6a2 2 0 1 1 2.5 2L8 10M8 12v1"/></svg>
+      Grammar Quiz
+    </div>
+    <div class="nav-item" onclick="showView('s-vocab')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h8v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zM4 4V2h8v2"/></svg>
+      Vocab Cards
+    </div>
+    <div class="nav-section-label">Reference</div>
+    <div class="nav-item" onclick="showView('s-noun-classes')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+      Noun Classes
+    </div>
+    <div class="nav-item" onclick="showView('s-concords')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="11" r="2"/><path d="M6 8h2M10 5.5L6.5 7.5M10 10.5L6.5 8.5"/></svg>
+      Concords Table
+    </div>
+  </div>
+
+  <!-- Grammar card at bottom of sidebar -->
+  <div style="flex:1;"></div>
+  <div class="sidebar-grammar-card" id="grammar-card">
+    <div class="sgc-lang" id="sgc-lang-name">chiTonga</div>
+    <div class="sgc-meta" id="sgc-meta">
+      ISO: toi · Guthrie: M.64<br>
+      21 classes · 8 TAM · 14 ext
+    </div>
+    <div class="sgc-pill" id="sgc-version">v1.0.0</div>
+  </div>
+</nav>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main>
+
+  <!-- ──────── TEACHER: Grammar Info ──────── -->
+  <section class="view active" id="view-t-info">
+    <div class="page-title">Grammar Overview</div>
+    <div class="page-desc">Summary statistics and metadata for the loaded grammar.</div>
+
+    <!-- All content below is populated dynamically by buildGrammarInfoView() -->
+    <div class="stat-row" id="stat-row"><!-- populated by JS --></div>
+
+    <div class="two-col" id="info-two-col"><!-- populated by JS --></div>
+
+    <div class="card section-gap" style="overflow:hidden;" id="nc-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Noun Classes</div>
+          <div class="card-subtitle" id="nc-card-sub"></div>
+        </div>
+      </div>
+      <div class="card-body" style="padding:12px 18px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;" id="nc-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── TEACHER: Verb Paradigm ──────── -->
+  <section class="view" id="view-t-paradigm">
+    <div class="page-title">Verb Paradigm Generator</div>
+    <div class="page-desc">Generate a full SM × TAM inflection table for any verb root. Export as CSV, Markdown or HTML.</div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Parameters</div>
+        <div class="export-bar">
+          <button class="btn btn-secondary btn-sm" onclick="exportParadigm('csv')">CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportParadigm('md')">Markdown</button>
+          <div class="divider"></div>
+          <button class="btn btn-teal btn-sm" onclick="generateParadigm()">Generate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="two-col" style="gap:16px;align-items:start;">
+          <div>
+            <label class="field-label">Verb root</label>
+            <div class="input-row">
+              <input type="text" id="para-root" value="lya" placeholder="e.g. lya, bona, lila">
+              <button class="btn btn-primary" onclick="generateParadigm()">Run</button>
+            </div>
+            <div style="margin-top:6px;font-size:11px;color:var(--ink-3)">Enter bare root without affixes or hyphens</div>
+          </div>
+          <div>
+            <label class="field-label">Extensions</label>
+            <div class="check-group" id="ext-checks">
+              <label class="check-pill" onclick="toggleCheck(this)">
+                <input type="checkbox" value="APPL"> APPL
+              </label>
+              <label class="check-pill" onclick="toggleCheck(this)">
+                <input type="checkbox" value="CAUS"> CAUS
+              </label>
+              <label class="check-pill" onclick="toggleCheck(this)">
+                <input type="checkbox" value="PASS"> PASS
+              </label>
+              <label class="check-pill" onclick="toggleCheck(this)">
+                <input type="checkbox" value="RECIP"> RECIP
+              </label>
+              <label class="check-pill" onclick="toggleCheck(this)">
+                <input type="checkbox" value="APPL+CAUS"> APPL+CAUS
+              </label>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <label class="field-label">Polarity</label>
+          <div class="check-group">
+            <label class="check-pill checked" onclick="toggleCheck(this)">
+              <input type="checkbox" value="affirmative" checked> Affirmative
+            </label>
+            <label class="check-pill" onclick="toggleCheck(this)">
+              <input type="checkbox" value="negative"> Negative
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="paradigm-result" style="margin-top:16px;"></div>
+  </section>
+
+  <!-- ──────── TEACHER: Concord Matrix ──────── -->
+  <section class="view" id="view-t-concords">
+    <div class="page-title">Concord Agreement Matrix</div>
+    <div class="page-desc">All concord paradigms across all noun classes — the full agreement system at a glance.</div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-body" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:0 0 auto;">
+          <label class="field-label">Noun Class</label>
+          <select class="ctrl" id="nc-select" style="width:120px;" onchange="updateConcordTable()">
+            <option value="all">All classes</option>
+            <option value="NC1">NC1</option>
+            <option value="NC2">NC2</option>
+            <option value="NC3">NC3</option>
+            <option value="NC4">NC4</option>
+            <option value="NC5">NC5</option>
+            <option value="NC6">NC6</option>
+            <option value="NC7">NC7</option>
+            <option value="NC8">NC8</option>
+            <option value="NC9">NC9</option>
+            <option value="NC10">NC10</option>
+            <option value="NC11">NC11</option>
+            <option value="NC14">NC14</option>
+            <option value="NC15">NC15</option>
+          </select>
+        </div>
+        <div style="flex:0 0 auto;">
+          <label class="field-label">Paradigm</label>
+          <select class="ctrl" id="concord-type-select" style="width:200px;" onchange="updateConcordTable()">
+            <option value="all">All paradigms</option>
+            <option value="subject_concords">Subject</option>
+            <option value="object_concords">Object</option>
+            <option value="possessive_concords">Possessive</option>
+            <option value="adjectival_concords">Adjectival</option>
+            <option value="demonstrative_concords">Demonstrative</option>
+            <option value="relative_concords">Relative</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="exportConcords('csv')">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="card" style="overflow:hidden;">
+      <div style="overflow-x:auto;">
+        <table class="concord-matrix" id="concord-table">
+          <thead id="concord-thead"></thead>
+          <tbody id="concord-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── TEACHER: Analysis ──────── -->
+  <section class="view" id="view-t-analyze">
+    <div class="page-title">Morpheme Analysis</div>
+    <div class="page-desc">Segment any Chitonga word into morpheme slots with UD feature annotation.</div>
+
+    <div class="card">
+      <div class="card-body">
+        <label class="field-label">Word to analyse</label>
+        <div class="input-row">
+          <input type="text" id="t-word-input" placeholder="e.g. balya, cilya, tabalyi, muntu…"
+                 onkeydown="if(event.key==='Enter') analyseWord('t')">
+          <button class="btn btn-primary" onclick="analyseWord('t')">Analyse</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-result" id="t-analysis-result">
+      <div class="two-col" style="gap:16px;margin-top:0;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Morpheme Segmentation</div>
+            <div class="export-bar">
+              <button class="btn-icon btn-sm" data-tip="Copy gloss" onclick="copyGloss()">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1"/><path d="M3 11V3h8"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="card-body" id="t-morph-display">
+            <div class="token-display" id="t-token-display"></div>
+            <div class="token-meta" id="t-token-meta"></div>
+            <div class="hyp-tabs" id="t-hyp-tabs"></div>
+            <div class="morpheme-ribbon" id="t-morpheme-ribbon"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">UD Features</div></div>
+          <div class="card-body" id="t-ud-display">
+            <table class="ud-table">
+              <thead><tr><th>Feature</th><th>Value</th><th>Source</th></tr></thead>
+              <tbody id="t-ud-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── TEACHER: Corpus Annotator ──────── -->
+  <section class="view" id="view-t-corpus">
+    <div class="page-title">Corpus Annotator</div>
+    <div class="page-desc">Enter plain text to produce CoNLL-U morphological annotation.</div>
+
+    <div class="two-col" style="gap:16px;align-items:start;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Input Text</div>
+          <button class="btn btn-primary btn-sm" onclick="annotateCorpus()">Annotate</button>
+        </div>
+        <div class="card-body">
+          <textarea id="corpus-input" rows="8" style="resize:vertical;font-family:var(--font-mono);font-size:13px;"
+            placeholder="Enter Chitonga sentences here…&#10;&#10;Balya muntu.&#10;Cilya cintu.&#10;Twalya muntu.">Balya muntu.
+Cilya cintu.
+Twalya bana.</textarea>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <label class="field-label" style="margin:0;align-self:center;">Options:</label>
+            <label class="check-pill" onclick="toggleCheck(this)">
+              <input type="checkbox" value="include_gloss"> Include gloss line
+            </label>
+            <label class="check-pill checked" onclick="toggleCheck(this)">
+              <input type="checkbox" value="include_feats" checked> UD FEATS column
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">CoNLL-U Output</div>
+          <div class="export-bar">
+            <button class="btn btn-secondary btn-sm" onclick="copyConllu()">Copy</button>
+            <button class="btn btn-teal btn-sm" onclick="downloadConllu()">Download .conllu</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="conllu-out" id="conllu-output">
+<span class="conllu-comment"># Annotation will appear here</span>
+<span class="conllu-comment"># Run 'Annotate' to generate CoNLL-U output</span>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--ink-3)" id="corpus-stats"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── TEACHER: Language Compare ──────── -->
+  <section class="view" id="view-t-compare">
+    <div class="page-title">Language Comparator</div>
+    <div class="page-desc">Compare morphological features across two Zambian languages side by side.</div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-body" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <label class="field-label">Language A</label>
+          <select class="ctrl" id="compare-lang-a" style="width:160px;">
+            <option value="chitonga">chiTonga</option>
+            <option value="chibemba">chiBemba</option>
+            <option value="chinyanja">chiNyanja</option>
+            <option value="silozi">siLozi</option>
+          </select>
+        </div>
+        <div style="padding-bottom:8px;color:var(--ink-3)">vs</div>
+        <div>
+          <label class="field-label">Language B</label>
+          <select class="ctrl" id="compare-lang-b" style="width:160px;">
+            <option value="chibemba">chiBemba</option>
+            <option value="chitonga">chiTonga</option>
+            <option value="chinyanja">chiNyanja</option>
+            <option value="silozi">siLozi</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Feature section</label>
+          <select class="ctrl" id="compare-feature" style="width:160px;">
+            <option value="noun_classes">Noun classes</option>
+            <option value="tam">TAM markers</option>
+            <option value="concords">Concords</option>
+            <option value="extensions">Extensions</option>
+            <option value="phonology">Phonology</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="runComparison()">Compare</button>
+      </div>
+    </div>
+
+    <div class="card" id="compare-result-card">
+      <div class="card-header">
+        <div class="card-title" id="compare-title">Feature comparison</div>
+        <div id="compare-summary"></div>
+      </div>
+      <div id="compare-body">
+        <div class="empty-state">
+          <div class="empty-icon">⟺</div>
+          <div class="empty-title">Select two languages and run comparison</div>
+          <div class="empty-hint">Differences are shown as additions (+) removals (−) and value changes (≠)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── TEACHER: Verify Flags ──────── -->
+  <section class="view" id="view-t-verify">
+    <div class="page-title">VERIFY Flags</div>
+    <div class="page-desc">Unresolved annotation flags requiring primary-source verification.</div>
+
+    <div class="card">
+      <div class="card-body" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <label class="field-label">Filter by field path</label>
+          <input type="search" id="flag-filter" placeholder="e.g. phonology, concord_systems…" oninput="filterFlags()">
+        </div>
+        <label class="check-pill" onclick="toggleCheck(this)">
+          <input type="checkbox" value="show-resolved"> Show resolved
+        </label>
+        <button class="btn btn-secondary btn-sm" onclick="exportFlags()">Export</button>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-header">
+        <div class="card-title">Flag List</div>
+        <span class="badge badge-teal" id="flag-count-badge">0 unresolved</span>
+      </div>
+      <div class="card-body" id="flag-list">
+        <div class="empty-state">
+          <div class="empty-icon">✓</div>
+          <div class="empty-title">No unresolved VERIFY flags</div>
+          <div class="empty-hint">The loaded chiTonga grammar is fully verified.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── STUDENT: Analyse a Word ──────── -->
+  <section class="view" id="view-s-analyze">
+    <div class="page-title">Analyse a Word</div>
+    <div class="page-desc">Type any chiTonga word to see how it is built from morpheme parts.</div>
+
+    <div class="card" style="max-width:600px;">
+      <div class="card-body">
+        <label class="field-label">Enter a word</label>
+        <div class="input-row">
+          <input type="text" id="s-word-input" placeholder="e.g. balya, cilya, muntu, twalya…"
+                 onkeydown="if(event.key==='Enter') analyseWord('s')"
+                 style="font-size:16px;padding:10px 14px;">
+          <button class="btn btn-primary" onclick="analyseWord('s')">Analyse →</button>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--ink-3)">Try:</span>
+          <button class="btn btn-secondary btn-sm" onclick="quickAnalyse('s','balya')">balya</button>
+          <button class="btn btn-secondary btn-sm" onclick="quickAnalyse('s','cilya')">cilya</button>
+          <button class="btn btn-secondary btn-sm" onclick="quickAnalyse('s','tabalyi')">tabalyi</button>
+          <button class="btn btn-secondary btn-sm" onclick="quickAnalyse('s','muntu')">muntu</button>
+          <button class="btn btn-secondary btn-sm" onclick="quickAnalyse('s','cintu')">cintu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-result" id="s-analysis-result" style="margin-top:16px;">
+      <div class="card" style="max-width:700px;">
+        <div class="card-body">
+          <div class="token-display" id="s-token-display" style="font-size:40px;"></div>
+          <div class="token-meta" id="s-token-meta"></div>
+          <div class="hyp-tabs" id="s-hyp-tabs"></div>
+          <div class="morpheme-ribbon" id="s-morpheme-ribbon" style="margin-bottom:20px;"></div>
+
+          <hr class="sep">
+
+          <div id="s-explanation" style="font-size:14px;color:var(--ink-2);line-height:1.8;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── STUDENT: Grammar Quiz ──────── -->
+  <section class="view" id="view-s-quiz">
+    <div class="page-title">Grammar Quiz</div>
+    <div class="page-desc">Test your knowledge of chiTonga noun classes and verb morphology.</div>
+
+    <div class="quiz-card" id="quiz-container">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar" id="quiz-progress-bar" style="width:10%"></div>
+      </div>
+      <div class="quiz-question" id="quiz-question">Loading question…</div>
+      <div class="quiz-prompt" id="quiz-prompt"></div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="quiz-nav">
+        <div>
+          <div class="quiz-counter" id="quiz-counter">Question 1 of 10</div>
+          <div class="quiz-score" id="quiz-score"></div>
+        </div>
+        <button class="btn btn-primary" id="quiz-next" onclick="nextQuestion()" style="display:none;">Next →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── STUDENT: Vocab Cards ──────── -->
+  <section class="view" id="view-s-vocab">
+    <div class="page-title">Vocabulary Cards</div>
+    <div class="page-desc">Core chiTonga vocabulary organised by noun class.</div>
+
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+      <select class="ctrl" id="vocab-nc-filter" style="width:130px;" onchange="renderVocab()">
+        <option value="all">All classes</option>
+        <option value="NC1">NC1 – humans sg</option>
+        <option value="NC2">NC2 – humans pl</option>
+        <option value="NC7">NC7 – things sg</option>
+        <option value="NC8">NC8 – things pl</option>
+        <option value="NC14">NC14 – abstract</option>
+        <option value="NC15">NC15 – infinitives</option>
+      </select>
+      <input type="search" id="vocab-search" placeholder="Search…" style="width:200px;" oninput="renderVocab()">
+      <span class="badge badge-ink" id="vocab-count">12 words</span>
+    </div>
+
+    <div id="vocab-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
+    </div>
+  </section>
+
+  <!-- ──────── STUDENT: Noun Classes ──────── -->
+  <section class="view" id="view-s-noun-classes">
+    <div class="page-title">Noun Classes</div>
+    <div class="page-desc">chiTonga has 18 noun classes. Every noun belongs to one class — and that class controls the agreement on verbs, adjectives and other words in the sentence.</div>
+
+    <div class="card" style="overflow:hidden;">
+      <div style="overflow-x:auto;">
+        <table class="concord-matrix" id="nc-ref-table">
+          <thead>
+            <tr>
+              <th class="nc-header">Class</th>
+              <th>Prefix</th>
+              <th>Allomorphs</th>
+              <th>Domain</th>
+              <th>Pair</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody id="nc-ref-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────── STUDENT: Concords ──────── -->
+  <section class="view" id="view-s-concords">
+    <div class="page-title">Agreement (Concords)</div>
+    <div class="page-desc">When a noun is the subject of a verb, the verb prefix must <em>agree</em> with the noun class. These prefixes are called concords. Select a class to see all its concord forms.</div>
+
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;">
+      <div>
+        <label class="field-label">Noun class</label>
+        <select class="ctrl" id="s-nc-select" style="width:120px;" onchange="updateStudentConcords()">
+          <option value="NC1">NC1</option>
+          <option value="NC2">NC2</option>
+          <option value="NC3">NC3</option>
+          <option value="NC4">NC4</option>
+          <option value="NC5">NC5</option>
+          <option value="NC6">NC6</option>
+          <option value="NC7" selected>NC7</option>
+          <option value="NC8">NC8</option>
+          <option value="NC9">NC9</option>
+          <option value="NC10">NC10</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="student-concords-display"></div>
+  </section>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// GRAMMAR DATA  — mirrors what the GGT loader returns
+// In production: replace these objects with fetch() calls
+// to the FastAPI backend (web/backend/routes/)
+// ═══════════════════════════════════════════════
+
+const GRAMMAR = {
+  chitonga: {
+    meta: { language:'chitonga', iso_code:'toi', guthrie:'M.64', grammar_version:'1.0.0', min_loader:'1.0.0', max_loader:'999.0.0', verify_count:0 },
+    noun_classes: [
+      {id:'NC1',  prefix:'mu-',  allomorphs:['mw-'],     domain:'human_beings',       active:true, plural:'NC2',  example:'muntu (person)'},
+      {id:'NC1a', prefix:'Ø-',   allomorphs:[],           domain:'kinship/names',       active:true, plural:'NC2a', example:'sisi (sister)'},
+      {id:'NC2',  prefix:'ba-',  allomorphs:['b-'],       domain:'human_beings',        active:true, sg:'NC1',     example:'bantu (people)'},
+      {id:'NC2a', prefix:'ba-',  allomorphs:['b-'],       domain:'kinship pl',          active:true, sg:'NC1a',    example:'basisi (sisters)'},
+      {id:'NC2b', prefix:'ba-',  allomorphs:[],           domain:'honorific',           active:true, sg:'NC1',     example:'baSikalusi'},
+      {id:'NC3',  prefix:'mu-',  allomorphs:['mw-'],      domain:'trees/plants sg',     active:true, plural:'NC4', example:'musamu (tree)'},
+      {id:'NC4',  prefix:'mi-',  allomorphs:['my-'],      domain:'trees/plants pl',     active:true, sg:'NC3',     example:'misamu (trees)'},
+      {id:'NC5',  prefix:'li-',  allomorphs:['ly-','Ø-'], domain:'augmentative sg',     active:true, plural:'NC6', example:'liinwe (finger)'},
+      {id:'NC6',  prefix:'ma-',  allomorphs:['m-'],       domain:'liquids/masses pl',   active:true, sg:'NC5',     example:'maanwe (fingers)'},
+      {id:'NC7',  prefix:'ci-',  allomorphs:['chi-','c-'],'domain':'things sg',          active:true, plural:'NC8', example:'cintu (thing)'},
+      {id:'NC8',  prefix:'zi-',  allomorphs:['zy-','z-'], domain:'things pl',           active:true, sg:'NC7',     example:'zintu (things)'},
+      {id:'NC9',  prefix:'N-',   allomorphs:['n-','m-','ng-','ny-','Ø-'], domain:'animals/loanwords sg', active:true, plural:'NC10', example:'nkuku (chicken)'},
+      {id:'NC10', prefix:'zi-',  allomorphs:['zy-','n-'], domain:'animals/loanwords pl',active:true, sg:'NC9',     example:'zikuku (chickens)'},
+      {id:'NC11', prefix:'lu-',  allomorphs:['lw-'],      domain:'long objects sg',     active:true, plural:'NC10',example:'luseke (reed)'},
+      {id:'NC12', prefix:'ka-',  allomorphs:['k-'],       domain:'diminutive sg',       active:true, plural:'NC13',example:'kayuni (little bird)'},
+      {id:'NC13', prefix:'tu-',  allomorphs:['tw-'],      domain:'diminutive pl',       active:true, sg:'NC12',    example:'tuyuni (little birds)'},
+      {id:'NC14', prefix:'bu-',  allomorphs:['bw-'],      domain:'abstract/mass',       active:true, plural:null,  example:'bulelo (rulership)'},
+      {id:'NC15', prefix:'ku-',  allomorphs:['kw-'],      domain:'infinitives',         active:true, plural:null,  example:'kulya (to eat)'},
+      {id:'NC16', prefix:'a-',   allomorphs:['aa-'],      domain:'locative definite',   active:true, plural:null,  example:'amunzi (at the village)'},
+      {id:'NC17', prefix:'ku-',  allomorphs:['kw-'],      domain:'locative general',    active:true, plural:null,  example:'kumunzi (to/from village)'},
+      {id:'NC18', prefix:'mu-',  allomorphs:['mw-'],      domain:'locative interior',   active:true, plural:null,  example:'mumunzi (inside village)'},
+    ],
+    tam: [
+      {id:'TAM_PRES',    short:'PRES',    form:'a',    tense:'present',        aspect:'imperfective', mood:'indicative', label:'Present'},
+      {id:'TAM_PST',     short:'PST',     form:'aka',  tense:'immediate_past', aspect:'perfective',   mood:'indicative', label:'Past'},
+      {id:'TAM_REC_PST', short:'REC.PST', form:'ali',  tense:'immediate_past', aspect:'perfective',   mood:'indicative', label:'Recent past'},
+      {id:'TAM_REM_PST', short:'REM.PST', form:'aka',  tense:'remote_past',    aspect:'perfective',   mood:'indicative', label:'Remote past'},
+      {id:'TAM_FUT_NEAR',short:'FUT.N',   form:'yo',   tense:'immediate_future',aspect:'none',        mood:'indicative', label:'Near future'},
+      {id:'TAM_FUT_REM', short:'FUT.R',   form:'za',   tense:'remote_future',  aspect:'none',         mood:'indicative', label:'Remote future'},
+      {id:'TAM_HAB',     short:'HAB',     form:'la',   tense:'present',        aspect:'habitual',     mood:'indicative', label:'Habitual'},
+      {id:'TAM_PERF',    short:'PERF',    form:'a+ide',tense:'present',        aspect:'perfective',   mood:'indicative', label:'Perfect'},
+    ],
+    subject_concords: {
+      '1SG':'ndi', '2SG':'u', '3SG':'u',
+      '1PL_EXCL':'tu', '1PL_INCL':'tw', '2PL':'mu',
+      'NC1':'u', 'NC1a':'u', 'NC2':'ba', 'NC2a':'ba', 'NC2b':'ba',
+      'NC3':'u', 'NC4':'i', 'NC5':'li', 'NC6':'a', 'NC7':'ci',
+      'NC8':'zi', 'NC9':'i', 'NC10':'zi', 'NC11':'lu', 'NC12':'ka',
+      'NC13':'tu', 'NC14':'bu', 'NC15':'ku', 'NC16':'a', 'NC17':'ku', 'NC18':'mu'
+    },
+    object_concords: {
+      '1SG':'ndi', '2SG':'ku', '1PL':'tu', '2PL':'mu',
+      'NC1':'mu', 'NC2':'ba', 'NC3':'u', 'NC4':'i', 'NC5':'li',
+      'NC6':'a', 'NC7':'ci', 'NC8':'zi', 'NC9':'i', 'NC10':'zi',
+      'NC11':'lu', 'NC12':'ka', 'NC13':'tu', 'NC14':'bu', 'NC15':'ku'
+    },
+    possessive_concords: {
+      'NC1':'wa', 'NC2':'ba', 'NC3':'wa', 'NC4':'ya', 'NC5':'lya',
+      'NC6':'a', 'NC7':'ca', 'NC8':'zya', 'NC9':'ya', 'NC10':'zya',
+      'NC11':'lwa', 'NC12':'ka', 'NC13':'twa', 'NC14':'bwa', 'NC15':'kwa'
+    },
+    adjectival_concords: {
+      'NC1':'u', 'NC2':'ba', 'NC3':'u', 'NC4':'i', 'NC5':'li',
+      'NC6':'a', 'NC7':'ci', 'NC8':'zi', 'NC9':'i', 'NC10':'zi',
+      'NC11':'lu', 'NC12':'ka', 'NC13':'tu', 'NC14':'bu', 'NC15':'ku'
+    },
+    extensions: ['APPL','CAUS','TRANS','CONT','RECIP','STAT','PASS','INTENS','REDUP','PERF_EXT','REV','REPET','FREQ','POS'],
+  },
+  chibemba: {
+    meta: { language:'chibemba', iso_code:'bem', guthrie:'M.42', grammar_version:'1.0.0', min_loader:'1.0.0', max_loader:'999.0.0', verify_count:0 },
+    noun_classes: [
+      {id:'NC1',prefix:'u-', allomorphs:['w-'],  domain:'human_beings sg',   active:true, plural:'NC2', example:'umuntu (person)'},
+      {id:'NC2',prefix:'ba-',allomorphs:['b-'],  domain:'human_beings pl',   active:true, sg:'NC1',     example:'abantu (people)'},
+      {id:'NC7',prefix:'ici-',allomorphs:['ci-'],'domain':'things sg',         active:true, plural:'NC8', example:'icintu (thing)'},
+      {id:'NC8',prefix:'ifi-',allomorphs:['fi-'],'domain':'things pl',         active:true, sg:'NC7',     example:'ifintu (things)'},
+    ],
+    tam: [
+      {id:'TAM_PRES',  short:'PRES', form:'a',   tense:'present',      aspect:'imperfective',mood:'indicative',label:'Present'},
+      {id:'TAM_PST',   short:'PST',  form:'alile',tense:'past',         aspect:'perfective',  mood:'indicative',label:'Past'},
+      {id:'TAM_FUT',   short:'FUT',  form:'ka',  tense:'future',       aspect:'none',        mood:'indicative',label:'Future'},
+    ],
+    subject_concords: {
+      '1SG':'ndi', '2SG':'u', 'NC1':'a', 'NC2':'ba', 'NC7':'ci', 'NC8':'fi'
+    },
+    extensions: ['APPL','CAUS','PASS','RECIP','STAT'],
+  }
+};
+
+// The SC keys we show in paradigm tables (filtered to main paradigm)
+const PARADIGM_SC_KEYS = ['1SG','2SG','NC1','NC2','NC3','NC4','NC5','NC6','NC7','NC8','NC9','NC10','NC11','NC14','NC15'];
+const SLOT_COLORS = {
+  neg:'slot-neg', pre:'slot-other', sm:'slot-sm', tam:'slot-tam',
+  modal:'slot-other', om:'slot-om', root:'slot-root', ext:'slot-ext',
+  fv:'slot-fv', nc:'slot-nc', pos:'slot-pos', other:'slot-other',
+  override:'slot-override'   // v2: extra_slots caller-supplied fills
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentRole = 'teacher';
+let currentLang = 'chitonga';
+let currentView = 't-info';
+let quizState = { questions:[], idx:0, score:0, answered:false };
+
+// ═══════════════════════════════════════════════
+// ROLE + NAV
+// ═══════════════════════════════════════════════
+function setRole(role) {
+  currentRole = role;
+  document.getElementById('btn-teacher').classList.toggle('active', role==='teacher');
+  document.getElementById('btn-student').classList.toggle('active', role==='student');
+  document.getElementById('nav-teacher').style.display = role==='teacher' ? 'block' : 'none';
+  document.getElementById('nav-student').style.display = role==='student' ? 'block' : 'none';
+  showView(role==='teacher' ? 't-info' : 's-analyze');
+}
+
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewId)?.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(viewId)) n.classList.add('active');
+  });
+  currentView = viewId;
+
+  // Lazy-init specific views
+  if (viewId === 't-concords') buildConcordMatrix();
+  if (viewId === 't-info') buildGrammarInfoView();
+  if (viewId === 's-noun-classes') buildNcRefTable();
+  if (viewId === 's-concords') updateStudentConcords();
+  if (viewId === 's-quiz' && quizState.questions.length===0) initQuiz();
+  if (viewId === 's-vocab') renderVocab();
+}
+
+function onLangChange() {
+  currentLang = document.getElementById('global-lang').value;
+  updateSidebarCard();
+  // Refresh active view if it uses grammar data
+  if (currentView === 't-info') buildGrammarInfoView();
+  if (currentView === 't-concords') buildConcordMatrix();
+  if (currentView === 's-noun-classes') buildNcRefTable();
+  if (currentView === 's-concords') updateStudentConcords();
+}
+
+function updateSidebarCard() {
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  const m = g.meta;
+  const nc = g.noun_classes?.length || '–';
+  const tam = g.tam?.length || '–';
+  const ext = g.extensions?.length || '–';
+  const nameMap = {chitonga:'chiTonga',chibemba:'chiBemba',chinyanja:'chiNyanja',silozi:'siLozi',luvale:'Luvale',lunda:'Lunda',kaonde:'Kaonde'};
+  document.getElementById('sgc-lang-name').textContent = nameMap[currentLang] || currentLang;
+  document.getElementById('sgc-meta').innerHTML = `ISO: ${m.iso_code} · Guthrie: ${m.guthrie}<br>${nc} classes · ${tam} TAM · ${ext} ext`;
+  document.getElementById('sgc-version').textContent = 'v' + m.grammar_version;
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+}
+
+// ═══════════════════════════════════════════════
+// GRAMMAR INFO VIEW  — fully dynamic, language-aware
+// ═══════════════════════════════════════════════
+function buildGrammarInfoView() {
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  const m = g.meta || {};
+  const nameMap = {chitonga:'chiTonga',chibemba:'chiBemba',chinyanja:'chiNyanja',silozi:'siLozi',luvale:'Luvale',lunda:'Lunda',kaonde:'Kaonde'};
+  const displayName = nameMap[currentLang] || currentLang;
+
+  // ── Stat row ────────────────────────────────
+  const ncCount  = (g.noun_classes||[]).length;
+  const ncActive = (g.noun_classes||[]).filter(n=>n.active!==false).length;
+  const tamCount = (g.tam||[]).length;
+  const extCount = (g.extensions||[]).length;
+  const concordTypes = Object.keys(g).filter(k => k.endsWith('_concords') && g[k]).length;
+
+  document.getElementById('stat-row').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${ncCount}</div>
+      <div class="stat-label">Noun Classes</div>
+      <div class="stat-sub">${ncActive} active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${tamCount}</div>
+      <div class="stat-label">TAM Markers</div>
+      <div class="stat-sub">tense · aspect · mood</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${concordTypes || '–'}</div>
+      <div class="stat-label">Concord Types</div>
+      <div class="stat-sub">subj · obj · poss · dem…</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${extCount}</div>
+      <div class="stat-label">Verb Extensions</div>
+      <div class="stat-sub">Z1–Z4 zones</div>
+    </div>`;
+
+  // ── Meta table + TAM list (two-col) ─────────
+  const verifyBadge = (m.verify_count === 0 || m.verify_count == null)
+    ? `<span class="badge badge-teal">0 unresolved</span>`
+    : `<span class="badge badge-terra">${m.verify_count} unresolved</span>`;
+
+  const metaHtml = `
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Metadata</div>
+          <div class="card-subtitle">Grammar file identity</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="ud-table" id="meta-table"><tbody>
+          <tr>
+            <td style="color:var(--ink-3);font-size:11px;font-family:var(--font-mono);width:130px">language</td>
+            <td><span class="badge badge-terra">${currentLang}</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--ink-3);font-size:11px;font-family:var(--font-mono)">iso_code</td>
+            <td style="font-family:var(--font-mono);font-size:12px">${m.iso_code||'–'}</td>
+          </tr>
+          <tr>
+            <td style="color:var(--ink-3);font-size:11px;font-family:var(--font-mono)">guthrie</td>
+            <td style="font-family:var(--font-mono);font-size:12px">${m.guthrie||'–'}</td>
+          </tr>
+          <tr>
+            <td style="color:var(--ink-3);font-size:11px;font-family:var(--font-mono)">grammar_version</td>
+            <td style="font-family:var(--font-mono);font-size:12px">${m.grammar_version||'–'}</td>
+          </tr>
+          <tr>
+            <td style="color:var(--ink-3);font-size:11px;font-family:var(--font-mono)">loader_range</td>
+            <td style="font-family:var(--font-mono);font-size:12px">${m.min_loader||'1.0.0'} – ${m.max_loader||'999.0.0'}</td>
+          </tr>
+          <tr>
+            <td style="color:var(--ink-3);font-size:11px;font-family:var(--font-mono)">verify_flags</td>
+            <td>${verifyBadge}</td>
+          </tr>
+        </tbody></table>
+      </div>
+    </div>`;
+
+  // TAM badge colours by tense
+  const tamBadgeCls = tam => {
+    if (!tam.tense || tam.tense === 'none') return 'badge-ink';
+    if (tam.tense.includes('future')) return 'badge-teal';
+    if (tam.tense.includes('past'))   return 'badge-gold';
+    return 'badge-terra';
+  };
+
+  // Flag forms shared across TAM entries (e.g. PST and REM_PST both "aka")
+  const tamForms = (g.tam||[]).map(t => t.form);
+  const formCounts = {};
+  tamForms.forEach(f => { formCounts[f] = (formCounts[f]||0) + 1; });
+
+  const tamItems = (g.tam||[]).map(t => {
+    const shared = formCounts[t.form] > 1 ? ' ‡' : '';
+    return `<div style="display:flex;flex-direction:column;gap:2px;align-items:center">
+      <span class="badge ${tamBadgeCls(t)}" style="font-size:11px">${t.short||t.id.replace('TAM_','')}</span>
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-3)">form: ${t.form}${shared}</span>
+    </div>`;
+  }).join('');
+
+  const sharedNote = Object.values(formCounts).some(c => c > 1)
+    ? `<div style="margin-top:10px;font-size:11px;color:var(--ink-3)">‡ Some TAM markers share a surface form — tone or context disambiguates</div>`
+    : '';
+
+  const tamHtml = `
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">TAM Markers</div>
+          <div class="card-subtitle">Tense-Aspect-Mood inventory</div>
+        </div>
+      </div>
+      <div class="card-body" id="tam-list">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">${tamItems}</div>
+        ${sharedNote}
+      </div>
+    </div>`;
+
+  document.getElementById('info-two-col').innerHTML = metaHtml + tamHtml;
+
+  // ── NC card subtitle ─────────────────────────
+  const basePairs = Math.floor(ncCount / 2);
+  const ncSub = document.getElementById('nc-card-sub');
+  if (ncSub) ncSub.textContent = `Prefix inventory — ${ncCount} classes across ${basePairs} base pairs`;
+
+  // ── NC grid ──────────────────────────────────
+  const grid = document.getElementById('nc-grid');
+  if (!g.noun_classes || g.noun_classes.length === 0) {
+    grid.innerHTML = `<div style="color:var(--ink-3);font-size:12px;grid-column:1/-1">No noun class data available for ${displayName}.</div>`;
+    return;
+  }
+  const colorsArr = ['#b85c38','#2a6b69','#b89340','#7b3f5e','#4a7a4e','#3a6aaa','#7a5a20','#5a3a7a'];
+  grid.innerHTML = g.noun_classes.map((nc, i) => `
+    <div style="border:1px solid var(--cream-line);border-radius:8px;overflow:hidden;">
+      <div style="background:${colorsArr[i%colorsArr.length]};padding:8px 12px;display:flex;align-items:baseline;gap:8px;">
+        <span style="font-family:var(--font-display);font-weight:900;color:white;font-size:16px">${nc.id}</span>
+        <span style="font-family:var(--font-mono);color:rgba(255,255,255,0.75);font-size:13px">${nc.prefix}</span>
+      </div>
+      <div style="padding:8px 12px;">
+        <div style="font-size:11px;color:var(--ink-2);margin-bottom:3px;">${(nc.domain||'').replace(/_/g,' ')}</div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--ink-3);">${nc.example||''}</div>
+      </div>
+    </div>`).join('');
+}
+
+// Keep buildNcGrid as a thin alias so any remaining call sites still work
+function buildNcGrid() { buildGrammarInfoView(); }
+
+// ═══════════════════════════════════════════════
+// PARADIGM GENERATOR
+// ═══════════════════════════════════════════════
+function generateParadigm() {
+  const root = document.getElementById('para-root').value.trim() || 'lya';
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  const tams = g.tam || [];
+  const scs  = g.subject_concords || {};
+
+  const checkedExts = [...document.querySelectorAll('#ext-checks .check-pill.checked')]
+    .map(el => el.querySelector('input').value);
+  const checkedPols = [...document.querySelectorAll('.check-group .check-pill.checked')]
+    .filter(el => ['affirmative','negative'].includes(el.querySelector('input').value))
+    .map(el => el.querySelector('input').value);
+  const pols = checkedPols.length ? checkedPols : ['affirmative'];
+
+  // Build column labels
+  const cols = [];
+  for (const tam of tams) {
+    for (const pol of pols) {
+      cols.push({ tam, pol, label: tams.length>1 && pols.length>1 ? `${tam.short}/${pol==='affirmative'?'aff':'neg'}` : tam.short });
+    }
+  }
+
+  // Filter SC keys
+  const rows = PARADIGM_SC_KEYS.filter(k => k in scs);
+
+  // Generate cells: SM + TAM + root + ext suffix + FV
+  function genForm(scKey, tam, pol, exts) {
+    const neg = pol === 'negative';
+    const sm = scs[scKey] || '?';
+    const tamForm = tam.form.replace('+ide','');
+    const extStr = exts.length ? '-' + exts.join('-').toLowerCase() : '';
+    const fv = neg ? 'i' : (tam.form.includes('ide') ? 'ide' : 'a');
+    const prefix = neg ? 'ta-' + sm : sm;
+    return `${prefix}-${tamForm}-${root}${extStr}-${fv}`;
+  }
+
+  function genSeg(scKey, tam, pol, exts) {
+    const neg = pol === 'negative';
+    const sm = scs[scKey] || '?';
+    const tamForm = tam.form.replace('+ide','');
+    const extParts = exts.length ? exts.map(e=>e.toLowerCase()).join('-') + '-' : '';
+    const fv = neg ? 'i' : (tam.form.includes('ide') ? 'ide' : 'a');
+    const parts = neg ? [`ta`, sm, tamForm, root, ...exts.map(e=>e.toLowerCase()), fv]
+                      : [sm, tamForm, root, ...exts.map(e=>e.toLowerCase()), fv];
+    return parts.join('-');
+  }
+
+  const exts = checkedExts.length ? checkedExts[0].split('+') : [];
+
+  let html = `<div class="card"><div class="card-header">
+    <div><div class="card-title">Paradigm: <em>${root}</em>${exts.length?' + '+exts.join('+'):''}</div>
+    <div class="card-subtitle">${currentLang} · ${rows.length} SC × ${tams.length} TAM</div></div>
+    <div class="export-bar">
+      <span class="badge badge-ink">${rows.length * cols.length} cells</span>
+    </div>
+  </div>
+  <div class="paradigm-wrap"><table class="paradigm">
+    <thead><tr>
+      <th>SC key</th>`;
+  for (const c of cols) html += `<th class="tam-header">${c.label}</th>`;
+  html += `</tr></thead><tbody>`;
+
+  for (const scKey of rows) {
+    html += `<tr><td class="row-key">${scKey}</td>`;
+    for (const c of cols) {
+      const surface = genForm(scKey, c.tam, c.pol, exts);
+      const seg = genSeg(scKey, c.tam, c.pol, exts);
+      // v2: underlying = surface in frontend stub (backend will populate via ParadigmCell.underlying)
+      const underlyingAttr = surface.replace(/-/g,'');
+      html += `<td data-underlying="${underlyingAttr}" data-rules="0"><div class="para-cell">
+        <div class="para-surface">${surface}</div>
+        <div class="para-seg">${seg}</div>
+      </div></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table></div></div>';
+
+  document.getElementById('paradigm-result').innerHTML = html;
+}
+
+function exportParadigm(fmt) {
+  const root = document.getElementById('para-root').value.trim() || 'lya';
+  alert(`Export as ${fmt.toUpperCase()}: In the full backend, this would call\nGET /api/paradigm/${currentLang}/${root}?format=${fmt}\nand download the file.`);
+}
+
+// ═══════════════════════════════════════════════
+// CONCORD MATRIX
+// ═══════════════════════════════════════════════
+function getConcordSets() {
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  return {
+    subject_concords: g.subject_concords,
+    object_concords: g.object_concords,
+    possessive_concords: g.possessive_concords,
+    adjectival_concords: g.adjectival_concords,
+  };
+}
+
+function buildConcordMatrix() {
+  const ncFilter = document.getElementById('nc-select')?.value || 'all';
+  const typeFilter = document.getElementById('concord-type-select')?.value || 'all';
+  const sets = getConcordSets();
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+
+  const allTypes = Object.keys(sets).filter(k => sets[k]);
+  const types = typeFilter === 'all' ? allTypes : allTypes.filter(t => t === typeFilter);
+
+  const allNCs = (g.noun_classes||[]).map(nc=>nc.id);
+  const ncs = ncFilter === 'all' ? allNCs : allNCs.filter(n => n===ncFilter);
+
+  const thead = document.getElementById('concord-thead');
+  const tbody = document.getElementById('concord-tbody');
+
+  thead.innerHTML = '<tr><th class="nc-header">NC</th>' +
+    types.map(t => `<th>${t.replace(/_concords$/,'').replace(/_/g,' ')}</th>`).join('') + '</tr>';
+
+  tbody.innerHTML = ncs.map(nc => {
+    const cells = types.map(t => {
+      const form = sets[t]?.[nc];
+      const cls = form ? 'form-present' : 'form-absent';
+      return `<td class="${cls}">${form || '—'}</td>`;
+    }).join('');
+    return `<tr><td class="nc-id">${nc}</td>${cells}</tr>`;
+  }).join('');
+}
+
+function updateConcordTable() { buildConcordMatrix(); }
+function exportConcords(fmt) {
+  alert(`Export as ${fmt.toUpperCase()}: calls GET /api/concords/${currentLang}?format=${fmt}`);
+}
+
+// ═══════════════════════════════════════════════
+// MORPHEME ANALYSIS
+// ═══════════════════════════════════════════════
+
+// Simple rule-based analyser that mirrors what MorphologicalAnalyzer returns
+// In production: replace with POST /api/analyze
+function fakeMorphAnalyse(token) {
+  const t = token.toLowerCase().trim();
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  const scs = g.subject_concords || {};
+
+  // Detect negation
+  let rem = t, neg = null;
+  if (t.startsWith('ta')) { neg = 'ta'; rem = t.slice(2); }
+
+  // Detect SM
+  let sm = null, smKey = null;
+  const smPairs = Object.entries(scs).sort((a,b) => b[1].length - a[1].length);
+  for (const [key, form] of smPairs) {
+    if (rem.startsWith(form) && rem.length > form.length + 1) {
+      sm = form; smKey = key; rem = rem.slice(form.length); break;
+    }
+  }
+
+  // Detect TAM
+  let tam = null, tamObj = null;
+  for (const t2 of (g.tam||[])) {
+    const form = t2.form.replace('+ide','');
+    if (form && rem.startsWith(form) && rem.length > form.length) {
+      tam = form; tamObj = t2; rem = rem.slice(form.length); break;
+    }
+  }
+
+  // Detect FV
+  let fv = null;
+  if (rem.endsWith('ide')) { fv = 'ide'; rem = rem.slice(0,-3); }
+  else if (rem.endsWith('i') && neg) { fv = 'i'; rem = rem.slice(0,-1); }
+  else if (rem.endsWith('e')) { fv = 'e'; rem = rem.slice(0,-1); }
+  else if (rem.endsWith('a')) { fv = 'a'; rem = rem.slice(0,-1); }
+
+  // Detect NC prefix (nominal)
+  let ncPrefix = null, ncObj = null;
+  for (const nc of (g.noun_classes||[])) {
+    const pfx = nc.prefix.replace('-','');
+    if (pfx && t.startsWith(pfx) && t.length > pfx.length) {
+      ncPrefix = pfx; ncObj = nc; break;
+    }
+  }
+
+  // Colour helper — maps content_type (v2 vocabulary) to slot CSS class
+  function slotColor(contentType, slot) {
+    const map = {
+      subject_concord:'slot-sm', object_concord:'slot-om',
+      tam_marker:'slot-tam', verb_root:'slot-root',
+      verb_extension:'slot-ext', final_vowel:'slot-fv',
+      noun_prefix:'slot-nc', noun_stem:'slot-root',
+      negation_pre:'slot-neg', negation_infix:'slot-neg', negation:'slot-neg',
+      override:'slot-override',  // v2: extra_slots caller-supplied fills
+    };
+    return map[contentType] || SLOT_COLORS[slot] || 'slot-other';
+  }
+
+  const morphemes = [];
+  const isVerbal = sm !== null || (tamObj && fv);
+
+  if (isVerbal) {
+    if (neg) morphemes.push({form:'ta', slot:'SLOT1', label:'NEG', color:'slot-neg', content_type:'negation_pre'});
+    if (sm) {
+      const label = smKey ? `${smKey}.SM` : 'SM';
+      morphemes.push({form:sm, slot:'SLOT3', label, color:'slot-sm', nc_id: smKey?.startsWith('NC') ? smKey : null, content_type:'subject_concord'});
+    }
+    if (tam) morphemes.push({form:tam, slot:'SLOT5', label:tamObj?.short||'TAM', color:'slot-tam', content_type:'tam_marker'});
+    if (rem.length > 0) morphemes.push({form:rem, slot:'SLOT8', label:'ROOT', color:'slot-root', content_type:'verb_root'});
+    if (fv) morphemes.push({form:fv, slot:'SLOT10', label:'FV', color:'slot-fv', content_type:'final_vowel'});
+  } else if (ncPrefix) {
+    morphemes.push({form:ncPrefix, slot:'NC', label:`${ncObj.id}`, color:'slot-nc', nc_id: ncObj.id, content_type:'noun_prefix'});
+    const nounRoot = t.slice(ncPrefix.length);
+    if (nounRoot) morphemes.push({form:nounRoot, slot:'ROOT', label:'ROOT', color:'slot-root', content_type:'noun_stem'});
+    morphemes.push({form:'', slot:'POS', label:'N', color:'slot-pos', content_type:'unknown'});
+  } else {
+    morphemes.push({form:t, slot:'?', label:'?', color:'slot-other', content_type:'unknown'});
+  }
+
+  const udFeats = {};
+  if (tamObj) {
+    if (tamObj.tense && tamObj.tense !== 'none') udFeats.Tense = {val: tamObj.tense==='present'?'Pres':tamObj.tense.includes('past')?'Past':'Fut', cls:'ud-tense'};
+    if (tamObj.aspect && tamObj.aspect !== 'none') udFeats.Aspect = {val: tamObj.aspect==='imperfective'?'Imp':tamObj.aspect==='perfective'?'Perf':tamObj.aspect==='habitual'?'Hab':'Prog', cls:'ud-aspect'};
+    if (tamObj.mood && tamObj.mood !== 'none') udFeats.Mood = {val: tamObj.mood==='indicative'?'Ind':tamObj.mood==='subjunctive'?'Sub':'Imp', cls:'ud-mood'};
+  }
+  if (smKey) {
+    if (smKey.startsWith('NC')) udFeats.Nounclass = {val:'Bantu'+smKey.replace(/\D/g,''), cls:'ud-nc'};
+    if (smKey.includes('PL')) udFeats.Number = {val:'Plur', cls:'ud-num'};
+    else if (smKey.includes('SG')) udFeats.Number = {val:'Sing', cls:'ud-num'};
+    const p = smKey[0]; if (['1','2','3'].includes(p)) udFeats.Person = {val:p, cls:'ud-person'};
+    else udFeats.Person = {val:'3', cls:'ud-person'};
+  }
+  if (ncObj) {
+    udFeats.Nounclass = {val:'Bantu'+ncObj.id.replace(/\D/g,''), cls:'ud-nc'};
+    udFeats.Number = {val:ncObj.plural?'Sing':'', cls:'ud-num'};
+  }
+  if (neg) udFeats.Polarity = {val:'Neg', cls:'ud-neg'};
+  udFeats.Voice = {val:'Act', cls:'ud-voice'};
+
+  const conf = morphemes.filter(m=>m.form).length / (morphemes.length || 1);
+
+  return {
+    token, morphemes, udFeats,
+    confidence: conf,
+    segmented: morphemes.filter(m=>m.form).map(m=>m.form).join('-'),
+    is_verbal: isVerbal,
+    language: currentLang,
+    // v2: phonology provenance fields (empty in frontend simulation; populated by backend)
+    underlying: morphemes.filter(m=>m.form).map(m=>m.form).join(''),  // stub: surface = underlying
+    rule_trace: [],   // stub: no rules simulated in frontend
+  };
+}
+
+function buildMorphemeRibbon(morphemes, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = morphemes.filter(m=>m.form).map((m,i) => `
+    <div class="morpheme-block">
+      <div class="morph-form ${m.color}">${m.form}</div>
+      <div class="morph-label">${m.label}</div>
+    </div>
+    ${i < morphemes.filter(x=>x.form).length-1 ? '<span class="morph-sep">·</span>' : ''}
+  `).join('');
+}
+
+function buildUDTable(udFeats, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  const featureOrder = ['Tense','Aspect','Mood','Voice','Nounclass','Number','Person','Polarity'];
+  tbody.innerHTML = featureOrder.filter(f=>udFeats[f]).map(f => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3)">${f}</td>
+      <td><span class="ud-tag ${udFeats[f].cls}">${udFeats[f].val}</span></td>
+      <td style="font-size:11px;color:var(--ink-3)">mapper.map_${f.toLowerCase()}()</td>
+    </tr>
+  `).join('');
+  if (!Object.keys(udFeats).length)
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--ink-3);font-size:12px">No UD features derived</td></tr>';
+}
+
+function buildPhonProvenance(result, containerId) {
+  // Remove any previous provenance rows
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.phon-row').forEach(el => el.remove());
+
+  const underlying = result.underlying || '';
+  const surface    = (result.segmented || '').replace(/-/g, '');
+  const rules      = result.rule_trace || [];
+
+  // Only render when there is something meaningful to show
+  if (!underlying || (underlying === surface && rules.length === 0)) return;
+
+  // Underlying form row
+  if (underlying && underlying !== surface) {
+    const uRow = document.createElement('div');
+    uRow.className = 'phon-row';
+    uRow.innerHTML = `<span class="phon-label">Underlying</span>
+      <span class="phon-value" style="font-family:var(--font-mono)">${underlying}</span>`;
+    container.appendChild(uRow);
+  }
+
+  // Rule trace row
+  if (rules.length > 0) {
+    const rRow = document.createElement('div');
+    rRow.className = 'phon-row';
+    const ruleList = rules.map(r => {
+      const ruleId = r.split(':')[0];
+      return `<span class="phon-rules-badge" title="${r.replace(/"/g,'&quot;')}">${ruleId}</span>`;
+    }).join(' ');
+    rRow.innerHTML = `<span class="phon-label">Phon rules</span>
+      <span style="display:flex;gap:4px;flex-wrap:wrap;">${ruleList}</span>`;
+    container.appendChild(rRow);
+  }
+}
+
+function analyseWord(mode) {
+  const input = document.getElementById(`${mode}-word-input`);
+  const word = input.value.trim();
+  if (!word) return;
+  const result = fakeMorphAnalyse(word);
+  renderAnalysisResult(mode, result);
+}
+
+function quickAnalyse(mode, word) {
+  document.getElementById(`${mode}-word-input`).value = word;
+  analyseWord(mode);
+}
+
+function renderAnalysisResult(mode, result) {
+  const resultEl = document.getElementById(`${mode}-analysis-result`);
+  resultEl.classList.add('visible');
+
+  // Token display
+  const tdEl = document.getElementById(`${mode}-token-display`);
+  if (tdEl) tdEl.textContent = result.token;
+
+  // Meta — v2: include underlying and rule count when they differ from surface
+  const metaEl = document.getElementById(`${mode}-token-meta`);
+  if (metaEl) {
+    const t = result.is_verbal ? 'Verbal' : 'Nominal';
+    const rulesPart = result.rule_trace?.length
+      ? ` · ${result.rule_trace.length} phon rule${result.rule_trace.length !== 1 ? 's' : ''}`
+      : '';
+    metaEl.textContent = `${result.language} · ${t} · conf: ${Math.round(result.confidence*100)}%${rulesPart} · seg: ${result.segmented}`;
+  }
+
+  // Morpheme ribbon
+  buildMorphemeRibbon(result.morphemes, `${mode}-morpheme-ribbon`);
+
+  if (mode === 't') {
+    buildUDTable(result.udFeats, 't-ud-body');
+    // v2: phonology provenance rows (underlying form + rule trace)
+    buildPhonProvenance(result, 't-morph-display');
+  }
+
+  if (mode === 's') {
+    // Student-friendly explanation
+    buildStudentExplanation(result);
+  }
+}
+
+function buildStudentExplanation(result) {
+  const el = document.getElementById('s-explanation');
+  if (!el) return;
+  const parts = result.morphemes.filter(m => m.form);
+  let html = '<div style="font-size:13px;line-height:2;font-family:var(--font-body);">';
+  html += '<strong>How this word is built:</strong><br>';
+  for (const m of parts) {
+    const color = window.getComputedStyle(document.documentElement).getPropertyValue('--terracotta');
+    const explain = {
+      'ROOT':'This is the main root — the core meaning of the verb.',
+      'SM':  'This is the subject marker — it tells you who is doing the action.',
+      'TAM': 'This is the tense marker — it tells you when the action happens.',
+      'NEG': 'This is the negation prefix — it makes the verb negative.',
+      'FV':  'This is the final vowel — it closes the verb form.',
+    };
+    const slotType = m.label.split('.').pop();
+    const note = explain[slotType] || `${m.label} morpheme.`;
+    if (m.form) {
+      html += `<span class="morph-form ${m.color}" style="display:inline-block;margin:0 4px 4px 0">${m.form}</span> → <em style="color:var(--ink-2);font-size:12px">${note}</em><br>`;
+    }
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function copyGloss() {
+  const ribbon = document.getElementById('t-morpheme-ribbon');
+  const forms = [...ribbon.querySelectorAll('.morph-form')].map(e=>e.textContent).join('-');
+  navigator.clipboard?.writeText(forms).then(() => {});
+}
+
+// ═══════════════════════════════════════════════
+// CORPUS ANNOTATOR
+// ═══════════════════════════════════════════════
+function annotateCorpus() {
+  const text = document.getElementById('corpus-input').value.trim();
+  if (!text) return;
+  const sentences = text.split(/\n+/).filter(s=>s.trim());
+  let output = '';
+  let totalToks = 0;
+
+  for (let si = 0; si < sentences.length; si++) {
+    const sent = sentences[si].replace(/[.?!]$/,'').trim();
+    const tokens = sent.split(/\s+/).filter(t=>t);
+    output += `# sent_id = ${si+1}\n# text = ${sentences[si]}\n`;
+    for (let ti = 0; ti < tokens.length; ti++) {
+      const tok = tokens[ti].toLowerCase().replace(/[.?!,]/g,'');
+      const r = fakeMorphAnalyse(tok);
+      const feats = Object.entries(r.udFeats)
+        .filter(([,v])=>v.val)
+        .map(([k,v])=>`${k}=${v.val}`)
+        .sort().join('|') || '_';
+      const upos = r.is_verbal ? 'VERB' : 'NOUN';
+      output += `${ti+1}\t${tokens[ti]}\t${tok}\t${upos}\t_\t${feats}\t_\t_\t_\t_\n`;
+      totalToks++;
+    }
+    output += '\n';
+  }
+
+  const out = document.getElementById('conllu-output');
+  out.innerHTML = output.split('\n').map(line => {
+    if (line.startsWith('#')) return `<span class="conllu-comment">${line}</span>`;
+    const cols = line.split('\t');
+    if (cols.length >= 6) {
+      // Highlight MISC column (col 9, index 9) — v2 may contain Underlying= and PhonRules=
+      const miscRaw = cols[9] || '_';
+      const miscHtml = miscRaw === '_' ? '_' : miscRaw.split('|').map(pair => {
+        if (pair.startsWith('Underlying=') || pair.startsWith('PhonRules=')) {
+          return `<span class="conllu-phon">${pair}</span>`;
+        }
+        return `<span class="conllu-misc">${pair}</span>`;
+      }).join('<span style="color:var(--ink-4)">|</span>');
+      return `<span class="conllu-id">${cols[0]}</span>\t<span class="conllu-form">${cols[1]}</span>\t${cols[2]}\t<span class="conllu-upos">${cols[3]}</span>\t${cols[4]}\t<span class="conllu-feats">${cols[5]}</span>\t${cols[6]||'_'}\t${cols[7]||'_'}\t${cols[8]||'_'}\t${miscHtml}`;
+    }
+    return line;
+  }).join('\n');
+
+  document.getElementById('corpus-stats').textContent = `${sentences.length} sentence(s) · ${totalToks} tokens annotated`;
+}
+
+function copyConllu() {
+  const text = document.getElementById('conllu-output').textContent;
+  navigator.clipboard?.writeText(text);
+}
+
+function downloadConllu() {
+  const text = document.getElementById('conllu-output').textContent;
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${currentLang}_annotated.conllu`; a.click();
+}
+
+// ═══════════════════════════════════════════════
+// LANGUAGE COMPARATOR
+// ═══════════════════════════════════════════════
+function runComparison() {
+  const langA = document.getElementById('compare-lang-a').value;
+  const langB = document.getElementById('compare-lang-b').value;
+  const feature = document.getElementById('compare-feature').value;
+  const gA = GRAMMAR[langA] || GRAMMAR.chitonga;
+  const gB = GRAMMAR[langB] || GRAMMAR.chitonga;
+
+  document.getElementById('compare-title').textContent = `${feature.replace(/_/g,' ')}: ${langA} vs ${langB}`;
+
+  let rows = [];
+
+  if (feature === 'noun_classes') {
+    const idsA = new Set((gA.noun_classes||[]).map(n=>n.id));
+    const idsB = new Set((gB.noun_classes||[]).map(n=>n.id));
+    const allIds = [...new Set([...idsA,...idsB])];
+    for (const id of allIds) {
+      const ncA = (gA.noun_classes||[]).find(n=>n.id===id);
+      const ncB = (gB.noun_classes||[]).find(n=>n.id===id);
+      const inA = !!ncA, inB = !!ncB;
+      const cls = !inA ? 'diff-added' : !inB ? 'diff-removed' : (ncA.prefix!==ncB.prefix?'diff-changed':'diff-same');
+      rows.push(`<div class="diff-row">
+        <div class="diff-cell diff-key">${id}</div>
+        <div class="diff-cell ${!inA?'diff-added':'diff-same'}">${inA ? ncA.prefix : '—'}<br><span style="font-size:10px;color:var(--ink-3)">${inA ? (ncA.domain||'').replace(/_/g,' ') : 'not in '+langA}</span></div>
+        <div class="diff-cell ${!inB?'diff-removed':'diff-same'}">${inB ? ncB.prefix : '—'}<br><span style="font-size:10px;color:var(--ink-3)">${inB ? (ncB.domain||'').replace(/_/g,' ') : 'not in '+langB}</span></div>
+      </div>`);
+    }
+  } else if (feature === 'tam') {
+    const tamsA = new Map((gA.tam||[]).map(t=>[t.id,t]));
+    const tamsB = new Map((gB.tam||[]).map(t=>[t.id,t]));
+    const allIds = [...new Set([...tamsA.keys(),...tamsB.keys()])];
+    for (const id of allIds) {
+      const tA = tamsA.get(id), tB = tamsB.get(id);
+      const cls = !tA ? 'diff-added' : !tB ? 'diff-removed' : (tA.form!==tB.form?'diff-changed':'diff-same');
+      rows.push(`<div class="diff-row">
+        <div class="diff-cell diff-key">${id.replace('TAM_','')}</div>
+        <div class="diff-cell ${!tA?'diff-removed':cls}">${tA ? tA.form : '—'}</div>
+        <div class="diff-cell ${!tB?'diff-added':cls}">${tB ? tB.form : '—'}</div>
+      </div>`);
+    }
+  } else if (feature === 'extensions') {
+    const extA = new Set(gA.extensions||[]);
+    const extB = new Set(gB.extensions||[]);
+    const all = [...new Set([...extA,...extB])];
+    for (const e of all) {
+      const inA = extA.has(e), inB = extB.has(e);
+      const cls = !inA?'diff-added':!inB?'diff-removed':'diff-same';
+      rows.push(`<div class="diff-row">
+        <div class="diff-cell diff-key">${e}</div>
+        <div class="diff-cell ${!inA?'diff-removed':'diff-same'}">${inA?'✓':'—'}</div>
+        <div class="diff-cell ${!inB?'diff-added':'diff-same'}">${inB?'✓':'—'}</div>
+      </div>`);
+    }
+  } else {
+    rows.push(`<div class="diff-row"><div class="diff-cell diff-key" colspan="3" style="color:var(--ink-3);font-size:12px">Comparison for '${feature}' requires grammar data for ${langB}.</div></div>`);
+  }
+
+  const added   = rows.filter(r=>r.includes('diff-added')).length;
+  const removed = rows.filter(r=>r.includes('diff-removed')).length;
+  const changed = rows.filter(r=>r.includes('diff-changed')).length;
+
+  document.getElementById('compare-summary').innerHTML = `
+    <span class="badge badge-teal" style="margin-right:4px">${added} added</span>
+    <span class="badge badge-terra" style="margin-right:4px">${removed} removed</span>
+    <span class="badge badge-gold">${changed} changed</span>
+  `;
+
+  const body = document.getElementById('compare-body');
+  const header = `<div class="diff-row" style="background:var(--paper-2);">
+    <div class="diff-cell diff-key" style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)">Feature</div>
+    <div class="diff-cell" style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)">${langA}</div>
+    <div class="diff-cell" style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)">${langB}</div>
+  </div>`;
+  body.innerHTML = `<div style="overflow-y:auto;max-height:400px;">${header}${rows.join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// VERIFY FLAGS
+// ═══════════════════════════════════════════════
+function filterFlags() {
+  // In production: calls loader.list_verify_flags()
+  // chiTonga has 0 unresolved flags — show that
+  document.getElementById('flag-count-badge').textContent = '0 unresolved';
+}
+function exportFlags() {
+  alert('Export: calls ggt verify-flags ' + currentLang + ' --count via CLI or /api/verify-flags endpoint');
+}
+
+// ═══════════════════════════════════════════════
+// STUDENT: Noun Classes Table
+// ═══════════════════════════════════════════════
+function buildNcRefTable() {
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  const tbody = document.getElementById('nc-ref-body');
+  tbody.innerHTML = (g.noun_classes||[]).map((nc,i) => {
+    const colorsArr = ['#b85c38','#2a6b69','#b89340','#7b3f5e','#4a7a4e','#3a6aaa','#7a5a20','#5a3a7a'];
+    const c = colorsArr[i%colorsArr.length];
+    return `<tr>
+      <td class="nc-id" style="border-left:3px solid ${c}">${nc.id}</td>
+      <td style="font-family:var(--font-mono);font-weight:500">${nc.prefix}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3)">${nc.allomorphs?.join(', ')||'—'}</td>
+      <td style="font-size:12px">${(nc.domain||'').replace(/_/g,' ')}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${nc.plural || nc.sg || '—'}</td>
+      <td style="font-size:12px;color:var(--teal-dk);font-family:var(--font-mono)">${nc.example||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// STUDENT: Concords Table
+// ═══════════════════════════════════════════════
+function updateStudentConcords() {
+  const nc = document.getElementById('s-nc-select')?.value || 'NC7';
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+  const concords = {
+    'Subject concords':   g.subject_concords,
+    'Object concords':    g.object_concords,
+    'Possessive concords':g.possessive_concords,
+    'Adjectival concords':g.adjectival_concords,
+  };
+  const ncObj = (g.noun_classes||[]).find(n=>n.id===nc) || {};
+
+  let html = `<div class="card"><div class="card-header"><div class="card-title">${nc} — Agreement forms</div>
+    <div class="card-subtitle">${(ncObj.domain||'').replace(/_/g,' ')} · ${ncObj.example||''}</div></div>
+    <div class="card-body">
+    <table class="ud-table"><thead><tr><th>Paradigm</th><th>Form</th><th>Example</th></tr></thead><tbody>`;
+
+  for (const [name, set] of Object.entries(concords)) {
+    if (!set) continue;
+    const form = set[nc] || set[nc.replace(/[a-z]$/,'')] || '—';
+    const ex = form !== '—' ? `<em style="font-family:var(--font-mono);color:var(--teal)">${form}-…</em>` : '—';
+    html += `<tr><td style="color:var(--ink-2)">${name}</td>
+      <td><span class="badge badge-terra">${form}</span></td>
+      <td style="font-size:11px">${ex}</td></tr>`;
+  }
+  html += '</tbody></table></div></div>';
+  document.getElementById('student-concords-display').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// STUDENT: Vocabulary Cards
+// ═══════════════════════════════════════════════
+const VOCAB_DATA = [
+  {tonga:'muntu',   nc:'NC1', plural:'bantu',  gloss:'person',   domain:'human'},
+  {tonga:'bantu',   nc:'NC2', sg:'muntu',      gloss:'people',   domain:'human'},
+  {tonga:'cintu',   nc:'NC7', plural:'zintu',  gloss:'thing',    domain:'object'},
+  {tonga:'zintu',   nc:'NC8', sg:'cintu',      gloss:'things',   domain:'object'},
+  {tonga:'musamu',  nc:'NC3', plural:'misamu', gloss:'tree',     domain:'nature'},
+  {tonga:'misamu',  nc:'NC4', sg:'musamu',     gloss:'trees',    domain:'nature'},
+  {tonga:'mwana',   nc:'NC1', plural:'bana',   gloss:'child',    domain:'human'},
+  {tonga:'bana',    nc:'NC2', sg:'mwana',      gloss:'children', domain:'human'},
+  {tonga:'nkuku',   nc:'NC9', plural:'zikuku', gloss:'chicken',  domain:'animal'},
+  {tonga:'bulelo',  nc:'NC14',                  gloss:'rulership',domain:'abstract'},
+  {tonga:'kulya',   nc:'NC15',                  gloss:'to eat',   domain:'infinitive'},
+  {tonga:'munzi',   nc:'NC18',                  gloss:'village (interior)', domain:'locative'},
+];
+
+function renderVocab() {
+  const ncFilter = document.getElementById('vocab-nc-filter')?.value || 'all';
+  const search = (document.getElementById('vocab-search')?.value || '').toLowerCase();
+  const g = GRAMMAR[currentLang] || GRAMMAR.chitonga;
+
+  let filtered = VOCAB_DATA.filter(v => {
+    if (ncFilter !== 'all' && v.nc !== ncFilter) return false;
+    if (search && !v.tonga.includes(search) && !v.gloss.includes(search)) return false;
+    return true;
+  });
+
+  document.getElementById('vocab-count').textContent = filtered.length + ' words';
+
+  const colorsArr = {NC1:'#b85c38',NC2:'#7a3a18',NC7:'#2a6b69',NC8:'#1a4a48',NC14:'#5a3a7a',NC15:'#4a7a4e'};
+  document.getElementById('vocab-grid').innerHTML = filtered.map(v => {
+    const col = colorsArr[v.nc] || '#888';
+    return `<div class="vocab-card" onclick="quickAnalyse('s','${v.tonga}');setRole('student');showView('s-analyze')">
+      <div style="background:${col};padding:16px 20px;">
+        <div class="vocab-tonga" style="color:white">${v.tonga}</div>
+        <div class="vocab-nc" style="color:rgba(255,255,255,0.65)">${v.nc}${v.plural?' · pl: '+v.plural:v.sg?' · sg: '+v.sg:''}</div>
+      </div>
+      <div style="padding:12px 16px;">
+        <div class="vocab-gloss">${v.gloss}</div>
+        <div style="font-size:11px;color:var(--ink-3);margin-top:3px;font-style:italic">click to analyse</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// STUDENT: QUIZ
+// ═══════════════════════════════════════════════
+const QUIZ_BANK = [
+  {q:'What noun class does <strong>muntu</strong> (person) belong to?', prompt:'muntu', answer:'NC1', options:['NC1','NC7','NC3','NC14'], exp:'Muntu belongs to NC1 — the human singular class with prefix mu-.'},
+  {q:'What is the NC7 subject concord in chiTonga?', prompt:'NC7 (things singular)', answer:'ci-', options:['ci-','mu-','ba-','ka-'], exp:'NC7 nouns use <em>ci-</em> as their subject marker on verbs (e.g. ci-lya — it eats).'},
+  {q:'Which TAM marker signals the <em>present habitual</em> tense?', prompt:'TAM_PRES', answer:'a', options:['a','aka','ali','yo'], exp:'The present habitual form is <em>a</em> (low tone). It is distinguished from the perfect by the final vowel: -a vs -ide.'},
+  {q:'What is the plural counterpart of NC3 (trees singular)?', prompt:'NC3 → ?', answer:'NC4', options:['NC4','NC6','NC8','NC2'], exp:'NC3 (mu- prefix, trees/plants singular) pairs with NC4 (mi- prefix, trees/plants plural).'},
+  {q:'In the word <strong>balya</strong>, what does <em>ba-</em> indicate?', prompt:'ba-lya', answer:'NC2 subject (3PL human)', options:['NC2 subject (3PL human)','1PL exclusive','NC14 subject','negative prefix'], exp:'ba- is the NC2 subject marker — it agrees with a human plural subject (baNtu — people).'},
+  {q:'Which extension adds an applicative meaning (beneficiary/location)?', prompt:'verb + ___', answer:'APPL (-il-/-el-)', options:['APPL (-il-/-el-)','PASS (-w-)','CAUS (-is-)','RECIP (-an-)'], exp:'The applicative APPL (-il- after high/low vowels, -el- after mid vowels) adds a beneficiary or location argument.'},
+  {q:'What is the negative final vowel in chiTonga?', prompt:'Requires ta- in SLOT1', answer:'-i', options:['-i','-a','-e','-ide'], exp:'The negative final vowel is -i. It requires the pre-initial negation ta- in SLOT1 (enforced by the flag diacritic @R.NEG.ON@).'},
+  {q:'What is the NC1 possessive concord?', prompt:'NC1 (muntu) + possessive', answer:'wa', options:['wa','ba','ca','lwa'], exp:'The possessive concord for NC1 is <em>wa</em> — e.g. muntu <em>wa</em>ngu (my person).'},
+  {q:'NC9 uses a nasal prefix that assimilates to the following consonant. Before a bilabial, it becomes…', prompt:'N + b/p/m/v', answer:'m-', options:['m-','n-','ng-','ny-'], exp:'Before bilabials (b, p, m, v) the nasal assimilates to m-: N + bwa → mbwa (dog).'},
+  {q:'Which slot in the chiTonga verb template is OBLIGATORY?', prompt:'11-slot template: SLOT1…SLOT11', answer:'SLOT3 (subject concord)', options:['SLOT1 (negation)','SLOT3 (subject concord)','SLOT7 (object concord)','SLOT9 (extensions)'], exp:'SLOT3 (subject concord) is obligatory in all finite verb forms. SLOT8 (root) and SLOT10 (final vowel) are also obligatory.'},
+];
+
+function initQuiz() {
+  quizState.questions = [...QUIZ_BANK].sort(()=>Math.random()-.5).slice(0,8);
+  quizState.idx = 0; quizState.score = 0; quizState.answered = false;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizState.questions[quizState.idx];
+  const total = quizState.questions.length;
+
+  document.getElementById('quiz-progress-bar').style.width = ((quizState.idx/total)*100)+'%';
+  document.getElementById('quiz-counter').textContent = `Question ${quizState.idx+1} of ${total}`;
+  document.getElementById('quiz-score').innerHTML = quizState.score > 0 ?
+    `<span class="score-good">✓ ${quizState.score} correct</span>` : '';
+  document.getElementById('quiz-question').innerHTML = q.q;
+  document.getElementById('quiz-prompt').textContent = q.prompt;
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('quiz-next').style.display = 'none';
+  quizState.answered = false;
+
+  const letters = ['A','B','C','D'];
+  document.getElementById('quiz-options').innerHTML = q.options.map((opt,i) => `
+    <button class="quiz-option" onclick="selectOption(this,'${opt.replace(/'/g,"\\'")}')">
+      <span class="option-letter">${letters[i]}</span>
+      <span class="option-text">${opt}</span>
+    </button>
+  `).join('');
+}
+
+function selectOption(el, chosen) {
+  if (quizState.answered) return;
+  quizState.answered = true;
+  const q = quizState.questions[quizState.idx];
+  const correct = chosen === q.answer;
+  if (correct) quizState.score++;
+
+  document.querySelectorAll('.quiz-option').forEach(btn => {
+    btn.classList.add('disabled');
+    const txt = btn.querySelector('.option-text').textContent;
+    if (txt === q.answer) btn.classList.add('correct');
+    if (btn === el && !correct) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (correct?'correct':'wrong');
+  fb.innerHTML = (correct ? '<strong>Correct!</strong> ' : '<strong>Not quite.</strong> ') + q.exp;
+
+  document.getElementById('quiz-next').style.display = 'flex';
+  if (quizState.idx === quizState.questions.length-1)
+    document.getElementById('quiz-next').textContent = 'See results';
+}
+
+function nextQuestion() {
+  quizState.idx++;
+  if (quizState.idx >= quizState.questions.length) {
+    showQuizResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showQuizResults() {
+  const total = quizState.questions.length;
+  const score = quizState.score;
+  const pct = Math.round(score/total*100);
+  const msg = pct===100 ? 'Perfect!' : pct>=80 ? 'Excellent!' : pct>=60 ? 'Good work!' : 'Keep practising!';
+  document.getElementById('quiz-container').innerHTML = `
+    <div style="text-align:center;padding:20px 0;">
+      <div style="font-size:64px;font-family:var(--font-display);font-weight:900;color:${pct>=60?'var(--teal)':'var(--terracotta)'};">${pct}%</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:700;margin:8px 0 4px">${msg}</div>
+      <div style="color:var(--ink-3);font-size:13px;margin-bottom:24px">${score} of ${total} correct</div>
+      <button class="btn btn-primary" onclick="initQuiz();document.getElementById('quiz-container').innerHTML='';initQuiz()">Try again</button>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+setRole('teacher');
+updateSidebarCard();
+buildGrammarInfoView();
+</script>
+</body>
+</html>

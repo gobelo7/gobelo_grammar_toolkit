@@ -1,0 +1,25 @@
+{
+  "name": "gobelo-frontend",
+  "private": true,
+  "version": "2.0.0",
+  "description": "GGT Grammar Admin v2 — spec-compliant Gobelo Grammar Toolkit frontend",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1",
+    "lodash-es": "^4.17.21",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.2",
+    "vite": "^5.4.0"
+  }
+}

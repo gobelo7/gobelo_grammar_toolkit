@@ -1,0 +1,32 @@
+/* src/styles/editor.css
+   ──────────────────────────────────────────────────────────────────────────
+   Editor-specific custom classes.
+   Only include styles that cannot be expressed as Tailwind utility classes.
+   ──────────────────────────────────────────────────────────────────────────
+*/
+
+/* Concord table — sticky header */
+.concord-table thead th {
+  position: sticky;
+  top: 0;
+  background: #0d1117;
+  z-index: 1;
+}
+
+/* NC block summary — remove default disclosure triangle */
+.nc-block > summary { list-style: none; }
+.nc-block > summary::-webkit-details-marker { display: none; }
+
+/* Tag chip row wraps cleanly */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+/* VERIFY flag highlight in any input */
+input.has-verify,
+textarea.has-verify {
+  border-color: #d4a30077;
+}
