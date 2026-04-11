@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GobeloWordTokenizer — GGT User Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0b0d11;
+    --surface: #13161d;
+    --surface2: #1a1e28;
+    --border: #252934;
+    --accent: #e2ff5d;
+    --accent2: #5df0e2;
+    --accent3: #e25d9a;
+    --text: #d4d8e8;
+    --text-dim: #7a8099;
+    --text-bright: #f0f4ff;
+    --slot1: #ff6b6b;
+    --slot2: #ffa94d;
+    --slot3: #ffd43b;
+    --slot4: #69db7c;
+    --slot5: #4dabf7;
+    --slot6: #e599f7;
+    --slot7: #f783ac;
+    --slot8: #74c0fc;
+    --slot9: #a9e34b;
+    --slot10: #63e6be;
+    --slot11: #ffa8a8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  nav {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2rem 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-logo {
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+
+  .nav-logo .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(226,255,93,0.1);
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+
+  .nav-logo h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.2;
+  }
+
+  .nav-logo p {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  nav a {
+    display: block;
+    padding: 7px 1.5rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--text-bright);
+    background: rgba(255,255,255,0.04);
+    border-left-color: var(--accent);
+  }
+
+  nav .nav-section {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    padding: 1.2rem 1.5rem 0.4rem;
+    text-transform: uppercase;
+  }
+
+  /* ── Main ── */
+  main {
+    padding: 3rem 3.5rem;
+    max-width: 1000px;
+  }
+
+  section { margin-bottom: 4rem; }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    margin-bottom: 1.25rem;
+    padding-top: 0.5rem;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  p { margin-bottom: 0.9rem; color: var(--text); }
+
+  /* ── Code blocks ── */
+  pre, code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    line-height: 1.6;
+    color: #c5cde8;
+  }
+
+  code {
+    background: rgba(93,240,226,0.1);
+    color: var(--accent2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(37,41,52,0.6);
+    vertical-align: top;
+    color: var(--text);
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td code { font-size: 11.5px; }
+
+  /* ── Pipeline diagram ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 1.5rem 0;
+  }
+
+  .stage {
+    display: flex;
+    align-items: stretch;
+    position: relative;
+  }
+
+  .stage-connector {
+    width: 2px;
+    background: var(--border);
+    margin: 0 0 0 28px;
+    height: 16px;
+  }
+
+  .stage-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    width: 100%;
+  }
+
+  .stage-row:hover { border-color: var(--accent); background: var(--surface2); }
+  .stage-row.open  { border-color: var(--accent2); }
+
+  .stage-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #0b0d11;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .stage-info { flex: 1; }
+  .stage-info h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text-bright);
+    margin-bottom: 2px;
+  }
+  .stage-info p { font-size: 12.5px; color: var(--text-dim); margin: 0; }
+
+  .stage-chevron {
+    color: var(--text-dim);
+    font-size: 18px;
+    transition: transform 0.2s;
+    margin-top: 4px;
+  }
+  .stage-row.open .stage-chevron { transform: rotate(90deg); color: var(--accent2); }
+
+  .stage-detail {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 1.25rem 1.5rem;
+    margin-top: -6px;
+    font-size: 13px;
+  }
+  .stage-detail.open { display: block; }
+  .stage-detail pre { margin: 0.75rem 0 0; }
+
+  /* ── Token simulator ── */
+  .simulator {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+
+  .sim-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .sim-header label {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sim-header input[type="text"] {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .sim-header input[type="text"]:focus { border-color: var(--accent); }
+
+  .sim-header select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 10px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .sim-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 5px;
+    color: #0b0d11;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+  .sim-btn:hover { opacity: 0.85; }
+
+  .sim-body { padding: 1.5rem; }
+
+  .token-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .token-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .token-chip .chip-form {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .token-chip:hover .chip-form,
+  .token-chip.selected .chip-form {
+    border-color: var(--accent);
+    background: rgba(226,255,93,0.07);
+  }
+
+  .token-chip .chip-tag {
+    font-size: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  .tag-WORD    { background: rgba(77,171,247,0.15); color: #4dabf7; }
+  .tag-PUNCT   { background: rgba(122,128,153,0.15); color: #7a8099; }
+  .tag-NUMBER  { background: rgba(255,212,59,0.15); color: #ffd43b; }
+  .tag-CLITIC  { background: rgba(229,153,247,0.15); color: #e599f7; }
+  .tag-SPECIAL { background: rgba(99,230,190,0.15); color: #63e6be; }
+  .tag-CS      { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+  .tag-OOV     { background: rgba(255,168,168,0.15); color: #ffa8a8; }
+
+  .token-detail {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-size: 12.5px;
+  }
+
+  .token-detail h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    font-size: 13px;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 4px 12px;
+  }
+
+  .field-key {
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+  }
+  .field-val {
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    word-break: break-all;
+  }
+
+  .flag-pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 4px;
+    background: rgba(226,255,93,0.1);
+    color: var(--accent);
+  }
+
+  /* ── Slot table ── */
+  .slot-grid {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+    margin: 1rem 0;
+  }
+
+  .slot-cell {
+    border-radius: 5px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .slot-cell .slot-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  .slot-cell .slot-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  /* ── Callout boxes ── */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(226,255,93,0.05);
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1rem 0;
+    font-size: 13.5px;
+  }
+
+  .callout.info  { border-color: var(--accent2); background: rgba(93,240,226,0.05); }
+  .callout.warn  { border-color: #ffd43b; background: rgba(255,212,59,0.05); }
+  .callout.danger{ border-color: var(--accent3); background: rgba(226,93,154,0.05); }
+
+  .callout strong { color: var(--text-bright); }
+
+  /* ── Flow diagram ── */
+  .flow { display: flex; align-items: center; gap: 6px; margin: 1rem 0; flex-wrap: wrap; }
+  .flow-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .flow-box.hi { border-color: var(--accent2); color: var(--accent2); }
+  .flow-arr { color: var(--text-dim); font-size: 14px; }
+
+  /* ── Misc ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  .version-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .version-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══════════════════════════ SIDEBAR ══════════════════════════ -->
+<nav>
+  <div class="nav-logo">
+    <div class="badge">GGT · PHASE 1</div>
+    <h1>Gobelo<br>Word Tokenizer</h1>
+    <p>User guide & reference</p>
+  </div>
+
+  <div class="nav-section">Getting started</div>
+  <a href="#overview">Overview</a>
+  <a href="#quickstart">Quick start</a>
+  <a href="#simulator">Token simulator</a>
+
+  <div class="nav-section">Architecture</div>
+  <a href="#pipeline">Six-stage pipeline</a>
+  <a href="#slots">Verb slot model</a>
+  <a href="#config">Config tables</a>
+
+  <div class="nav-section">API reference</div>
+  <a href="#api">Public methods</a>
+  <a href="#wordtoken">WordToken fields</a>
+  <a href="#sentence">AnnotatedSentence</a>
+
+  <div class="nav-section">Integration</div>
+  <a href="#loader">Loader contract</a>
+  <a href="#mock">Mock loader</a>
+  <a href="#languages">Language notes</a>
+  <a href="#extending">Extending</a>
+</nav>
+
+<!-- ══════════════════════════ MAIN ══════════════════════════════ -->
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="version-tag"><span class="version-dot"></span>GobeloWordTokenizer v1.0.0</div>
+    <h2>Overview</h2>
+    <p><code>GobeloWordTokenizer</code> is the Phase 1 component of the Gobelo Grammar Toolkit — a language-agnostic word tokeniser for the seven official regional languages of Zambia: ChiBemba, ChiTonga, ChiNyanja, SiLozi, ciLunda, ciLuvale, and ciKaonde.</p>
+
+    <p>All language-specific knowledge flows exclusively from external data files. <strong>Adding a new language requires zero Python changes.</strong> The tokeniser produces <code>AnnotatedSentence</code> objects consumed directly by Phase 2 (<code>GobelloMorphAnalyser</code>).</p>
+
+    <div class="callout info">
+      <strong>Phase 1 scope:</strong> The tokeniser handles splitting, classification, and lexicon stub lookup. It does <em>not</em> perform morphological analysis — that is Phase 2. Verb <code>slot_parses</code>, <code>morpheme_spans</code>, and <code>feats</code> are all populated downstream.
+    </div>
+  </section>
+
+  <!-- QUICK START -->
+  <section id="quickstart">
+    <h2>Quick start</h2>
+
+    <h3>Full production setup</h3>
+    <pre><code>from word_tokenizer import GobeloWordTokenizer
+
+loader     = GobeloGrammarLoader("bem")           # ChiBemba
+corpus_cfg = CorpusConfig.load("corpus_config.yaml")
+
+tok = GobeloWordTokenizer(
+    loader         = loader,
+    corpus_cfg     = corpus_cfg,
+    lang_iso       = "bem",
+    sent_id_prefix = "bem-GEN-001",
+)
+
+sent = tok.tokenize(
+    "Bakali balima mu nganda.",
+    sent_id = "bem-GEN-001-01",
+    source  = "Bible:Mk.1.1",
+)
+
+for token in sent.tokens:
+    print(token.token_id, token.form, token.upos, token.flags)</code></pre>
+
+    <h3>Minimal / test setup</h3>
+    <pre><code># Both arguments default to null stubs — useful for unit tests
+tok = GobeloWordTokenizer()
+
+sent = tok.tokenize("Ni lata ku ya.")
+print(sent.coverage_stats())
+# {'total': 4, 'oov': 4, 'lexicon': 0, 'analysed': 0, 'punct': 1, 'special': 0}</code></pre>
+
+    <h3>Batch processing</h3>
+    <pre><code>sentences = tok.tokenize_batch(
+    ["Bakali balima.", "Ba bona ndu yono.", ""],   # empty strings skipped
+    source = "corpus:bem_001",
+)
+print(len(sentences))  # 2</code></pre>
+  </section>
+
+  <!-- SIMULATOR -->
+  <section id="simulator">
+    <h2>Token simulator</h2>
+    <p>Enter a Zambian Bantu sentence below to see how the tokeniser classifies each token.</p>
+
+    <div class="simulator">
+      <div class="sim-header">
+        <label>Language</label>
+        <select id="sim-lang">
+          <option value="bem">ChiBemba (bem)</option>
+          <option value="loz">SiLozi (loz)</option>
+          <option value="toi">ChiTonga (toi)</option>
+          <option value="nya">ChiNyanja (nya)</option>
+          <option value="lun">ciLunda (lun)</option>
+        </select>
+        <label>Input</label>
+        <input type="text" id="sim-input"
+               value="Bakali balima mu nganda 2:15 na ifintu."
+               placeholder="Type a sentence…">
+        <button class="sim-btn" onclick="simulate()">Tokenise</button>
+      </div>
+      <div class="sim-body">
+        <div class="token-strip" id="token-strip"></div>
+        <div class="token-detail" id="token-detail" style="display:none"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section id="pipeline">
+    <h2>Six-stage pipeline</h2>
+    <p>Click a stage to expand its implementation details.</p>
+
+    <div class="pipeline" id="pipeline-stages">
+
+      <!-- S1 -->
+      <div class="stage">
+        <div class="stage-row" onclick="toggleStage(this)">
+          <div class="stage-num">1</div>
+          <div class="stage-info">
+            <h4>Pre-normalisation</h4>
+            <p>NFC normalise · OCR corrections · noise-char stripping</p>
+          </div>
+          <div class="stage-chevron">›</div>
+        </div>
+        <div class="stage-detail">
+          <p>Applied to the entire raw string before any splitting occurs:</p>
+          <ol style="padding-left:1.4rem;font-size:13px;margin-top:.5rem">
+            <li><strong>NFC normalise</strong> — <code>unicodedata.normalize("NFC", text)</code>. Ensures combining diacritics are in canonical form.</li>
+            <li><strong>OCR corrections</strong> — apply <code>ocr_map</code> substitutions <em>longest-key-first</em> to prevent partial replacements. Source: <code>corpus_cfg.get(lang, "ocr_corrections")</code>.</li>
+            <li><strong>Noise strip</strong> — remove any character whose Unicode category is in <code>noise_categories</code> or whose code point is in <code>noise_chars</code>. Source: <code>corpus_cfg</code>.</li>
+          </ol>
+          <pre><code># corpus_config.yaml example
+ocr_corrections:
+  "ﬁ": "fi"         # ligature fix
+  "\u00AD": ""       # soft hyphen removal
+noise_unicode_categories: ["Cf"]  # strip Unicode format chars</code></pre>
+        </div>
+      </div>
+
+      <div class="stage-connector"></div>
+
+      <!-- S2 -->
+      <div class="stage">
+        <div class="stage-row" onclick="toggleStage(this)">
+          <div class="stage-num">2</div>
+          <div class="stage-info">
+            <h4>Special-token pre-scan</h4>
+            <p>Verse references · chapter headings · custom regex patterns</p>
+          </div>
+          <div class="stage-chevron">›</div>
+        </div>
+        <div class="stage-detail">
+          <p>Scans the normalised string with each compiled <code>special_pattern</code>. Returns a sorted list of <code>(start, end, TokenType, xpos)</code> tuples. Overlapping spans are resolved: earliest start wins; on tie, longer span wins.</p>
+          <table>
+            <tr><th>Pattern</th><th>Default regex</th><th>TokenType</th><th>xpos</th></tr>
+            <tr><td>Verse ref</td><td><code>^\d+:\d+$</code></td><td>SPECIAL</td><td>VERSE_REF</td></tr>
+            <tr><td>Chapter heading</td><td><code>^[A-Z][A-Za-z0-9 ]+\s+\d+$</code></td><td>SPECIAL</td><td>CHAP_HEAD</td></tr>
+            <tr><td>Custom</td><td>from corpus_config</td><td>SPECIAL</td><td>CUSTOM</td></tr>
+          </table>
+          <p style="font-size:12.5px">Special spans that exactly cover a whitespace-split chunk are emitted directly in Stage 3, bypassing punct and clitic splitting.</p>
+        </div>
+      </div>
+
+      <div class="stage-connector"></div>
+
+      <!-- S3 -->
+      <div class="stage">
+        <div class="stage-row" onclick="toggleStage(this)">
+          <div class="stage-num">3</div>
+          <div class="stage-info">
+            <h4>Whitespace splitting</h4>
+            <p>Unicode whitespace · original byte offsets preserved</p>
+          </div>
+          <div class="stage-chevron">›</div>
+        </div>
+        <div class="stage-detail">
+          <p>A character-walk yields <code>(chunk, start, end)</code> tuples preserving character offsets into the normalised string. Chunks that exactly match a Stage 2 special span are emitted as special tokens directly.</p>
+          <pre><code>"Bakali balima 2:15." 
+→  ("Bakali", 0, 6)
+   ("balima", 7, 13)
+   ("2:15.", 14, 19)   ← punct splitting will handle the period</code></pre>
+        </div>
+      </div>
+
+      <div class="stage-connector"></div>
+
+      <!-- S4 -->
+      <div class="stage">
+        <div class="stage-row" onclick="toggleStage(this)">
+          <div class="stage-num">4</div>
+          <div class="stage-info">
+            <h4>Punctuation splitting</h4>
+            <p>Sentence-final and inline punct · protected patterns preserved</p>
+          </div>
+          <div class="stage-chevron">›</div>
+        </div>
+        <div class="stage-detail">
+          <p>For each non-special chunk, <code>_PunctSplitter</code>:</p>
+          <ol style="padding-left:1.4rem;font-size:13px;margin-top:.5rem">
+            <li>If chunk matches any <code>protect_pattern</code> (URL, abbreviation like <code>Mk.</code>, decimal number) → emit as-is.</li>
+            <li>Otherwise, scan character-by-character: when a punctuation character from <code>sentence_final_punct ∪ inline_punct</code> is found, flush the buffer as a word-chunk and emit the punct char as its own token.</li>
+          </ol>
+          <pre><code>"nganda."  →  ("nganda", word) + (".", punct)
+"2:15."   →  ("2:15.", whole — protected by decimal pattern? No → "2:15" + ".")
+"Mk."     →  protected by r"[A-Z][a-z]*\." → emitted whole</code></pre>
+          <div class="callout warn" style="margin-top:.75rem">
+            <strong>Default protect patterns:</strong> <code>https?://\S+</code>, <code>\d+\.\d+</code>, <code>[A-Z][a-z]*\.</code>, <code>[A-Z]{2,}</code>. Override per-language in corpus_config.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-connector"></div>
+
+      <!-- S5 -->
+      <div class="stage">
+        <div class="stage-row" onclick="toggleStage(this)">
+          <div class="stage-num">5</div>
+          <div class="stage-info">
+            <h4>Clitic splitting</h4>
+            <p>Proclitics and enclitics · longest-match greedy</p>
+          </div>
+          <div class="stage-chevron">›</div>
+        </div>
+        <div class="stage-detail">
+          <p><code>_CliticSplitter</code> applies to each non-punct word chunk. Clitic lists are sorted longest-first at config construction time for greedy matching.</p>
+          <ol style="padding-left:1.4rem;font-size:13px;margin-top:.5rem">
+            <li><strong>Proclitics</strong> (left): try each in order; detach the first that matches <em>and</em> leaves a non-empty remainder. One proclitic per token in the current implementation.</li>
+            <li><strong>Enclitics</strong> (right): same logic applied from the right. One enclitic per token.</li>
+            <li>Detached clitics become <code>TokenType.CLITIC</code> tokens; <code>clitic_of</code> is set to the host token's id.</li>
+          </ol>
+          <pre><code># corpus_config.yaml
+extra_enclitics: ["fo", "mo", "ni"]
+
+# Input: "bonamo"
+# Enclitic "mo" matches suffix and leaves "bona" (non-empty)
+# → WordToken(form="bona") + WordToken(form="mo", type=CLITIC, clitic_of="N")</code></pre>
+        </div>
+      </div>
+
+      <div class="stage-connector"></div>
+
+      <!-- S6 -->
+      <div class="stage">
+        <div class="stage-row" onclick="toggleStage(this)">
+          <div class="stage-num">6</div>
+          <div class="stage-info">
+            <h4>Post-processing</h4>
+            <p>Numerics · reduplification · lexicon probe · code-switch detection</p>
+          </div>
+          <div class="stage-chevron">›</div>
+        </div>
+        <div class="stage-detail">
+          <p>Applied to every final word-form chunk in order:</p>
+          <table>
+            <tr><th>Check</th><th>Condition</th><th>Effect</th></tr>
+            <tr><td>Numeric</td><td>digit string, decimal, or Roman numeral I–XXXIX</td><td><code>TokenType.NUMBER</code>, <code>upos=NUM</code>, flag <code>NUMERIC</code></td></tr>
+            <tr><td>All-punct</td><td>all chars are Unicode P or S category</td><td><code>TokenType.PUNCT</code>, <code>upos=PUNCT</code></td></tr>
+            <tr><td>Reduplification</td><td><code>form[:n] == form[n:2n]</code> for any n≥2, length≥4</td><td><code>is_reduplicated=True</code>, flag <code>REDUPLICATED</code></td></tr>
+            <tr><td>Lexicon probe</td><td>direct noun/verb match, then strip 1-3 final chars for verb stem</td><td><code>is_oov=False</code>, preliminary upos/lemma/noun_class; flags <code>LEXICON_HIT</code> or <code>OOV</code></td></tr>
+            <tr><td>Code-switch</td><td>tone-marking language + no combining diacritics + all-Latin + ≥4 chars</td><td><code>TokenType.CODE_SWITCH</code>, flag <code>CODE_SWITCH</code></td></tr>
+            <tr><td>MISC</td><td>always</td><td><code>misc["NFC"]</code> = NFC form</td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /pipeline -->
+  </section>
+
+  <!-- SLOTS -->
+  <section id="slots">
+    <h2>Verb slot model</h2>
+    <p>The GGT models the agglutinative Bantu verb as eleven positional slots. The tokeniser does <em>not</em> fill these slots — that is Phase 2. But it creates the <code>SlotParse</code> stubs and lexicon hints that Phase 2 operates on.</p>
+
+    <div class="slot-grid">
+      <div class="slot-cell" style="background:rgba(255,107,107,0.15);border:1px solid rgba(255,107,107,0.3)">
+        <div class="slot-num">S1</div>
+        <div class="slot-name" style="color:#ff6b6b">Pre-SM Neg</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(255,169,77,0.15);border:1px solid rgba(255,169,77,0.3)">
+        <div class="slot-num">S2</div>
+        <div class="slot-name" style="color:#ffa94d">Subj Marker</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(255,212,59,0.15);border:1px solid rgba(255,212,59,0.3)">
+        <div class="slot-num">S3</div>
+        <div class="slot-name" style="color:#ffd43b">TAM / Rel</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(105,219,124,0.15);border:1px solid rgba(105,219,124,0.3)">
+        <div class="slot-num">S4</div>
+        <div class="slot-name" style="color:#69db7c">Obj Marker</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(77,171,247,0.15);border:1px solid rgba(77,171,247,0.3)">
+        <div class="slot-num">S5</div>
+        <div class="slot-name" style="color:#4dabf7">Verb Root</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(229,153,247,0.15);border:1px solid rgba(229,153,247,0.3)">
+        <div class="slot-num">S6</div>
+        <div class="slot-name" style="color:#e599f7">Ext A</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(247,131,172,0.15);border:1px solid rgba(247,131,172,0.3)">
+        <div class="slot-num">S7</div>
+        <div class="slot-name" style="color:#f783ac">Ext B</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(116,192,252,0.15);border:1px solid rgba(116,192,252,0.3)">
+        <div class="slot-num">S8</div>
+        <div class="slot-name" style="color:#74c0fc">Ext C</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(169,227,75,0.15);border:1px solid rgba(169,227,75,0.3)">
+        <div class="slot-num">S9</div>
+        <div class="slot-name" style="color:#a9e34b">Ext D</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(99,230,190,0.15);border:1px solid rgba(99,230,190,0.3)">
+        <div class="slot-num">S10</div>
+        <div class="slot-name" style="color:#63e6be">Final V</div>
+      </div>
+      <div class="slot-cell" style="background:rgba(255,168,168,0.15);border:1px solid rgba(255,168,168,0.3)">
+        <div class="slot-num">S11</div>
+        <div class="slot-name" style="color:#ffa8a8">Post-FV</div>
+      </div>
+    </div>
+
+    <p style="font-size:12.5px;color:var(--text-dim)">Extensions A–D correspond to valency-increasing (Z1), valency-adjusting (Z2), voice (Z3), and aspectual/lexical (Z4) zones. Phase 2 fills these slots with <code>SlotFill</code> objects carrying form, gloss, source rule, and confidence level.</p>
+  </section>
+
+  <!-- CONFIG -->
+  <section id="config">
+    <h2>Config tables</h2>
+    <p>All fields are resolved once at construction via <code>_build_config(loader, corpus_cfg, lang_iso)</code> and stored in <code>_TokeniserConfig</code>.</p>
+
+    <h3>From the grammar YAML (via loader)</h3>
+    <table>
+      <tr><th>Loader key</th><th>Config field</th><th>Used in stage</th></tr>
+      <tr><td><code>clitics → proclitics</code></td><td><code>proclitics</code></td><td>Stage 5</td></tr>
+      <tr><td><code>clitics → enclitics</code></td><td><code>enclitics</code></td><td>Stage 5</td></tr>
+      <tr><td><code>phonology.vowels_nfc</code></td><td><code>vowels</code></td><td>Stage 6</td></tr>
+      <tr><td><code>phonology.tone_marks</code></td><td><code>tone_marks</code></td><td>Stage 6</td></tr>
+      <tr><td><code>engine_features → augment</code></td><td><code>has_augment</code></td><td>Phase 2 hint</td></tr>
+      <tr><td><code>engine_features → extended_H_spread</code></td><td><code>extended_h_spread</code></td><td>Phase 2 hint</td></tr>
+    </table>
+
+    <h3>From corpus_config.yaml</h3>
+    <table>
+      <tr><th>corpus_cfg key</th><th>Config field</th><th>Used in stage</th></tr>
+      <tr><td><code>ocr_corrections</code></td><td><code>ocr_map</code></td><td>Stage 1</td></tr>
+      <tr><td><code>noise_unicode_categories</code></td><td><code>noise_categories</code></td><td>Stage 1</td></tr>
+      <tr><td><code>noise_chars</code></td><td><code>noise_chars</code></td><td>Stage 1</td></tr>
+      <tr><td><code>sentence_final_punct</code></td><td><code>sentence_final_punct</code></td><td>Stage 4</td></tr>
+      <tr><td><code>inline_punct</code></td><td><code>inline_punct</code></td><td>Stage 4</td></tr>
+      <tr><td><code>protect_patterns</code></td><td><code>protect_patterns</code></td><td>Stage 4</td></tr>
+      <tr><td><code>bible_book_abbreviations</code></td><td><code>abbreviations</code></td><td>Stage 4</td></tr>
+      <tr><td><code>extra_enclitics</code></td><td><code>enclitics</code> (merged)</td><td>Stage 5</td></tr>
+      <tr><td><code>verse_pattern</code></td><td><code>special_patterns[0]</code></td><td>Stage 2</td></tr>
+      <tr><td><code>chapter_heading_pattern</code></td><td><code>special_patterns[1]</code></td><td>Stage 2</td></tr>
+      <tr><td><code>special_token_patterns</code></td><td><code>special_patterns[2+]</code></td><td>Stage 2</td></tr>
+      <tr><td><code>code_switch_langs</code></td><td><code>cs_lang_isos</code></td><td>Stage 6</td></tr>
+    </table>
+  </section>
+
+  <!-- API -->
+  <section id="api">
+    <h2>Public methods</h2>
+
+    <h3><code>tokenize(text, sent_id="", source="") → AnnotatedSentence</code></h3>
+    <table>
+      <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>text</code></td><td>str</td><td>Raw input sentence string</td></tr>
+      <tr><td><code>sent_id</code></td><td>str</td><td>Optional explicit ID; auto-generated as <code>{prefix}-{counter:06d}</code> if omitted</td></tr>
+      <tr><td><code>source</code></td><td>str</td><td>Provenance tag stored in <code>sent.source</code> (e.g. <code>"Bible:Mk.1.1"</code>)</td></tr>
+    </table>
+
+    <h3><code>tokenize_batch(texts, source="") → List[AnnotatedSentence]</code></h3>
+    <p>Convenience wrapper; empty strings in <code>texts</code> are silently skipped.</p>
+
+    <h3><code>describe() → str</code></h3>
+    <p>Returns a human-readable summary of the tokeniser's current configuration. Useful for logging and debugging.</p>
+    <pre><code>print(tok.describe())
+# GobeloWordTokenizer v1.0.0
+#   lang_iso   : bem
+#   proclitics : (none)
+#   enclitics  : ['mo', 'ni']
+#   ocr_map    : 3 entries
+#   sp_patterns: 2 patterns
+#   vowels     : ['a', 'e', 'i', 'o', 'u']
+#   tone_marks : []
+#   augment    : True
+#   H_spread   : True</code></pre>
+  </section>
+
+  <!-- WORDTOKEN -->
+  <section id="wordtoken">
+    <h2>WordToken fields</h2>
+
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Set by tokeniser</th><th>Notes</th></tr>
+      <tr><td><code>token_id</code></td><td>str</td><td>✅</td><td>1-based index in sentence</td></tr>
+      <tr><td><code>form</code></td><td>str</td><td>✅</td><td>NFC-normalised surface form</td></tr>
+      <tr><td><code>original_form</code></td><td>str</td><td>✅</td><td>Pre-normalisation form (audit trail)</td></tr>
+      <tr><td><code>upos</code></td><td>POSTag</td><td>✅ hint</td><td>Overridden by Phase 2</td></tr>
+      <tr><td><code>lemma</code></td><td>Optional[str]</td><td>✅ hint</td><td>From lexicon probe root</td></tr>
+      <tr><td><code>lang_iso</code></td><td>str</td><td>✅</td><td>From constructor</td></tr>
+      <tr><td><code>token_type</code></td><td>TokenType</td><td>✅</td><td>WORD / PUNCT / NUMBER / CLITIC / SPECIAL / CODE_SWITCH</td></tr>
+      <tr><td><code>char_start</code> / <code>char_end</code></td><td>int</td><td>✅</td><td>Offsets into normalised sentence string</td></tr>
+      <tr><td><code>is_oov</code></td><td>bool</td><td>✅</td><td>True until lexicon probe finds a hit</td></tr>
+      <tr><td><code>lexicon_matches</code></td><td>List[LexiconEntry]</td><td>✅ stub</td><td>Phase 2 will populate fully</td></tr>
+      <tr><td><code>noun_class</code></td><td>Optional[str]</td><td>✅ hint</td><td>From lexicon probe (e.g. <code>"NC3"</code>)</td></tr>
+      <tr><td><code>is_reduplicated</code></td><td>bool</td><td>✅</td><td>Heuristic detection</td></tr>
+      <tr><td><code>clitic_of</code></td><td>Optional[str]</td><td>✅</td><td>token_id of host token</td></tr>
+      <tr><td><code>flags</code></td><td>List[str]</td><td>✅</td><td>LEXICON_HIT / OOV / REDUPLICATED / CODE_SWITCH / CLITIC / NUMERIC</td></tr>
+      <tr><td><code>misc["NFC"]</code></td><td>str</td><td>✅</td><td>NFC form for CoNLL-U</td></tr>
+      <tr><td><code>slot_parses</code></td><td>List[SlotParse]</td><td>❌</td><td>Phase 2 (GobelloMorphAnalyser)</td></tr>
+      <tr><td><code>morpheme_spans</code></td><td>List[MorphemeSpan]</td><td>❌</td><td>Phase 2</td></tr>
+      <tr><td><code>feats</code></td><td>Dict[str,str]</td><td>❌</td><td>Phase 2</td></tr>
+      <tr><td><code>head</code> / <code>deprel</code></td><td>int / str</td><td>❌</td><td>Phase 3 (dependency parser)</td></tr>
+    </table>
+  </section>
+
+  <!-- SENTENCE -->
+  <section id="sentence">
+    <h2>AnnotatedSentence</h2>
+    <pre><code>sent = tok.tokenize("Bakali balima mu nganda.")
+
+# Filtered views
+sent.word_tokens()        # excludes PUNCT and SPECIAL
+sent.oov_tokens()         # word tokens with is_oov=True
+sent.verb_tokens()        # upos VERB or AUX
+sent.noun_tokens()        # upos NOUN or PROPN
+sent.code_switch_tokens() # TokenType.CODE_SWITCH
+
+# Statistics
+sent.token_count()   # int: number of word tokens
+sent.oov_rate()      # float in [0.0, 1.0]
+sent.coverage_stats()
+# {'total': 4, 'oov': 4, 'lexicon': 0, 'analysed': 0, 'punct': 1, 'special': 0}
+
+# Serialisation
+sent.to_conllu()     # full CoNLL-U block as string
+sent.to_dict()       # JSON-safe dict
+
+# Audit trail
+sent.pipeline        # ["GobeloWordTokenizer-1.0.0"]</code></pre>
+  </section>
+
+  <!-- LOADER CONTRACT -->
+  <section id="loader">
+    <h2>Loader interface contract</h2>
+    <p>The tokeniser calls <code>loader.get(key, default)</code> with dot-separated YAML paths, plus three direct attributes.</p>
+
+    <table>
+      <tr><th>Access</th><th>Expected type</th><th>Purpose</th></tr>
+      <tr><td><code>loader.lang_iso</code></td><td>str</td><td>Default language ISO code</td></tr>
+      <tr><td><code>loader.lexicon_verb</code></td><td>dict[str, LexiconEntry]</td><td>Verb root → entry lookup</td></tr>
+      <tr><td><code>loader.lexicon_noun</code></td><td>dict[str, LexiconEntry]</td><td>Noun stem → entry lookup</td></tr>
+      <tr><td><code>loader.get("clitics", {})</code></td><td>dict with <code>proclitics</code> / <code>enclitics</code> lists</td><td>Clitic splitting</td></tr>
+      <tr><td><code>loader.get("phonology.vowels_nfc", [])</code></td><td>list[str]</td><td>Reduplification / code-switch</td></tr>
+      <tr><td><code>loader.get("phonology.tone_marks", [])</code></td><td>list[str]</td><td>Code-switch detection</td></tr>
+      <tr><td><code>loader.get("engine_features", {})</code></td><td>dict</td><td><code>augment</code>, <code>extended_H_spread</code> flags</td></tr>
+    </table>
+  </section>
+
+  <!-- MOCK -->
+  <section id="mock">
+    <h2>Writing a mock loader</h2>
+    <pre><code>from models import LexiconEntry, LexiconCategory
+
+class MockLoader:
+    lang_iso = "loz"
+    grammar  = {}
+    lexicon_verb = {
+        "bon": LexiconEntry(
+            lang_iso="loz",
+            category=LexiconCategory.VERB,
+            root="bon",
+            gloss="see",
+        ),
+    }
+    lexicon_noun = {}
+
+    _data = {
+        "clitics": {"proclitics": [], "enclitics": ["fo", "mo"]},
+        "phonology.vowels_nfc": ["a", "e", "i", "o", "u"],
+        "phonology.tone_marks": [],
+        "engine_features": {
+            "augment": False,
+            "extended_H_spread": False,
+        },
+    }
+
+    def get(self, key, default=None):
+        return self._data.get(key, default)
+
+
+tok = GobeloWordTokenizer(loader=MockLoader())
+sent = tok.tokenize("U ta bona ndu yono.")
+print(tok.describe())</code></pre>
+  </section>
+
+  <!-- LANGUAGES -->
+  <section id="languages">
+    <h2>Language-specific notes</h2>
+
+    <h3>ChiBemba (bem)</h3>
+    <p><code>engine_features.extended_H_spread: true</code> — stored in <code>_cfg.extended_h_spread</code> but acted on by Phase 2 tonal rules, not the tokeniser. NC7 prefix <code>fi-/ifi-</code> and NC8 <code>bi-/ibi-</code> affect lexicon probe noun-class hints. Augment system (<code>i-/a-</code>) present; <code>has_augment=True</code> propagates to the analyser.</p>
+
+    <h3>SiLozi (loz)</h3>
+    <p><code>engine_features.extended_H_spread: false</code> — tonal rule TS.2 does not fire. NC16 locative is <code>fa-</code> (not <code>pa-</code>). No augment system; <code>has_augment=False</code>. The <code>ne</code> past auxiliary is handled as a separate whitespace-split token; no special-casing needed.</p>
+
+    <h3>All languages</h3>
+    <div class="callout">
+      <strong>Zero Python changes</strong> for any new language. Create the GGT YAML, add corpus_config entries, register the language in the loader registry.
+    </div>
+  </section>
+
+  <!-- EXTENDING -->
+  <section id="extending">
+    <h2>Extending the tokeniser</h2>
+
+    <h3>New special-token pattern (corpus_config.yaml)</h3>
+    <pre><code>special_token_patterns:
+  - "^\\[\\d+\\]$"   # footnote markers like [1]
+  - "^<[A-Z]+>$"     # XML-style tags in annotated corpora</code></pre>
+
+    <h3>Additional enclitics</h3>
+    <pre><code>extra_enclitics: ["ni", "ko", "pe"]</code></pre>
+
+    <h3>Stacking multiple clitics per token</h3>
+    <p>The current implementation handles one proclitic and one enclitic per token. To support stacking, extend <code>_CliticSplitter.split()</code>:</p>
+    <pre><code>def split(self, form: str) -> List[Tuple[str, bool]]:
+    pre_clitics, rest = [], form
+    # Loop — not just one pass:
+    changed = True
+    while changed:
+        changed = False
+        for cli in self._proclitics:
+            if rest.startswith(cli) and len(rest) > len(cli):
+                pre_clitics.append(cli)
+                rest = rest[len(cli):]
+                changed = True
+                break
+    # Same for enclitics (right side)
+    ...</code></pre>
+
+    <h3>Custom code-switch detector (Phase 3 hook)</h3>
+    <p>The current heuristic (Latin + no tone marks) is intentionally conservative. Replace <code>_detect_code_switch()</code> with a language-model based classifier in Phase 3; the <code>TokenType.CODE_SWITCH</code> flag and <code>code_switch_lang</code> field are already in place.</p>
+
+    <h3>Pipeline audit</h3>
+    <pre><code># Every AnnotatedSentence records which stages ran:
+sent.pipeline
+# Phase 1: ["GobeloWordTokenizer-1.0.0"]
+# Phase 2: ["GobeloWordTokenizer-1.0.0", "GobelloMorphAnalyser-2.0.0"]
+# Phase 3: [..., "GobelloPOSTagger-1.0.0", "GobelloDepParser-1.0.0"]</code></pre>
+  </section>
+
+</main>
+</div>
+
+<script>
+/* ── Pipeline accordion ── */
+function toggleStage(row) {
+  const detail = row.nextElementSibling;
+  const isOpen = row.classList.contains('open');
+  document.querySelectorAll('.stage-row.open').forEach(r => {
+    r.classList.remove('open');
+    r.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    row.classList.add('open');
+    detail.classList.add('open');
+  }
+}
+
+/* ── Sidebar active link ── */
+const sections = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('nav a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+/* ── Token simulator ── */
+const EXAMPLES = {
+  bem: [
+    "Bakali balima mu nganda 2:15 na ifintu.",
+    "Ta-balima ifintu fyonse fya bantu.",
+    "Ifikolo 3 filyonse ni chiTonga.",
+  ],
+  loz: [
+    "Ba bona ndu yono fa munzi 1:1.",
+    "Ni lata ku ya ni yena mwini.",
+    "Ki silozi sa mina bohile.",
+  ],
+  toi: [
+    "Bakali balima muunda wabo.",
+    "Ndalama zili mu ng'anda.",
+    "Mwana uyu ulazyalwa.",
+  ],
+  nya: [
+    "Anthu onse akugwira ntchito.",
+    "Mwana wamkazi akubwera.",
+    "Zilombo za nkhalango.",
+  ],
+  lun: [
+    "Yishikenu yivwanda kudi nkanu.",
+    "Abantu bonse bavwila.",
+    "Mahali muvuka.",
+  ],
+};
+
+function tokenise(text, lang) {
+  // Simulate the six-stage pipeline in JS for demo purposes
+  const tokens = [];
+  const nfc = text.normalize('NFC');
+
+  // Stage 2 pre-scan: verse refs
+  const verseRe = /\d+:\d+/g;
+  const specialSpans = [];
+  let m;
+  while ((m = verseRe.exec(nfc)) !== null) {
+    specialSpans.push({start: m.index, end: m.index + m[0].length, type:'SPECIAL', form: m[0]});
+  }
+
+  // Stage 3+4+5+6: whitespace split then punct split
+  const sfPunct = new Set(['.','!','?','…']);
+  const ilPunct = new Set([',',';',':','(',')','"','"',''',''','«','»','—','–']);
+  const allPunct = new Set([...sfPunct, ...ilPunct]);
+
+  // Enclitics (sample per language)
+  const enclitics = { bem: ['mo','ni','ko'], loz: ['fo','mo'], toi: ['ni'], nya: ['ni','ko'], lun: ['ni'] };
+  const enc = enclitics[lang] || [];
+
+  const words = nfc.split(/(\s+)/);
+  let offset = 0;
+
+  for (const w of words) {
+    if (/^\s+$/.test(w)) { offset += w.length; continue; }
+    // Check if special
+    const sp = specialSpans.find(s => s.start === offset);
+    if (sp) {
+      tokens.push({form: w.replace(/[.!?,;]/g,''), type:'SPECIAL', xpos:'VERSE_REF', start: offset, oov: false, flags: ['SPECIAL']});
+      offset += w.length;
+      continue;
+    }
+
+    // Split punct from right
+    let core = w;
+    let trailingPunct = '';
+    while (core.length > 0 && allPunct.has(core[core.length-1])) {
+      trailingPunct = core[core.length-1] + trailingPunct;
+      core = core.slice(0, -1);
+    }
+
+    if (core) {
+      // Clitic split (enclitic only, for demo)
+      let host = core, clitic = null;
+      for (const c of enc.sort((a,b) => b.length - a.length)) {
+        if (core.toLowerCase().endsWith(c) && core.length > c.length) {
+          host   = core.slice(0, -c.length);
+          clitic = c;
+          break;
+        }
+      }
+
+      tokens.push(classifyToken(host, lang, offset));
+      if (clitic) {
+        tokens.push({form: clitic, type:'CLITIC', xpos:'', start: offset + host.length, oov: true, flags:['CLITIC'], clitic_of: tokens.length - 1});
+      }
+    }
+
+    if (trailingPunct) {
+      for (const ch of trailingPunct) {
+        tokens.push({form: ch, type:'PUNCT', xpos:'', start: offset + core.length, oov: false, flags:[]});
+      }
+    }
+
+    offset += w.length;
+  }
+
+  return tokens.map((t,i) => ({...t, id: i+1}));
+}
+
+function classifyToken(form, lang, offset) {
+  // Numeric?
+  if (/^\d[\d,.]*$/.test(form) || /^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/i.test(form) && form.length > 0) {
+    return {form, type:'NUMBER', xpos:'NUM', start:offset, oov:false, flags:['NUMERIC']};
+  }
+  // Reduplicated?
+  const lower = form.toLowerCase();
+  let redupl = false;
+  for (let half = 2; half <= Math.floor(lower.length/2); half++) {
+    if (lower.slice(0,half) === lower.slice(half, 2*half)) { redupl = true; break; }
+  }
+
+  // Very rough OOV simulation
+  const commonRoots = { bem:['ba','ni','mu','ku','fi','bi','tu','li','na','bu','pa'], loz:['ba','ni','mo','ku','si','li','tu','fa','ma','bu'], toi:['ba','a','mu','ku','ci','zi','tu','li','na','bu','pa'] };
+  const roots = commonRoots[lang] || [];
+  const oov = !roots.some(r => lower.startsWith(r)) && lower.length > 3;
+
+  const flags = [];
+  if (redupl) flags.push('REDUPLICATED');
+  if (oov) flags.push('OOV'); else flags.push('LEXICON_HIT');
+
+  return {form, type: oov ? 'WORD' : 'WORD', xpos:'', start:offset, oov, flags, redupl};
+}
+
+let selectedToken = null;
+
+function simulate() {
+  const text = document.getElementById('sim-input').value.trim();
+  const lang = document.getElementById('sim-lang').value;
+  if (!text) return;
+
+  const tokens = tokenise(text, lang);
+  const strip  = document.getElementById('token-strip');
+  const detail = document.getElementById('token-detail');
+  strip.innerHTML = '';
+  detail.style.display = 'none';
+  selectedToken = null;
+
+  tokens.forEach((tok, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'token-chip';
+
+    let tagClass = 'tag-WORD';
+    if (tok.type === 'PUNCT')   tagClass = 'tag-PUNCT';
+    if (tok.type === 'NUMBER')  tagClass = 'tag-NUMBER';
+    if (tok.type === 'CLITIC')  tagClass = 'tag-CLITIC';
+    if (tok.type === 'SPECIAL') tagClass = 'tag-SPECIAL';
+    if (tok.oov && tok.type === 'WORD') tagClass = 'tag-OOV';
+
+    const tagLabel = tok.type === 'WORD' && tok.oov ? 'OOV' : tok.type;
+
+    chip.innerHTML = `
+      <div class="chip-form">${escHtml(tok.form)}</div>
+      <span class="chip-tag ${tagClass}">${tagLabel}</span>
+    `;
+    chip.dataset.idx = idx;
+    chip.addEventListener('click', () => showDetail(chip, tok, tokens));
+    strip.appendChild(chip);
+  });
+}
+
+function showDetail(chip, tok, tokens) {
+  if (selectedToken) selectedToken.classList.remove('selected');
+  chip.classList.add('selected');
+  selectedToken = chip;
+
+  const detail = document.getElementById('token-detail');
+  detail.style.display = 'block';
+
+  const flagsHtml = tok.flags.map(f => `<span class="flag-pill">${f}</span>`).join('');
+
+  let extra = '';
+  if (tok.redupl) extra += `<div class="field-key">is_reduplicated</div><div class="field-val">True</div>`;
+  if (tok.clitic_of !== undefined) extra += `<div class="field-key">clitic_of</div><div class="field-val">#${tok.clitic_of + 1}</div>`;
+
+  detail.innerHTML = `
+    <h4>Token #${tok.id} — "${escHtml(tok.form)}"</h4>
+    <div class="field-grid">
+      <div class="field-key">token_id</div><div class="field-val">${tok.id}</div>
+      <div class="field-key">form (NFC)</div><div class="field-val">${escHtml(tok.form)}</div>
+      <div class="field-key">token_type</div><div class="field-val">${tok.type}</div>
+      <div class="field-key">is_oov</div><div class="field-val">${tok.oov}</div>
+      <div class="field-key">char_start</div><div class="field-val">${tok.start}</div>
+      ${extra}
+      <div class="field-key">flags</div><div class="field-val">${flagsHtml || '(none)'}</div>
+      <div class="field-key">slot_parses</div><div class="field-val" style="color:var(--text-dim)">[] — populated by Phase 2</div>
+      <div class="field-key">morpheme_spans</div><div class="field-val" style="color:var(--text-dim)">[] — populated by Phase 2</div>
+    </div>
+  `;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Load example on language change
+document.getElementById('sim-lang').addEventListener('change', function() {
+  const lang = this.value;
+  const exs = EXAMPLES[lang];
+  if (exs) document.getElementById('sim-input').value = exs[0];
+  simulate();
+});
+
+// Initial simulate
+window.addEventListener('load', () => simulate());
+
+// Smooth scroll for nav
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+</script>
+</body>
+</html>

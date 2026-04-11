@@ -34,8 +34,8 @@ metadata:
     max_parser_version: "2.x"
 
   maintainer:
-    name: "Your Name"
-    email: "your.email@example.com"
+    name: "Shuller Habeenzu"
+    email: "beenzu@gobelo.dev"
 
   framework:
     name: "Gobelo-YAML Grammar Framework"
@@ -142,11 +142,11 @@ phonology:
     notes: "SiLozi shows Sotho consonant influence: zh/sh series active; ts/dz affricates present. No clicks. The sh/zh series distinguishes SiLozi from most Zone M languages."
 
   syllable_structure:
-    pattern: [(C)V(N), CCV(N), CCCV(N)]
+    pattern: [(C)V(N), CCV(N), NCV, CV]
     variants: []
 
   tones:
-    levels: ["high", "low", "falling", "rising"]
+    levels: ["high", "low", "falling", "rising", "cresendo"]
     notation: ["´", "`", "^", "ˇ"]
     notes: "SiLozi is 2-tone H/L system; some tone neutralisation in loanwords (Sotho influence). Tone is grammatically significant in TAM and relative clause constructions."
 
@@ -585,7 +585,7 @@ noun_class_system:
       active: true
 
       prefix:
-        canonical_form: "mo-"
+        canonical_form: "mu-"
         allomorphs:
           - form: "mw-"
             condition: before_vowels

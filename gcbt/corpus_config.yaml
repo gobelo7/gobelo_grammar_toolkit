@@ -1,0 +1,284 @@
+# =============================================================================
+# Gobelo Corpus Builder Toolkit — Corpus Configuration
+# corpus_config.yaml
+#
+# PURPOSE
+#   This file supplies corpus-processing settings for each language.
+#   It intentionally contains ONLY information specific to corpus building
+#   that cannot be derived from the GGT YAML grammar files.
+#
+#   Phonological inventory, ISO codes, Guthrie codes, and language names
+#   are read directly from the GGT YAMLs by gcbt_v40.py.
+#   Do not duplicate that information here.
+#
+# TWO-LAYER ARCHITECTURE
+#   Layer 1 (authoritative linguistic data) : languages/<iso>.yaml  (GGT YAML)
+#   Layer 2 (corpus-pipeline settings)      : this file
+#
+# SECTION NAMES
+#   global:    Baseline values shared across every language.
+#   languages: Per-language extensions and overrides.
+#              Each entry needs only `ggt_yaml:` as a minimum;
+#              all other keys are optional.
+#
+# MERGING RULES
+#   chapter_words       ADDITIVE — language list ∪ global list
+#   book_abbreviations  ADDITIVE — language set ∪ global set
+#   valid_single_chars  ADDITIVE — language set ∪ global set
+#   extra_special_chars ADDITIVE — global list + language list (order preserved)
+#   strip_patterns      ADDITIVE — global list + language list (order preserved)
+#   ocr_corrections     KEY-BY-KEY OVERRIDE — language entry wins per key
+#   punctuation_map     GLOBAL ONLY
+#   Pipeline toggles    GLOBAL ONLY
+#
+# ADDING A NEW LANGUAGE
+#   1. Drop its GGT grammar YAML into languages/
+#   2. Add a block under `languages:` (only `ggt_yaml:` required)
+#   3. Restart gcbt — zero Python changes needed
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# global — baseline settings applied to every language
+# -----------------------------------------------------------------------------
+global:
+
+  # ── Verse / scripture reference pattern ──────────────────────────────────
+  # Matches: "1 Kor 11:7"  "Heb 2:11"  "Gen 1:1-3"  "M#Int 127:3"
+  verse_pattern: '\b(?:\d{1,2}\s*)?[A-Za-z#]{1,20}\.?\s?\d{1,3}:\d{1,3}(?:[,\-]\d{1,3})*\b'
+
+  # ── Punctuation normalisation ─────────────────────────────────────────────
+  # Typographic → ASCII. Global only; all languages share this map.
+  punctuation_map:
+    "\u201c": '"'
+    "\u201d": '"'
+    "\u201e": '"'
+    "\u201f": '"'
+    "\u2018": "'"
+    "\u2019": "'"
+    "\u2013": "-"
+    "\u2014": "-"
+    "\u2026": "..."
+
+  # ── Pipeline feature toggles ──────────────────────────────────────────────
+  remove_urls:           true
+  remove_emails:         true
+  preserve_bible_text:   false
+  filter_single_chars:   true
+  normalize_whitespace:  true
+  normalize_unicode:     true
+  normalize_punctuation: true
+  process_ocr_artifacts: true
+  fix_hyphenation:       true
+  protect_citations:     false
+
+  # ── Sentence length bounds ────────────────────────────────────────────────
+  min_sentence_length: 3
+  max_sentence_length: 1000
+
+  # ── Chapter / section heading words ──────────────────────────────────────
+  chapter_words:
+    - Chapter
+    - chapter
+    - Part
+    - Section
+    - Preface
+    - Introduction
+    - Appendix
+
+  # ── Book / title abbreviations ────────────────────────────────────────────
+  # Tokens that must NOT trigger a sentence boundary before a period.
+  book_abbreviations:
+    - Mr
+    - Mrs
+    - Ms
+    - Dr
+    - Prof
+    - St
+    - Ave
+    - Blvd
+    - Co
+    - Inc
+    - Ltd
+    - vs
+    - etc
+    - i.e
+    - e.g
+    - et al
+    - vol
+    - "no"
+    - pp
+
+  # ── OCR glyph corrections ────────────────────────────────────────────────
+  # Whole-word substitutions. Language entries override per key.
+  ocr_corrections:
+    "|":  "I"
+    "rn": "m"
+    "l1": "li"
+
+  # ── Valid single-character morphemes ──────────────────────────────────────
+  # Single-letter tokens in this set survive the single-char filter.
+  valid_single_chars:
+    - a
+    - e
+    - i
+    - o
+    - u
+    - n
+    - m
+
+  # ── Extra special characters (digraphs / trigraphs) ───────────────────────
+  # Multi-character orthographic units valid across all languages.
+  extra_special_chars: []
+
+  # ── Strip patterns ────────────────────────────────────────────────────────
+  # Regex patterns — matching lines are removed before segmentation.
+  # Example: '^\s*Footnote\s+\d+'
+  strip_patterns: []
+
+
+# -----------------------------------------------------------------------------
+# languages — per-language extensions and overrides
+#
+# Minimum viable entry:
+#   xyz:
+#     ggt_yaml: languages/xyz.yaml
+# -----------------------------------------------------------------------------
+languages:
+
+  # ── ChiTonga (M.64) ───────────────────────────────────────────────────────
+  toi:
+    ggt_yaml: languages/chitonga.yaml
+    path_keywords: [toi, chitonga, citonga, tonga]
+
+    chapter_words:
+      - Matalikilo    # "Origins / Genesis" — chapter heading in ChiTonga texts
+      - Mutwe       # "Chapter" in formal ChiTonga prose
+
+    book_abbreviations:
+      - Mw            # Mwami — chief / lord (honorific)
+      - Ba            # Ba-   — adult honorific prefix
+      - Sh            # Shikulu — elder / grandfather (title)
+
+    valid_single_chars:
+      - w             # NC3 prefix / conjunction "and/with"
+      - b             # morpheme prefix (NC2 reduced)
+      - y             # conjunction "and"
+      - k             # locative marker ku- reduced
+
+    extra_special_chars:
+      - ng            # prenasalised velar
+      - ny            # palatal nasal
+
+    ocr_corrections:
+      "cl": "ci"
+      "0":  "o"
+      "1":  "l"
+
+  # ── ChiBemba (M.42) ───────────────────────────────────────────────────────
+  bem:
+    ggt_yaml: languages/chibemba.yaml
+    path_keywords: [bem, chibemba, icibemba, bemba]
+
+    chapter_words:
+      - Mutwalo
+      - Mutwe
+
+    book_abbreviations:
+      - Ba
+      - Bana
+
+    valid_single_chars:
+      - b             # NC2 ba- reduced
+      - f             # NC7 fi- reduced
+      - k             # NC15/12 ku-/ka- reduced
+
+    extra_special_chars:
+      - ng
+      - sh
+
+  # ── ChiNyanja / Chichewa (N.31) ───────────────────────────────────────────
+  nya:
+    ggt_yaml: languages/chinyanja.yaml
+    path_keywords: [nya, chinyanja, nyanja, chichewa, chewa]
+
+    chapter_words:
+      - Mutu
+
+    book_abbreviations:
+      - Amai
+      - Bambo
+      - Abp
+      - Bp
+
+    extra_special_chars:
+      - ng
+      - ny
+      - ch
+
+  # ── SiLozi (K.21) ─────────────────────────────────────────────────────────
+  loz:
+    ggt_yaml: languages/silozi.yaml
+    path_keywords: [loz, silozi, lozi]
+
+    chapter_words:
+      - Kauhanyo
+
+    book_abbreviations:
+      - Ba
+      - Ndate
+
+    valid_single_chars:
+      - f             # fa- NC16 locative reduced
+      - s             # si- NC7 reduced
+
+    extra_special_chars:
+      - sh
+      - ng
+
+  # ── ciLunda (L.52) ────────────────────────────────────────────────────────
+  lun:
+    ggt_yaml: languages/lunda.yaml
+    path_keywords: [lun, cilunda, lunda]
+
+    chapter_words:
+      - Mutwalo
+
+    valid_single_chars:
+      - c             # NC7 ci- reduced
+
+    extra_special_chars:
+      - ng
+      - ny
+
+  # ── ciLuvale (K.14) ───────────────────────────────────────────────────────
+  lue:
+    ggt_yaml: languages/luvale.yaml
+    path_keywords: [lue, ciluvale, luvale]
+
+    chapter_words:
+      - Mutwalo
+
+    valid_single_chars:
+      - v             # NC8 vi- reduced
+
+    extra_special_chars:
+      - ng
+      - ny
+      - mb
+
+  # ── ciKaonde (L.41) ───────────────────────────────────────────────────────
+  kqn:
+    ggt_yaml: languages/kaonde.yaml
+    path_keywords: [kqn, cikaonde, kaonde]
+
+    chapter_words:
+      - Mutwalo
+
+    valid_single_chars:
+      - c             # NC7 ci- reduced
+      - b             # NC8 bi- reduced
+
+    extra_special_chars:
+      - ng
+      - ny
