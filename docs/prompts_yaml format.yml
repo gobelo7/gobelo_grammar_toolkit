@@ -1,0 +1,48 @@
+Below are the YAML format of  Bantu noun classes for Lunda language. 
+    NC3:
+      class_number: 3
+      class_type: regular
+      grammatical_number: singular
+      paired_class: NC4
+      frequency: high
+      active: true
+      prefix:
+        canonical_form: "mu-"
+        allomorphs:
+          - form: "mw-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+      augment:
+        form: "a-"
+        usage: optional
+      triggers_rules: [SND.1, VL.2, TS.1, TL.1]
+      semantics:
+        primary_domain: plants_trees_long_objects
+        features: [-human, +animate, +singular]
+        typical_referents: [trees, plants, long_objects, body_parts]
+      notes: "Homophonous with NC1; distinguished by concord"
+
+    NC4:
+      class_number: 4
+      class_type: regular
+      grammatical_number: plural
+      paired_class: NC3
+      frequency: high
+      active: true
+      prefix:
+        canonical_form: "mi-"
+        allomorphs:
+          - form: "my-"
+            condition: before_vowels
+            condition_formal: _V
+        tone: L
+      augment:
+        form: "a-"
+        usage: optional
+      triggers_rules: [SND.1, VL.2, TS.1, TL.1]
+      semantics:
+        primary_domain: plants_trees_long_objects_plural
+        features: [-human, +animate, +plural]
+        typical_referents: [trees_plural, plants_plural, body_parts_plural]
+

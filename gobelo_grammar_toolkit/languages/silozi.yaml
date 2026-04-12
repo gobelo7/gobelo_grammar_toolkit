@@ -590,7 +590,7 @@ noun_class_system:
           - form: "mw-"
             condition: before_vowels
             condition_formal: _V
-            examples: [mwana, mwanaa]
+            examples: [mu-sali, mw-ana]
         tone: L
         notes: "CRITICAL DIFFERENCE from Chitonga: SiLozi NC1 uses mo- (Sotho-influenced), not mu-. Verify against Givón (1970)."
 
@@ -625,6 +625,7 @@ noun_class_system:
         allomorphs: []
         formatives:
           - form: ["na-", "ndate-", "Ø"]
+          - examples: [ndate, mme]
         tone: L
         notes: "# VERIFY: SiLozi kinship prefix forms against Givón (1970); na- is attested for some kin terms"
 
@@ -657,8 +658,8 @@ noun_class_system:
         canonical_form: "ba-"
         allomorphs:
           - form: "b-"
-            condition: before_vowels_e_o
-            condition_formal: _V[e,o]
+            condition: before_vowels_a
+            condition_formal: _V[a]
         tone: L
         notes: "# VERIFY: SiLozi NC2 prefix — ba- confirmed as likely based on prompt Section 6.2; verify Givón (1970)"
 
@@ -678,7 +679,7 @@ noun_class_system:
         typical_referents: [human_groups, plural_kinship, professions_plural]
 
     # ==========================================================================
-    # CLASS 2a - Kinship/Proper Names Plural
+    # CLASS 2a - Kinship/Proper Names/ Honorific/Respectfu Plural 
     # ==========================================================================
     NC2a:
       class_number: 2
@@ -689,7 +690,7 @@ noun_class_system:
       active: true
 
       prefix:
-        canonical_form: "ba-"
+        canonical_form: "bo-"
         allomorphs: []
         tone: L
         notes: "Uses NC2 prefix; paired with NC1a nouns"
@@ -710,39 +711,6 @@ noun_class_system:
         typical_referents: [kinship_plural, proper_name_plural]
 
     # ==========================================================================
-    # CLASS 2b - Honorific/Respectful Plural
-    # ==========================================================================
-    NC2b:
-      class_number: 2
-      class_type: irregular
-      grammatical_number: plural
-      paired_class: NC1
-      frequency: low
-      active: true
-
-      prefix:
-        canonical_form: "ba-"
-        allomorphs: []
-        formative: "bama-"
-        tone: L
-        notes: "# VERIFY: SiLozi honorific plural prefix; bama- for elders/royalty attested in Lozi; verify Givón (1970)"
-
-      augment:
-        form: null
-        usage: not_applicable
-
-      triggers_rules:
-        - SND.2
-        - VL.2
-        - TS.1
-        - TL.1
-
-      semantics:
-        primary_domain: respectful_reference
-        features: [+human, +animate, +respectful]
-        typical_referents: [elders, chiefs, royal_family, respected_persons]
-
-    # ==========================================================================
     # CLASS 3 - Trees/Plants Singular (Sotho-influenced: mo-)
     # ==========================================================================
     NC3:
@@ -754,9 +722,12 @@ noun_class_system:
       active: true
 
       prefix:
-        canonical_form: "mo-"
+        canonical_form: "mu-"
         allomorphs:
           - form: "mw-"
+            condition: before_vowels
+            condition_formal: _V
+          - form: "m-"
             condition: before_vowels
             condition_formal: _V
         tone: L
@@ -828,8 +799,11 @@ noun_class_system:
         canonical_form: "li-"
         allomorphs:
           - form: "l-"
-            condition: before_vowels
-            condition_formal: _V
+            condition: before_vowels_with_i
+            condition_formal: _V[i]
+          - form: "ly-"
+            condition: before_vowels_o_u
+            condition_formal: _V[o, u]
           - form: "Ø"
             condition: some_nouns_take_zero_prefix
         tone: L
@@ -917,7 +891,7 @@ noun_class_system:
       semantics:
         primary_domain: things_instruments_languages
         features: [-human, -animate, +singular]
-        typical_referents: [objects, instruments, languages, customs, diminutives]
+        typical_referents: [objects, instruments, sicknesses, languages, customs, diminutives]
 
     # ==========================================================================
     # CLASS 8 - Things/Instruments Plural (CRITICAL: li- not zi-)
@@ -931,9 +905,9 @@ noun_class_system:
       active: true
 
       prefix:
-        canonical_form: "li-"
+        canonical_form: "bi-"
         allomorphs:
-          - form: "l-"
+          - form: "by-"
             condition: before_vowels
             condition_formal: _V
         tone: L
@@ -977,9 +951,24 @@ noun_class_system:
           - form: "ng-"
             condition: before_velars
             condition_formal: _[+velar]
-          - form: "mf-"
+          - form: "nj"
+            condition: before_palatals
+            condition_formal: _[+palatal]
+          - form: "p-"
+            condition: before_labiodentals
+            condition_formal: _b
+          - form: "mp-"
             condition: before_labiodentals
             condition_formal: _f
+          - form: "t-"
+            condition: before_labiodentals
+            condition_formal: _l
+          - form: "k-"
+            condition: before_labiodentals
+            condition_formal: _h
+          - form: "k-"
+            condition: before_vowels
+            condition_formal: _V
           - form: "Ø"
             condition: before_fricatives_and_vowels
         tone: L
@@ -1015,23 +1004,10 @@ noun_class_system:
       active: true
 
       prefix:
-        canonical_form: "N-"
+        canonical_form: "li-"
         allomorphs:
-          - form: "m-"
-            condition: before_labials
-            condition_formal: _[+labial]
-          - form: "n-"
-            condition: before_alveolars
-            condition_formal: _[+alveolar]
-          - form: "ng-"
-            condition: before_velars
-            condition_formal: _[+velar]
-          - form: "mf-"
-            condition: before_labiodentals
-          - form: "Ø"
-            condition: before_fricatives_and_vowels
         tone: L
-        notes: "# VERIFY: NC10 plural forms — may also use li- in some analyses; nasal prefix form is most conservative"
+        notes: "NC10 plural forms — may also use li- together wth class 9 prefix- in some analyses; nasal prefix form is most conservative"
 
       augment:
         form: null
@@ -1064,8 +1040,11 @@ noun_class_system:
         canonical_form: "lu-"
         allomorphs:
           - form: "lw-"
-            condition: before_vowels
-            condition_formal: _V
+            condition: before_vowels_a_e_i)
+            condition_formal: _V[a, e, i]
+          - form: "l-"
+            condition: before_vowels_o_u
+            condition_formal: _V[o, u]
         tone: L
 
       augment:
@@ -1098,7 +1077,7 @@ noun_class_system:
         canonical_form: "ka-"
         allomorphs:
           - form: "k-"
-            condition: before_vowels
+            condition: before_vowels_a
             condition_formal: _V
         tone: L
 
@@ -1132,7 +1111,7 @@ noun_class_system:
         canonical_form: "tu-"
         allomorphs:
           - form: "tw-"
-            condition: before_vowels
+            condition: before_vowels_a
             condition_formal: _V
         tone: L
 
@@ -1166,7 +1145,10 @@ noun_class_system:
         canonical_form: "bu-"
         allomorphs:
           - form: "bw-"
-            condition: before_vowels
+            condition: before_vowels_a_e_i
+            condition_formal: 
+          - form: "b-"
+            condition: before_vowels_o_u
             condition_formal: _V
         tone: L
         notes: "SiLozi NC14 = bu- (same as Chitonga); NOT u- as in Nyanja/Chichewa"
@@ -1201,10 +1183,7 @@ noun_class_system:
 
       prefix:
         canonical_form: "ku-"
-        allomorphs:
-          - form: "kw-"
-            condition: before_vowels
-            condition_formal: _V
+        allomorphs: []
         tone: L
 
       augment:
@@ -1363,11 +1342,10 @@ noun_class_system:
         features: [+locative]
 
       homophonous_prefixes:
-        "mo-": [NC1, NC3]
+        "mu-": [NC1, NC3, 18]
         "ku-": [NC15, NC17]
-        "mu-": [NC18]
-        "li-": [NC5, NC8]
-        note: "li- is shared by NC5 and NC8 — distinguished exclusively by concord agreement"
+        "li-": [NC5, NC10]
+        note: "li- is shared by NC5 and NC10 — distinguished exclusively by concord agreement"
 
       derivational_patterns:
 

@@ -624,28 +624,6 @@ noun_class_system:
         features: [+human, +animate, +plural]
         typical_referents: [kinship_plural, proper_name_plural]
 
-    NC2b:
-      class_number: 2
-      class_type: irregular
-      grammatical_number: plural
-      paired_class: NC1
-      frequency: low
-      active: true
-      prefix:
-        canonical_form: "a-"
-        allomorphs: []
-        formative: "ama-"
-        tone: L
-        notes: "# VERIFY: ciLunda honorific plural; ama- or other respectful form (Kawasha 2003)"
-      augment:
-        form: null
-        usage: not_applicable
-      triggers_rules: [SND.2, VL.2, TS.1, TL.1]
-      semantics:
-        primary_domain: respectful_reference
-        features: [+human, +animate, +respectful]
-        typical_referents: [elders, chiefs, respected_persons]
-
     NC3:
       class_number: 3
       class_type: regular
