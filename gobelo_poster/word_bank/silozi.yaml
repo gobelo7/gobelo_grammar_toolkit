@@ -1,0 +1,28 @@
+# Silozi Word Bank
+words:
+  - word: mulimu
+    nc: NC1
+    prefix: mu-
+    plural: balimu
+    gloss: person; human being
+    pos: noun
+    example: Mulimu yoozwi ki yena.
+    source: verified
+
+  - word: ndu
+    nc: NC9
+    prefix: "N-"
+    plural: ndu
+    gloss: house; home
+    pos: noun
+    example: Ndu yami ki yondu.
+    source: verified
+
+  - word: mazi
+    nc: NC6
+    prefix: ma-
+    plural: mazi
+    gloss: water
+    pos: noun
+    example: Mazi aa fita.
+    source: verified

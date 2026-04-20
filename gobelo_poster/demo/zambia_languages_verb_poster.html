@@ -1,0 +1,599 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0d0d0d;--ink2:#444;--ink3:#888;--rule:#e0e0e0;--rule2:#bbb;--bg-human:#fffcf5;--bg-thing:#f4f9f6;--bg-loc:#f5f4fb;--brand:#c8371a;--brand-light:#fdf0ed;--stripe:#f7f7f7}
+.shell{display:flex;height:620px;font-family:var(--font-sans)}
+.sidebar{width:232px;flex-shrink:0;background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;overflow-y:auto}
+.sb-section{padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.sb-title{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-text-tertiary);font-weight:500;margin-bottom:8px}
+.sb-row{margin-bottom:8px}
+.sb-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;display:block}
+.sb-row input[type=text],.sb-row select{width:100%;font-size:12px}
+.tam-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.tam-opt{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary);cursor:pointer;padding:3px 6px;border-radius:4px;border:0.5px solid var(--color-border-tertiary);transition:background 0.1s}
+.tam-opt:hover{background:var(--color-background-tertiary)}
+.tam-opt input{accent-color:var(--ink);width:12px;height:12px;flex-shrink:0}
+.tam-opt .code{font-size:9px;color:var(--color-text-tertiary);font-family:var(--font-mono)}
+.opt-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--color-text-secondary);cursor:pointer;margin-bottom:5px}
+.opt-row input{accent-color:var(--ink);width:12px;height:12px}
+.share-box{background:var(--color-background-tertiary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:background 0.15s}
+.share-box:hover{background:var(--color-background-secondary)}
+.share-url{font-size:9px;color:var(--color-text-secondary);font-family:var(--font-mono);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.share-icon{font-size:12px;flex-shrink:0;color:var(--color-text-tertiary)}
+.copied-badge{font-size:9px;color:var(--color-text-success);font-weight:500;display:none}
+.sb-bottom{padding:12px 14px;margin-top:auto}
+.btn-print{width:100%;padding:8px;font-size:12px;background:var(--ink);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500;letter-spacing:0.03em}
+.btn-print:hover{background:#333}
+.preview{flex:1;overflow:auto;background:#d8d8d8;display:flex;justify-content:center;padding:20px;align-items:flex-start}
+/* POSTER */
+.poster{width:1060px;flex-shrink:0;background:#fff;color:var(--ink);font-family:'Arial Narrow',Arial,sans-serif;position:relative}
+.ph{padding:22px 30px 16px;border-bottom:3px solid var(--ink);display:flex;justify-content:space-between;align-items:stretch;gap:20px}
+.ph-left{flex:1}
+.ph-eyebrow{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;font-family:Arial,sans-serif}
+.ph-verb{font-size:52px;font-weight:700;letter-spacing:-0.03em;line-height:0.95;font-family:Georgia,serif}
+.ph-gloss{font-size:13px;color:var(--ink2);font-style:italic;margin-top:6px;font-family:Arial,sans-serif}
+.ph-right{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end}
+.brand-block{text-align:right}
+.brand-name{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink)}
+.brand-sub{font-size:8px;color:var(--ink3);letter-spacing:0.1em;text-transform:uppercase;margin-top:1px}
+.brand-domain{font-size:8px;color:var(--brand);font-family:var(--font-mono);margin-top:3px}
+.lang-badges{display:flex;gap:6px;align-items:center}
+.badge{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-family:Arial,sans-serif;font-weight:700}
+.badge-lang{background:var(--ink);color:#fff}
+.badge-iso{background:var(--rule);color:var(--ink2)}
+.badge-guthrie{background:var(--brand-light);color:var(--brand);border:0.5px solid var(--brand)}
+.morph-bar{background:var(--stripe);border-bottom:0.5px solid var(--rule2);padding:8px 30px;display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.morph-cell{text-align:center;padding:0 10px;border-right:0.5px solid var(--rule2)}
+.morph-cell:last-child{border-right:none}
+.morph-cell .mc-label{font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);font-family:Arial,sans-serif;margin-bottom:2px}
+.morph-cell .mc-val{font-size:13px;font-weight:700;font-family:'Courier New',monospace;color:var(--ink)}
+.morph-cell .mc-val.brand{color:var(--brand)}
+.morph-arrow{font-size:14px;color:var(--ink3);padding:0 6px;font-weight:300}
+.grid-wrap{padding:14px 30px 10px}
+.grid-label{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);font-family:Arial,sans-serif;margin-bottom:8px}
+table.pg{width:100%;border-collapse:collapse;font-family:Arial,sans-serif}
+table.pg th{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);padding:5px 6px 8px;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;font-weight:700}
+table.pg th.rh{text-align:left;min-width:80px;padding-left:0}
+table.pg td{padding:4px 5px;border-bottom:0.5px solid var(--rule);vertical-align:middle}
+table.pg td.rl{padding-left:0;min-width:80px}
+table.pg td.rl .nc{font-size:10px;font-weight:700;color:var(--ink);display:block}
+table.pg td.rl .sl{font-size:8px;color:var(--ink3);display:block;line-height:1.3}
+table.pg td.pf{text-align:center;font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:var(--ink)}
+table.pg td.nf{text-align:center;font-family:'Courier New',monospace;font-size:10px;color:var(--ink3)}
+table.pg .sep-row td{border-top:1.5px solid var(--rule2);padding-top:6px}
+table.pg .gh td{background:var(--ink);color:#fff;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 5px 3px 0;font-weight:700}
+.bh{background:var(--bg-human)}
+.bt{background:var(--bg-thing)}
+.bl{background:var(--bg-loc)}
+.tam-head-group{border-left:1.5px solid var(--rule2)}
+.tam-head-group:first-of-type{border-left:none}
+.legend-row{padding:8px 30px;display:flex;gap:18px;border-top:0.5px solid var(--rule);background:var(--stripe)}
+.leg{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--ink3);font-family:Arial,sans-serif}
+.leg-sw{width:14px;height:8px;border-radius:1px;flex-shrink:0;border:0.5px solid var(--rule2)}
+.footer{padding:9px 30px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--ink)}
+.foot-l{font-size:8px;color:var(--ink3);font-family:Arial,sans-serif;line-height:1.6}
+.foot-r{font-size:8px;color:var(--ink3);font-family:Arial,sans-serif;text-align:right;line-height:1.6}
+.foot-brand{font-weight:700;color:var(--ink);font-size:9px}
+@media print{.shell{height:auto}.sidebar,.preview{display:none!important}.poster{width:100%!important;box-shadow:none!important;page-break-inside:avoid}}
+</style>
+
+<h2 class="sr-only">Zambia Languages Toolkit — verb conjugation poster generator. Select language, enter verb root, choose TAM forms, copy shareable URL or print.</h2>
+
+<div class="shell">
+<div class="sidebar">
+  <div class="sb-section">
+    <div class="sb-title">Language</div>
+    <div class="sb-row">
+      <select id="lang-sel" onchange="onLangChange()">
+        <option value="chitonga">ChiTonga (M.64)</option>
+        <option value="chibemba">Chibemba (M.42)</option>
+        <option value="chinyanja">ChiNyanja (N.31)</option>
+        <option value="silozi">SiLozi (K.21)</option>
+        <option value="cikaonde">ciKaonde (L.41)</option>
+        <option value="ciluvale">ciLuvale (K.14)</option>
+        <option value="cilunda">ciLunda (L.52)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">Verb</div>
+    <div class="sb-row">
+      <span class="sb-label">Root (no hyphens)</span>
+      <input type="text" id="root" value="bona" oninput="syncURL();render()" placeholder="e.g. bona, lya, ya">
+    </div>
+    <div class="sb-row">
+      <span class="sb-label">English gloss</span>
+      <input type="text" id="gloss" value="to see" oninput="syncURL();render()" placeholder="e.g. to see">
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">TAM forms</div>
+    <div class="tam-grid" id="tam-checks"></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">Display</div>
+    <label class="opt-row"><input type="checkbox" id="opt-neg" onchange="syncURL();render()"> Negative forms</label>
+    <label class="opt-row"><input type="checkbox" id="opt-loc" onchange="syncURL();render()"> Locative classes</label>
+    <label class="opt-row"><input type="checkbox" id="opt-morph" checked onchange="syncURL();render()"> Morpheme key</label>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">Share</div>
+    <div class="share-box" id="share-box" onclick="copyURL()">
+      <span class="share-icon">⎘</span>
+      <span class="share-url" id="share-url-text">generating…</span>
+      <span class="copied-badge" id="copied">Copied!</span>
+    </div>
+    <div style="font-size:9px;color:var(--color-text-tertiary);margin-top:5px;line-height:1.5">
+      URL encodes language, verb, gloss and all settings. Share to open the same poster.
+    </div>
+  </div>
+
+  <div class="sb-bottom">
+    <button class="btn-print" onclick="window.print()">⎙ Print / Export PDF</button>
+    <div style="font-size:9px;color:var(--color-text-tertiary);margin-top:5px;line-height:1.4;text-align:center">A3 landscape recommended for full grid</div>
+  </div>
+</div>
+
+<div class="preview">
+  <div class="poster" id="poster"></div>
+</div>
+</div>
+
+<script>
+const G={
+  chitonga:{name:"ChiTonga",iso:"toi",guthrie:"M.64",neg_pre:"ta",neg_type:"pre",
+    tam:[
+      {id:"PRES",label:"Present",     mk:"a",  fv:"a",  nfv:"i"},
+      {id:"PST", label:"Past",        mk:"aka",fv:"a",  nfv:"i"},
+      {id:"RPST",label:"Rec. past",   mk:"ali",fv:"a",  nfv:"i"},
+      {id:"FUT", label:"Near future", mk:"yo", fv:"a",  nfv:"i"},
+      {id:"RFUT",label:"Rem. future", mk:"za", fv:"a",  nfv:"i"},
+      {id:"HAB", label:"Habitual",    mk:"la", fv:"a",  nfv:"i"},
+      {id:"SUBJ",label:"Subjunctive", mk:"",   fv:"e",  nfv:"e"},
+      {id:"PERF",label:"Perfect",     mk:"a",  fv:"ide",nfv:"i"},
+    ],
+    def:["PRES","PST","FUT","PERF"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ndi",L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"tu", L:"we (excl)",S:"1PL.EXCL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"ba", L:"they",S:"3PL"},
+      ]},
+      {label:"Human noun classes",color:"h",rows:[
+        {id:"NC1",sc:"u", L:"NC1",S:"mu- person sg"},
+        {id:"NC2",sc:"ba",L:"NC2",S:"ba- people pl"},
+      ]},
+      {label:"Plant · tree · body",color:"t",rows:[
+        {id:"NC3",sc:"u", L:"NC3",S:"mu- tree sg"},
+        {id:"NC4",sc:"i", L:"NC4",S:"mi- trees pl"},
+      ]},
+      {label:"Object · thing · language",color:"t",rows:[
+        {id:"NC5", sc:"li",L:"NC5", S:"li- body part sg"},
+        {id:"NC6", sc:"a", L:"NC6", S:"ma- mass / pl"},
+        {id:"NC7", sc:"ci",L:"NC7", S:"ci- thing sg"},
+        {id:"NC8", sc:"zi",L:"NC8", S:"zi- things pl"},
+        {id:"NC9", sc:"i", L:"NC9", S:"N- animal sg"},
+        {id:"NC10",sc:"zi",L:"NC10",S:"N- animals pl"},
+        {id:"NC11",sc:"lu",L:"NC11",S:"lu- long object"},
+        {id:"NC12",sc:"ka",L:"NC12",S:"ka- diminutive sg"},
+        {id:"NC13",sc:"tu",L:"NC13",S:"tu- diminutives pl"},
+        {id:"NC14",sc:"bu",L:"NC14",S:"bu- abstract"},
+        {id:"NC15",sc:"ku",L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"pa",L:"NC16",S:"pa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+  chibemba:{name:"Chibemba",iso:"bem",guthrie:"M.42",neg_pre:"ta",neg_type:"pre",
+    tam:[
+      {id:"PRES",label:"Present",     mk:"a",   fv:"a",  nfv:"i"},
+      {id:"PST", label:"Past",        mk:"na",  fv:"a",  nfv:"i"},
+      {id:"FUT", label:"Future",      mk:"laa", fv:"a",  nfv:"i"},
+      {id:"HAB", label:"Habitual",    mk:"la",  fv:"a",  nfv:"i"},
+      {id:"SUBJ",label:"Subjunctive", mk:"",    fv:"e",  nfv:"e"},
+      {id:"PERF",label:"Perfect",     mk:"a",   fv:"ile",nfv:"i"},
+    ],
+    def:["PRES","PST","FUT","PERF"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ndi",L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"tu", L:"we",S:"1PL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"ba", L:"they",S:"3PL"},
+      ]},
+      {label:"Noun classes",color:"t",rows:[
+        {id:"NC1", sc:"u",  L:"NC1", S:"mu- human sg"},
+        {id:"NC2", sc:"ba", L:"NC2", S:"ba- humans pl"},
+        {id:"NC3", sc:"u",  L:"NC3", S:"mu- tree sg"},
+        {id:"NC4", sc:"i",  L:"NC4", S:"mi- trees pl"},
+        {id:"NC7", sc:"fi", L:"NC7", S:"fi- thing sg"},
+        {id:"NC8", sc:"bi", L:"NC8", S:"bi- things pl"},
+        {id:"NC9", sc:"i",  L:"NC9", S:"N- animal sg"},
+        {id:"NC10",sc:"zi", L:"NC10",S:"N- animals pl"},
+        {id:"NC14",sc:"bu", L:"NC14",S:"bu- abstract"},
+        {id:"NC15",sc:"ku", L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"pa",L:"NC16",S:"pa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+  chinyanja:{name:"ChiNyanja",iso:"nya",guthrie:"N.31",neg_infix:"sa",neg_type:"infix",
+    tam:[
+      {id:"PRES",label:"Present",     mk:"ma", fv:"a",nfv:"e"},
+      {id:"PST", label:"Past",        mk:"na", fv:"a",nfv:"a"},
+      {id:"FUT", label:"Future",      mk:"dza",fv:"a",nfv:"a"},
+      {id:"SUBJ",label:"Subjunctive", mk:"",   fv:"e",nfv:"e"},
+      {id:"PERF",label:"Perfect (H)", mk:"ná", fv:"a",nfv:"a"},
+    ],
+    def:["PRES","PST","FUT"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ndi",L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"ti", L:"we",S:"1PL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"a",  L:"they",S:"3PL"},
+      ]},
+      {label:"Noun classes",color:"t",rows:[
+        {id:"NC1", sc:"u",   L:"NC1", S:"mu- human sg"},
+        {id:"NC2", sc:"a",   L:"NC2", S:"a- humans pl"},
+        {id:"NC3", sc:"u",   L:"NC3", S:"mu- tree sg"},
+        {id:"NC4", sc:"i",   L:"NC4", S:"mi- trees pl"},
+        {id:"NC7", sc:"chi", L:"NC7", S:"chi- thing sg"},
+        {id:"NC8", sc:"zi",  L:"NC8", S:"zi- things pl"},
+        {id:"NC9", sc:"i",   L:"NC9", S:"N- animal sg"},
+        {id:"NC14",sc:"u",   L:"NC14",S:"u- abstract"},
+        {id:"NC15",sc:"ku",  L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"pa",L:"NC16",S:"pa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+  silozi:{name:"SiLozi",iso:"loz",guthrie:"K.21",neg_pre:"ha",neg_type:"pre",
+    tam:[
+      {id:"PRES",label:"Present",    mk:"a",  fv:"a",  nfv:"i"},
+      {id:"PST", label:"Past",       mk:"ne", fv:"ile",nfv:"i"},
+      {id:"FUT", label:"Future",     mk:"ka", fv:"a",  nfv:"i"},
+      {id:"SUBJ",label:"Subjunctive",mk:"",   fv:"e",  nfv:"e"},
+      {id:"PERF",label:"Perfect",    mk:"a",  fv:"ile",nfv:"i"},
+    ],
+    def:["PRES","PST","FUT"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ni", L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"lu", L:"we",S:"1PL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"ba", L:"they",S:"3PL"},
+      ]},
+      {label:"Noun classes",color:"t",rows:[
+        {id:"NC1", sc:"u",  L:"NC1", S:"mo- human sg"},
+        {id:"NC2", sc:"ba", L:"NC2", S:"ba- humans pl"},
+        {id:"NC3", sc:"u",  L:"NC3", S:"mo- tree sg"},
+        {id:"NC4", sc:"i",  L:"NC4", S:"mi- trees pl"},
+        {id:"NC7", sc:"si", L:"NC7", S:"si- thing sg"},
+        {id:"NC8", sc:"li", L:"NC8", S:"li- things pl"},
+        {id:"NC9", sc:"i",  L:"NC9", S:"N- animal sg"},
+        {id:"NC14",sc:"bu", L:"NC14",S:"bu- abstract"},
+        {id:"NC15",sc:"ku", L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"fa",L:"NC16",S:"fa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+  cikaonde:{name:"ciKaonde",iso:"kqn",guthrie:"L.41",neg_pre:"ta",neg_type:"pre",
+    tam:[
+      {id:"PRES",label:"Present",    mk:"a",  fv:"a",  nfv:"i"},
+      {id:"PST", label:"Past",       mk:"aka",fv:"ile",nfv:"i"},
+      {id:"FUT", label:"Future",     mk:"yo", fv:"a",  nfv:"i"},
+      {id:"HAB", label:"Habitual",   mk:"la", fv:"a",  nfv:"i"},
+      {id:"SUBJ",label:"Subjunctive",mk:"",   fv:"e",  nfv:"e"},
+      {id:"PERF",label:"Perfect",    mk:"a",  fv:"ile",nfv:"i"},
+    ],
+    def:["PRES","PST","FUT"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ndi",L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"tu", L:"we",S:"1PL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"ba", L:"they",S:"3PL"},
+      ]},
+      {label:"Noun classes",color:"t",rows:[
+        {id:"NC1", sc:"u",  L:"NC1", S:"mu- human sg"},
+        {id:"NC2", sc:"ba", L:"NC2", S:"ba- humans pl"},
+        {id:"NC7", sc:"ci", L:"NC7", S:"ci- thing sg"},
+        {id:"NC8", sc:"bi", L:"NC8", S:"bi- things pl"},
+        {id:"NC9", sc:"i",  L:"NC9", S:"N- animal sg"},
+        {id:"NC14",sc:"bu", L:"NC14",S:"bu- abstract"},
+        {id:"NC15",sc:"ku", L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"pa",L:"NC16",S:"pa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+  ciluvale:{name:"ciLuvale",iso:"lue",guthrie:"K.14",neg_pre:"ka",neg_type:"pre",
+    tam:[
+      {id:"PRES",label:"Present",    mk:"a",  fv:"a",  nfv:"i"},
+      {id:"PST", label:"Past",       mk:"aka",fv:"ile",nfv:"i"},
+      {id:"FUT", label:"Future",     mk:"yo", fv:"a",  nfv:"i"},
+      {id:"SUBJ",label:"Subjunctive",mk:"",   fv:"e",  nfv:"e"},
+      {id:"PERF",label:"Perfect",    mk:"a",  fv:"ile",nfv:"i"},
+    ],
+    def:["PRES","PST","FUT"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ndi",L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"tu", L:"we",S:"1PL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"a",  L:"they",S:"3PL"},
+      ]},
+      {label:"Noun classes",color:"t",rows:[
+        {id:"NC1", sc:"u",   L:"NC1", S:"mu- human sg"},
+        {id:"NC2", sc:"a",   L:"NC2", S:"a- humans pl"},
+        {id:"NC7", sc:"chi", L:"NC7", S:"chi- thing sg"},
+        {id:"NC8", sc:"vi",  L:"NC8", S:"vi- things pl"},
+        {id:"NC9", sc:"i",   L:"NC9", S:"N- animal sg"},
+        {id:"NC14",sc:"bu",  L:"NC14",S:"bu- abstract"},
+        {id:"NC15",sc:"ku",  L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"pa",L:"NC16",S:"pa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+  cilunda:{name:"ciLunda",iso:"lun",guthrie:"L.52",neg_pre:"ta",neg_type:"pre",
+    tam:[
+      {id:"PRES",label:"Present",    mk:"a",  fv:"a",  nfv:"i"},
+      {id:"PST", label:"Past",       mk:"aka",fv:"ile",nfv:"i"},
+      {id:"FUT", label:"Future",     mk:"yo", fv:"a",  nfv:"i"},
+      {id:"SUBJ",label:"Subjunctive",mk:"",   fv:"e",  nfv:"e"},
+      {id:"PERF",label:"Perfect",    mk:"a",  fv:"ile",nfv:"i"},
+    ],
+    def:["PRES","PST","FUT"],
+    groups:[
+      {label:"Personal pronouns",color:"h",rows:[
+        {id:"1SG",sc:"ndi",L:"I",S:"1SG"},
+        {id:"2SG",sc:"u",  L:"you (sg)",S:"2SG"},
+        {id:"3SG",sc:"u",  L:"he / she",S:"3SG"},
+        {id:"1PL",sc:"tu", L:"we",S:"1PL"},
+        {id:"2PL",sc:"mu", L:"you (pl)",S:"2PL"},
+        {id:"3PL",sc:"a",  L:"they (NC2 a-)"},
+      ]},
+      {label:"Noun classes",color:"t",rows:[
+        {id:"NC1", sc:"u",  L:"NC1", S:"mu- human sg"},
+        {id:"NC2", sc:"a",  L:"NC2", S:"a- humans pl"},
+        {id:"NC7", sc:"ci", L:"NC7", S:"ci- thing sg"},
+        {id:"NC8", sc:"i",  L:"NC8", S:"i- things pl (L.52)"},
+        {id:"NC9", sc:"i",  L:"NC9", S:"N- animal sg"},
+        {id:"NC14",sc:"bu", L:"NC14",S:"bu- abstract"},
+        {id:"NC15",sc:"ku", L:"NC15",S:"ku- infinitive"},
+      ]},
+      {label:"Locative classes",color:"l",rows:[
+        {id:"NC16",sc:"pa",L:"NC16",S:"pa- at / on"},
+        {id:"NC17",sc:"ku",L:"NC17",S:"ku- towards"},
+        {id:"NC18",sc:"mu",L:"NC18",S:"mu- inside"},
+      ]},
+    ]
+  },
+};
+
+function form(sc,mk,root,fv){return sc+mk+root+fv}
+function neg(g,sc,mk,root,fv,nfv,tam){
+  if(g.neg_type==="infix") return sc+(g.neg_infix||"sa")+root+nfv;
+  return (g.neg_pre||"ta")+sc+root+nfv;
+}
+
+function getState(){
+  const lang=document.getElementById("lang-sel").value;
+  const g=G[lang];
+  const selectedTam=g.tam.filter(t=>{const cb=document.getElementById("tc-"+t.id);return cb&&cb.checked;});
+  return{
+    lang,root:document.getElementById("root").value||"bona",
+    gloss:document.getElementById("gloss").value||"to see",
+    showNeg:document.getElementById("opt-neg").checked,
+    showLoc:document.getElementById("opt-loc").checked,
+    showMorph:document.getElementById("opt-morph").checked,
+    selectedTam,g
+  };
+}
+
+function buildURL(s){
+  const tids=s.selectedTam.map(t=>t.id).join(",");
+  const flags=(s.showNeg?"n":"")+(s.showLoc?"l":"")+(s.showMorph?"m":"");
+  return `gobelo.zambantutools.org/poster?lang=${s.lang}&verb=${encodeURIComponent(s.root)}&gloss=${encodeURIComponent(s.gloss)}&tam=${tids}&flags=${flags||"_"}`;
+}
+
+function syncURL(){
+  try{
+    const s=getState();
+    const url=buildURL(s);
+    document.getElementById("share-url-text").textContent=url;
+    document.getElementById("copied").style.display="none";
+  }catch(e){}
+}
+
+function copyURL(){
+  const url=document.getElementById("share-url-text").textContent;
+  navigator.clipboard&&navigator.clipboard.writeText("https://"+url).catch(()=>{});
+  document.getElementById("copied").style.display="inline";
+  setTimeout(()=>{document.getElementById("copied").style.display="none";},2000);
+}
+
+function render(){
+  const s=getState();const{g,root,gloss,showNeg,showLoc,showMorph,selectedTam}=s;
+  syncURL();
+  if(!selectedTam.length){document.getElementById("poster").innerHTML='<div style="padding:40px;color:#999;font-family:Arial;text-align:center;font-size:13px">Select at least one TAM form.</div>';return;}
+
+  const groups=showLoc?g.groups:g.groups.filter(gr=>gr.color!=="l");
+  const eg=g.tam[0],erow=groups[0]?.rows[0];
+
+  // header row: row-label | [TAM group spanning 1 or 2 cols each]
+  let thCells='<th class="rh">Class</th>';
+  selectedTam.forEach((t,i)=>{
+    const border=i>0?"border-left:1.5px solid #ccc;":"";
+    if(showNeg) thCells+=`<th colspan="2" style="${border}text-align:center">${t.label}</th>`;
+    else        thCells+=`<th style="${border}text-align:center">${t.label}</th>`;
+  });
+
+  // sub-header if neg
+  let subRow="";
+  if(showNeg){
+    subRow='<tr style="background:#f7f7f7"><td></td>';
+    selectedTam.forEach((t,i)=>{
+      const border=i>0?"border-left:1.5px solid #ccc;":"";
+      subRow+=`<td style="${border}font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#888;text-align:center;padding:2px 4px 5px;font-family:Arial;border-bottom:1.5px solid #111">affirm.</td>`;
+      subRow+=`<td style="font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#bbb;text-align:center;padding:2px 4px 5px;font-family:Arial;border-bottom:1.5px solid #111">negative</td>`;
+    });
+    subRow+="</tr>";
+  }
+
+  // body
+  let body="";
+  groups.forEach(grp=>{
+    const bg=grp.color==="h"?"var(--bg-human)":grp.color==="l"?"var(--bg-loc)":"var(--bg-thing)";
+    body+=`<tr><td colspan="${1+selectedTam.length*(showNeg?2:1)}" style="background:#111;color:#fff;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:4px 6px 4px 0;font-family:Arial;font-weight:700">${grp.label}</td></tr>`;
+    grp.rows.forEach(row=>{
+      let cells=`<td class="rl" style="background:${bg}"><span class="nc">${row.L}</span><span class="sl">${row.S||""}</span></td>`;
+      selectedTam.forEach((t,ti)=>{
+        const bl=ti>0?"border-left:1.5px solid #ddd;":"";
+        const pf=form(row.sc,t.mk,root,t.fv);
+        cells+=`<td class="pf" style="${bl}background:${bg}">${pf}</td>`;
+        if(showNeg){
+          const nf=neg(g,row.sc,t.mk,root,t.fv,t.nfv,t);
+          cells+=`<td class="nf" style="background:${bg}">${nf}</td>`;
+        }
+      });
+      body+=`<tr>${cells}</tr>`;
+    });
+  });
+
+  // morpheme key
+  let morphHtml="";
+  if(showMorph&&eg&&erow){
+    const pf=form(erow.sc,eg.mk,root,eg.fv);
+    const items=[];
+    if(g.neg_type==="pre") items.push({l:"neg. pre-initial",v:g.neg_pre+"-",dim:true});
+    items.push({l:"subj. concord",v:erow.sc+"-"});
+    if(g.neg_type==="infix") items.push({l:"neg. infix",v:"-"+(g.neg_infix||"sa")+"-",dim:true});
+    items.push({l:"TAM marker",v:eg.mk||"∅"});
+    items.push({l:"verb root",v:"-"+root+"-",brand:true});
+    items.push({l:"final vowel",v:"-"+eg.fv});
+    const chips=items.map(it=>`<div class="morph-cell"><div class="mc-label">${it.l}</div><div class="mc-val${it.brand?" brand":""}" style="${it.dim?"color:#aaa":""}">${it.v}</div></div>`).join('<div class="morph-arrow">+</div>');
+    morphHtml=`<div class="morph-bar">${chips}<div class="morph-arrow">→</div><div class="morph-cell"><div class="mc-label">surface (${eg.label})</div><div class="mc-val">${pf}</div></div><div style="flex:1"></div><div style="font-size:8px;color:#999;font-family:Arial;text-align:right;align-self:center">Example row: ${erow.L} · ${erow.S||""}</div></div>`;
+  }
+
+  document.getElementById("poster").innerHTML=`
+<div class="ph">
+  <div class="ph-left">
+    <div class="ph-eyebrow">${g.name} &nbsp;·&nbsp; ${g.iso} &nbsp;·&nbsp; Guthrie ${g.guthrie} &nbsp;·&nbsp; Verb conjugation reference</div>
+    <div class="ph-verb">&#x2013;${root}&#x2013;</div>
+    <div class="ph-gloss">${gloss}</div>
+  </div>
+  <div class="ph-right">
+    <div class="lang-badges">
+      <span class="badge badge-lang">${g.name}</span>
+      <span class="badge badge-iso">${g.iso}</span>
+      <span class="badge badge-guthrie">${g.guthrie}</span>
+    </div>
+    <div class="brand-block">
+      <div class="brand-name">Zambia Languages Toolkit</div>
+      <div class="brand-sub">Gobelo Platform</div>
+      <div class="brand-domain">gobelo.zambantutools.org</div>
+    </div>
+  </div>
+</div>
+${morphHtml}
+<div class="grid-wrap">
+  <div class="grid-label">Full paradigm — ${selectedTam.map(t=>t.label).join(" · ")}</div>
+  <table class="pg">
+    <thead>
+      <tr>${thCells}</tr>
+      ${subRow}
+      ${!showNeg?`<tr style="border-bottom:1.5px solid #111"><td></td>${selectedTam.map((_,i)=>`<td style="${i>0?"border-left:1.5px solid #ccc;":""}border-bottom:1.5px solid #111"></td>`).join("")}</tr>`:""}
+    </thead>
+    <tbody>${body}</tbody>
+  </table>
+</div>
+<div class="legend-row">
+  <div class="leg"><div class="leg-sw" style="background:var(--bg-human)"></div>Human / personal</div>
+  <div class="leg"><div class="leg-sw" style="background:var(--bg-thing)"></div>Object / plant classes</div>
+  ${showLoc?`<div class="leg"><div class="leg-sw" style="background:var(--bg-loc)"></div>Locative classes</div>`:""}
+  <div style="flex:1"></div>
+  <div class="leg" style="font-family:var(--font-mono);font-size:8px;color:#bbb">SC + TAM + root + FV&nbsp;&nbsp;|&nbsp;&nbsp;neg: ${g.neg_type==="infix"?`SC + -${g.neg_infix||"sa"}- + root + FV`:`${g.neg_pre||"ta"}- + SC + root + FV`}</div>
+</div>
+<div class="footer">
+  <div class="foot-l">
+    <div class="foot-brand">Zambia Languages Toolkit · Gobelo Platform</div>
+    <div>gobelo.zambantutools.org/poster?lang=${s.lang}&amp;verb=${encodeURIComponent(root)}&amp;gloss=${encodeURIComponent(gloss)}</div>
+  </div>
+  <div class="foot-r">
+    <div>Generated for classroom use · Verify forms against primary reference grammar</div>
+    <div>Data: GGT ${g.name} v1.0 · Free for educational use</div>
+  </div>
+</div>`;
+}
+
+function buildTamChecks(){
+  const lang=document.getElementById("lang-sel").value;
+  const g=G[lang];
+  document.getElementById("tam-checks").innerHTML=g.tam.map(t=>`
+    <label class="tam-opt">
+      <input type="checkbox" id="tc-${t.id}" onchange="syncURL();render()" ${g.def.includes(t.id)?"checked":""}>
+      ${t.label}<span class="code">${t.mk||"∅"}…${t.fv}</span>
+    </label>`).join("");
+}
+
+function onLangChange(){buildTamChecks();syncURL();render();}
+
+// Boot — read URL params if present
+(function(){
+  try{
+    const p=new URLSearchParams(location.search);
+    if(p.get("lang")&&G[p.get("lang")]){document.getElementById("lang-sel").value=p.get("lang");}
+    if(p.get("verb")) document.getElementById("root").value=p.get("verb");
+    if(p.get("gloss"))document.getElementById("gloss").value=p.get("gloss");
+  }catch(e){}
+  buildTamChecks();
+  try{
+    const p=new URLSearchParams(location.search);
+    if(p.get("tam")){const ids=p.get("tam").split(",");G[document.getElementById("lang-sel").value].tam.forEach(t=>{const cb=document.getElementById("tc-"+t.id);if(cb)cb.checked=ids.includes(t.id);});}
+    const flags=p.get("flags")||"";
+    if(flags.includes("n"))document.getElementById("opt-neg").checked=true;
+    if(flags.includes("l"))document.getElementById("opt-loc").checked=true;
+    if(!flags.includes("m"))document.getElementById("opt-morph").checked=false;
+  }catch(e){}
+  render();
+})();
+</script>

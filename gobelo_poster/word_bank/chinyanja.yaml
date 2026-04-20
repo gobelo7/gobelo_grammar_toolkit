@@ -1,0 +1,28 @@
+# ChiNyanja Word Bank
+words:
+  - word: munthu
+    nc: NC1
+    prefix: mu-
+    plural: anthu
+    gloss: person; human being
+    pos: noun
+    example: Munthu uja ndi wamkulu.
+    source: verified
+
+  - word: nyumba
+    nc: NC9
+    prefix: ny-
+    plural: nyumba
+    gloss: house; home
+    pos: noun
+    example: Nyumba yake ndi yaikulu.
+    source: verified
+
+  - word: madzi
+    nc: NC6
+    prefix: ma-
+    plural: madzi
+    gloss: water
+    pos: noun
+    example: Madzi ndi ofunika.
+    source: verified

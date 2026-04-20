@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobelo Platform - Bantu Language Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            background: #fdf6e8;
+            color: #1a1108;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .title {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: 3rem;
+            color: #c8711a;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #6b5240;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .lang-button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #d9c9b0;
+            background: #f5ede0;
+            color: #1a1108;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .lang-button:hover {
+            background: #e8a830;
+            border-color: #e8a830;
+            color: white;
+        }
+
+        .lang-button.active {
+            background: #c8711a;
+            border-color: #c8711a;
+            color: white;
+        }
+
+        .word-card {
+            background: #f5ede0;
+            border: 2px solid #d9c9b0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .word {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: 2.5rem;
+            color: #c8711a;
+            margin-bottom: 1rem;
+        }
+
+        .gloss {
+            font-size: 1.3rem;
+            color: #1a1108;
+            margin-bottom: 1rem;
+        }
+
+        .example {
+            font-style: italic;
+            color: #6b5240;
+            margin-bottom: 1.5rem;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tag.pos {
+            background: #c8711a;
+            color: white;
+        }
+
+        .tag.nc {
+            background: #2c5f6e;
+            color: white;
+        }
+
+        .tag.prefix {
+            background: #f5ede0;
+            color: #1a1108;
+            border: 1px solid #d9c9b0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b5240;
+        }
+
+        .refresh-button {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #e8a830;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .refresh-button:hover {
+            background: #c8711a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Gobelo Platform</h1>
+            <p class="subtitle">Bantu Language Learning</p>
+        </header>
+
+        <div class="language-selector" id="language-selector">
+            <!-- Language buttons will be populated by JavaScript -->
+        </div>
+
+        <div id="word-card" class="word-card">
+            <div class="loading">Select a language to see the Word of the Day</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="refresh-button" id="refresh-btn" onclick="loadWordOfDay()">🔄 Refresh Word</button>
+        </div>
+    </div>
+
+    <script>
+        const languages = {
+            chitonga: { name: "ChiTonga", iso: "toi", guthrie: "M.64", region: "Southern Province", color: "#2c5f6e" },
+            chibemba: { name: "Chibemba", iso: "bem", guthrie: "M.42", region: "Copperbelt / Luapula", color: "#a04030" },
+            chinyanja: { name: "ChiNyanja", iso: "nya", guthrie: "N.31", region: "Eastern Province / Lusaka", color: "#3a6b3e" },
+            silozi: { name: "SiLozi", iso: "loz", guthrie: "K.21", region: "Western Province", color: "#c8711a" },
+            cikaonde: { name: "ciKaonde", iso: "kqn", guthrie: "L.41", region: "North-Western Province", color: "#8b6f4e" },
+            ciluvale: { name: "ciLuvale", iso: "lue", guthrie: "K.14", region: "North-Western Province", color: "#5a7a3a" },
+            cilunda: { name: "ciLunda", iso: "lun", guthrie: "L.52", region: "North-Western Province", color: "#6a4a7a" },
+        };
+
+        let currentLang = 'chitonga';
+
+        // Create language selector buttons
+        const selector = document.getElementById('language-selector');
+        Object.entries(languages).forEach(([key, lang]) => {
+            const button = document.createElement('button');
+            button.className = 'lang-button';
+            button.textContent = lang.name;
+            button.onclick = () => selectLanguage(key);
+            if (key === currentLang) button.classList.add('active');
+            selector.appendChild(button);
+        });
+
+        function selectLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadWordOfDay();
+        }
+
+        async function loadWordOfDay() {
+            const card = document.getElementById('word-card');
+            card.innerHTML = '<div class="loading">Loading...</div>';
+
+            try {
+                const response = await fetch(`/api/wotd?lang=${currentLang}`);
+                const data = await response.json();
+
+                card.innerHTML = `
+                    <div class="word">${data.word}</div>
+                    <div class="gloss">${data.gloss}</div>
+                    ${data.example ? `<div class="example">${data.example}</div>` : ''}
+                    <div class="tags">
+                        ${data.pos ? `<span class="tag pos">${data.pos}</span>` : ''}
+                        ${data.nc ? `<span class="tag nc">${data.nc}</span>` : ''}
+                        ${data.prefix ? `<span class="tag prefix">prefix: ${data.prefix}</span>` : ''}
+                    </div>
+                `;
+            } catch (error) {
+                card.innerHTML = '<div class="loading">Error loading word. Please try again.</div>';
+                console.error('Error:', error);
+            }
+        }
+
+        // Load initial word
+        loadWordOfDay();
+    </script>
+</body>
+</html>
+  display:flex;align-items:center;gap:6px;font-size:11px;color:#555;
+  cursor:pointer;padding:3px 0;user-select:none;
+}
+.opt-row input{width:13px;height:13px;accent-color:#111;cursor:pointer}
+
+/* Share box */
+.share-box{
+  background:#f5f5f5;border:1px solid #ddd;border-radius:5px;
+  padding:7px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;
+}
+.share-box:hover{background:#eee}
+.share-url{font-size:9px;font-family:monospace;color:#555;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copied{font-size:9px;font-weight:700;color:#2a8a2a;display:none}
+.share-note{font-size:9px;color:#aaa;line-height:1.5;margin-top:4px}
+
+/* Bottom buttons */
+#sidebar-bottom{padding:12px 14px;border-top:1px solid #eee;margin-top:auto;display:flex;flex-direction:column;gap:6px}
+.btn-print{
+  width:100%;padding:8px;font-size:12px;font-weight:700;letter-spacing:0.04em;
+  background:#111;color:#fff;border:none;border-radius:5px;cursor:pointer;
+}
+.btn-print:hover{background:#333}
+.print-note{font-size:9px;color:#aaa;text-align:center;line-height:1.4}
+
+/* ── Preview area ────────────────────────────────────────────────────────── */
+#preview{
+  flex:1;overflow:auto;background:#d0d0d0;
+  display:flex;justify-content:center;padding:20px;align-items:flex-start;
+}
+.loading-msg{color:#888;font-size:13px;padding:60px;text-align:center}
+
+/* ── POSTER ───────────────────────────────────────────────────────────────── */
+#poster{
+  width:1050px;flex-shrink:0;background:#fff;color:#111;
+  font-family:'Arial Narrow',Arial,sans-serif;
+  box-shadow:0 2px 20px rgba(0,0,0,0.15);
+}
+/* Header */
+.ph{padding:20px 28px 14px;border-bottom:3px solid #111;display:flex;justify-content:space-between;align-items:stretch}
+.ph-left{flex:1}
+.ph-eyebrow{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#777;margin-bottom:5px}
+.ph-verb{font-size:50px;font-weight:700;letter-spacing:-0.03em;line-height:0.95;font-family:Georgia,serif}
+.ph-gloss{font-size:13px;color:#444;font-style:italic;margin-top:5px}
+.ph-right{text-align:right;display:flex;flex-direction:column;justify-content:space-between}
+.lang-badges{display:flex;gap:5px;justify-content:flex-end;margin-bottom:6px}
+.badge{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-weight:700}
+.badge-name{background:#111;color:#fff}
+.badge-iso{background:#eee;color:#555}
+.badge-g{background:#fff8f0;color:#b04010;border:0.5px solid #d06020}
+.brand-block{text-align:right}
+.brand-name{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#111}
+.brand-sub{font-size:8px;color:#888;letter-spacing:0.08em;text-transform:uppercase}
+.brand-url{font-size:8px;color:#c8371a;font-family:monospace}
+
+/* Morpheme-key bar */
+.mk-bar{background:#f7f7f7;border-bottom:1px solid #ddd;padding:8px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.mk-cell{text-align:center;padding:0 10px;border-right:1px solid #ddd}
+.mk-cell:last-child{border-right:none}
+.mk-cell .mk-label{font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#999;margin-bottom:2px}
+.mk-cell .mk-val{font-size:12px;font-weight:700;font-family:monospace;color:#111}
+.mk-cell .mk-val.brand{color:#c8371a}
+.mk-cell .mk-val.dim{color:#bbb}
+.mk-arrow{font-size:14px;color:#bbb;padding:0 4px}
+
+/* Grid */
+.grid-wrap{padding:12px 28px 8px}
+.grid-label{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#999;margin-bottom:7px}
+table.pg{width:100%;border-collapse:collapse;font-family:Arial,sans-serif}
+table.pg th{
+  font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#888;
+  padding:5px 5px 7px;border-bottom:2px solid #111;text-align:center;white-space:nowrap;
+}
+table.pg th.rh{text-align:left;min-width:88px;padding-left:0}
+table.pg .tam-header{border-left:1.5px solid #ccc}
+table.pg .tam-header:first-child{border-left:none}
+table.pg .sub-header td{
+  font-size:7px;letter-spacing:0.09em;text-transform:uppercase;color:#bbb;
+  text-align:center;padding:2px 4px 5px;border-bottom:1.5px solid #111;
+}
+table.pg .sub-header td.sl{border-left:1.5px solid #e0e0e0}
+table.pg td{padding:3px 5px;border-bottom:0.5px solid #e8e8e8;vertical-align:middle}
+table.pg td.rl{padding-left:0;min-width:88px}
+table.pg td.rl .nc{font-size:10px;font-weight:700;color:#111;display:block}
+table.pg td.rl .sl{font-size:8px;color:#aaa;display:block;line-height:1.3}
+table.pg td.pf{text-align:center;font-family:monospace;font-size:12px;font-weight:700;color:#111}
+table.pg td.nf{text-align:center;font-family:monospace;font-size:11px;color:#aaa}
+table.pg td.tdl{border-left:1.5px solid #e8e8e8}
+table.pg tr.gh td{
+  background:#111;color:#fff;font-size:7px;font-weight:700;
+  letter-spacing:0.14em;text-transform:uppercase;padding:3px 5px 3px 0;
+}
+/* Row background bands */
+.bh{background:#fffcf5}
+.bt{background:#f4f9f6}
+.bl{background:#f4f4fb}
+
+/* Legend */
+.legend-row{
+  padding:7px 28px;display:flex;gap:16px;align-items:center;
+  border-top:0.5px solid #ddd;background:#f9f9f9;flex-wrap:wrap;
+}
+.leg{display:flex;align-items:center;gap:5px;font-size:9px;color:#888}
+.leg-sw{width:14px;height:8px;border-radius:1px;flex-shrink:0;border:0.5px solid #ccc}
+.leg-right{margin-left:auto;font-size:8px;color:#bbb;font-family:monospace}
+
+/* Footer */
+.poster-footer{
+  padding:8px 28px;display:flex;justify-content:space-between;align-items:center;
+  border-top:2px solid #111;
+}
+.pf-left{font-size:8px;color:#888;line-height:1.6}
+.pf-left strong{color:#111;font-size:9px}
+.pf-right{font-size:8px;color:#aaa;text-align:right;line-height:1.6}
+
+/* ── Print styles ────────────────────────────────────────────────────────── */
+@media print{
+  #shell,#sidebar,#preview{display:block!important;height:auto!important;overflow:visible!important}
+  #sidebar,#preview{display:none!important}
+  #poster{
+    box-shadow:none!important;width:100%!important;
+    page-break-inside:avoid;
+  }
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────────────────────── -->
+  <div id="sidebar">
+    <div class="sb-brand">
+      <div class="b-name">Zambia Languages Toolkit</div>
+      <div class="b-sub">Gobelo Platform · Verb Poster</div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Language</div>
+      <div class="sb-row">
+        <select id="lang-sel" onchange="onLangChange()">
+          <option value="chitonga">ChiTonga (M.64)</option>
+          <option value="chibemba">Chibemba (M.42)</option>
+          <option value="chinyanja">ChiNyanja (N.31)</option>
+          <option value="silozi">SiLozi (K.21)</option>
+          <option value="cikaonde">ciKaonde (L.41)</option>
+          <option value="ciluvale">ciLuvale (K.14)</option>
+          <option value="cilunda">ciLunda (L.52)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Verb</div>
+      <div class="sb-row">
+        <span class="sb-label">Root (no hyphens)</span>
+        <input type="text" id="root" value="bona" oninput="debouncedRender()" placeholder="e.g. bona, lya, ya">
+      </div>
+      <div class="sb-row">
+        <span class="sb-label">English gloss</span>
+        <input type="text" id="gloss" value="to see" oninput="debouncedRender()" placeholder="e.g. to see">
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">TAM forms</div>
+      <div class="tam-grid" id="tam-checks"></div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Display options</div>
+      <label class="opt-row"><input type="checkbox" id="opt-neg"   onchange="renderPoster()"> Negative forms</label>
+      <label class="opt-row"><input type="checkbox" id="opt-loc"   onchange="renderPoster()"> Locative classes</label>
+      <label class="opt-row"><input type="checkbox" id="opt-morph" checked onchange="renderPoster()"> Morpheme key</label>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Share</div>
+      <div class="share-box" onclick="copyURL()">
+        <span style="font-size:13px;color:#888">⎘</span>
+        <span class="share-url" id="share-url">—</span>
+        <span class="copied" id="copied-badge">Copied!</span>
+      </div>
+      <div class="share-note">URL encodes all settings. Share it to open the same poster.</div>
+    </div>
+
+    <div id="sidebar-bottom">
+      <button class="btn-print" onclick="window.print()">⎙ Print / Export PDF</button>
+      <div class="print-note">Set paper to A3 landscape for best results.</div>
+    </div>
+  </div>
+
+  <!-- ── PREVIEW ──────────────────────────────────────────────────────────── -->
+  <div id="preview">
+    <div id="poster">
+      <div class="loading-msg">Loading grammar data…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let langMeta = {};   // { key: { name, iso, guthrie, tam, tam_order, default_tam, neg_type... } }
+let renderTimer = null;
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  await fetchLanguages();
+  readURLParams();
+  buildTamChecks();
+  await renderPoster();
+});
+
+// ── Language metadata fetch ────────────────────────────────────────────────
+async function fetchLanguages() {
+  try {
+    const r = await fetch('/api/languages');
+    const langs = await r.json();
+    langs.forEach(l => { langMeta[l.key] = l; });
+    // Populate language select if not already set
+    const sel = document.getElementById('lang-sel');
+    sel.innerHTML = langs.map(l =>
+      `<option value="${l.key}">${l.name} (${l.guthrie})</option>`
+    ).join('');
+  } catch (e) {
+    console.error('Could not fetch /api/languages', e);
+  }
+}
+
+// ── URL params ─────────────────────────────────────────────────────────────
+function readURLParams() {
+  const p = new URLSearchParams(location.search);
+  const langSel = document.getElementById('lang-sel');
+  if (p.get('lang') && langSel.querySelector(`option[value="${p.get('lang')}"]`))
+    langSel.value = p.get('lang');
+  if (p.get('verb'))  document.getElementById('root').value  = p.get('verb');
+  if (p.get('gloss')) document.getElementById('gloss').value = p.get('gloss');
+  if (p.get('neg'))   document.getElementById('opt-neg').checked   = p.get('neg') === '1';
+  if (p.get('loc'))   document.getElementById('opt-loc').checked   = p.get('loc') === '1';
+  if (p.has('morph')) document.getElementById('opt-morph').checked = p.get('morph') !== '0';
+  // TAM selection handled after buildTamChecks
+  window._urlTamIds = p.get('tam') ? p.get('tam').split(',') : null;
+}
+
+function currentLangKey() { return document.getElementById('lang-sel').value; }
+
+// ── TAM checkbox grid ──────────────────────────────────────────────────────
+function buildTamChecks() {
+  const langKey = currentLangKey();
+  const meta    = langMeta[langKey];
+  if (!meta) return;
+
+  const defaults = window._urlTamIds || meta.default_tam || [];
+  const order    = meta.tam_order || Object.keys(meta.tam);
+
+  document.getElementById('tam-checks').innerHTML = order.map(tid => {
+    const t       = meta.tam[tid];
+    const checked = defaults.includes(tid) ? 'checked' : '';
+    const code    = (t.marker || '∅') + '…' + t.fv;
+    return `<label class="tam-opt ${checked ? 'checked' : ''}">
+      <input type="checkbox" id="tc-${tid}" ${checked} onchange="tamChange(this)">
+      ${t.label}<span class="tam-code">${code}</span>
+    </label>`;
+  }).join('');
+
+  window._urlTamIds = null; // consumed
+}
+
+function tamChange(cb) {
+  cb.closest('.tam-opt').classList.toggle('checked', cb.checked);
+  renderPoster();
+}
+
+function onLangChange() { buildTamChecks(); renderPoster(); }
+
+// ── URL sync ───────────────────────────────────────────────────────────────
+function syncURL(root, gloss, langKey, tamIds, showNeg, showLoc, showMorph) {
+  const base = `${location.origin}/poster`;
+  const p    = new URLSearchParams({
+    lang:  langKey,
+    verb:  root,
+    gloss: gloss,
+    tam:   tamIds.join(','),
+    neg:   showNeg  ? '1' : '0',
+    loc:   showLoc  ? '1' : '0',
+    morph: showMorph ? '1' : '0',
+  });
+  const url = `${base}?${p}`;
+  // Show a clean version in the sidebar (origin stripped for readability)
+  const display = `gobelo.zambantutools.org/poster?lang=${langKey}&verb=${encodeURIComponent(root)}&tam=${tamIds.join(',')}`;
+  document.getElementById('share-url').textContent = display;
+  history.replaceState(null, '', url);
+  return url;
+}
+
+function copyURL() {
+  const url = location.href;
+  navigator.clipboard?.writeText(url).catch(() => {});
+  const badge = document.getElementById('copied-badge');
+  badge.style.display = 'inline';
+  setTimeout(() => { badge.style.display = 'none'; }, 2000);
+}
+
+// ── Debounced render ───────────────────────────────────────────────────────
+function debouncedRender() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(renderPoster, 320);
+}
+
+// ── Render poster via API ──────────────────────────────────────────────────
+async function renderPoster() {
+  const langKey  = currentLangKey();
+  const root     = document.getElementById('root').value.trim() || 'bona';
+  const gloss    = document.getElementById('gloss').value.trim();
+  const showNeg  = document.getElementById('opt-neg').checked;
+  const showLoc  = document.getElementById('opt-loc').checked;
+  const showMorph = document.getElementById('opt-morph').checked;
+
+  const tamIds = (langMeta[langKey]?.tam_order || []).filter(tid => {
+    const cb = document.getElementById('tc-' + tid);
+    return cb && cb.checked;
+  });
+
+  if (!tamIds.length) {
+    document.getElementById('poster').innerHTML =
+      '<div class="loading-msg">Select at least one TAM form.</div>';
+    return;
+  }
+
+  syncURL(root, gloss, langKey, tamIds, showNeg, showLoc, showMorph);
+
+  let data;
+  try {
+    const r = await fetch('/api/conjugate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lang: langKey, verb: root, gloss, tam: tamIds,
+                             show_neg: showNeg, show_loc: showLoc, show_morph: showMorph }),
+    });
+    data = await r.json();
+    if (data.error) throw new Error(data.error);
+  } catch (e) {
+    document.getElementById('poster').innerHTML =
+      `<div class="loading-msg" style="color:#c00">API error: ${e.message}</div>`;
+    return;
+  }
+
+  document.getElementById('poster').innerHTML = buildPosterHTML(data);
+}
+
+// ── Poster HTML builder ────────────────────────────────────────────────────
+function buildPosterHTML(d) {
+  const L = d.lang;
+  const url = `gobelo.zambantutools.org/poster?lang=${langMeta[currentLangKey()]?.key}&verb=${encodeURIComponent(d.root)}`;
+
+  // Header
+  const header = `
+<div class="ph">
+  <div class="ph-left">
+    <div class="ph-eyebrow">${L.name} &nbsp;·&nbsp; ${L.iso} &nbsp;·&nbsp; Guthrie ${L.guthrie} &nbsp;·&nbsp; Verb conjugation reference</div>
+    <div class="ph-verb">\u2013${d.root}\u2013</div>
+    <div class="ph-gloss">${d.gloss || ''}</div>
+  </div>
+  <div class="ph-right">
+    <div class="lang-badges">
+      <span class="badge badge-name">${L.name}</span>
+      <span class="badge badge-iso">${L.iso}</span>
+      <span class="badge badge-g">${L.guthrie}</span>
+    </div>
+    <div class="brand-block">
+      <div class="brand-name">Zambia Languages Toolkit</div>
+      <div class="brand-sub">Gobelo Platform</div>
+      <div class="brand-url">gobelo.zambantutools.org</div>
+    </div>
+  </div>
+</div>`;
+
+  // Morpheme key bar
+  let morphBar = '';
+  if (d.morph_key) {
+    const mk = d.morph_key;
+    const cells = mk.slots.map((s, i) => {
+      const cls = s.brand ? 'brand' : s.dim ? 'dim' : '';
+      return `<div class="mk-cell"><div class="mk-label">${s.label}</div><div class="mk-val ${cls}">${s.value}</div></div>`
+        + (i < mk.slots.length - 1 ? '<div class="mk-arrow">+</div>' : '');
+    }).join('');
+    morphBar = `
+<div class="mk-bar">${cells}
+  <div class="mk-arrow">\u2192</div>
+  <div class="mk-cell">
+    <div class="mk-label">surface (${mk.tam_label} · ${mk.sc_label})</div>
+    <div class="mk-val">${mk.surface}</div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="font-size:8px;color:#bbb;align-self:center;text-align:right">
+    Formula: ${d.formula}
+  </div>
+</div>`;
+  }
+
+  // Table header
+  const showNeg = document.getElementById('opt-neg').checked;
+  const nCols   = d.selected_tam.length * (showNeg ? 2 : 1);
+
+  let thRow = '<th class="rh">Class · Person</th>';
+  d.selected_tam.forEach((t, i) => {
+    const bl = i > 0 ? ' tam-header' : '';
+    if (showNeg) {
+      thRow += `<th colspan="2" class="${bl}" style="text-align:center">${t.label}</th>`;
+    } else {
+      thRow += `<th class="${bl}" style="text-align:center">${t.label}</th>`;
+    }
+  });
+
+  let subRow = '';
+  if (showNeg) {
+    subRow = '<tr class="sub-header"><td></td>';
+    d.selected_tam.forEach((t, i) => {
+      const bl = i > 0 ? ' sl' : '';
+      subRow += `<td class="${bl}">affirm.</td><td>negative</td>`;
+    });
+    subRow += '</tr>';
+  }
+
+  // Table body
+  const colorClass = {human:'bh', thing:'bt', locative:'bl'};
+  let body = '';
+  d.paradigm.forEach(group => {
+    const bg = colorClass[group.color] || 'bt';
+    body += `<tr class="gh"><td colspan="${1 + nCols}">${group.label}</td></tr>`;
+    group.rows.forEach(row => {
+      let cells = `<td class="rl ${bg}">
+        <span class="nc">${row.label}</span>
+        <span class="sl">${row.sublabel}</span>
+      </td>`;
+      d.selected_tam.forEach((t, ti) => {
+        const bl = ti > 0 ? ' tdl' : '';
+        const forms = row.forms[t.id] || {};
+        cells += `<td class="pf ${bg}${bl}">${forms.pos || '—'}</td>`;
+        if (showNeg) cells += `<td class="nf ${bg}">${forms.neg || '—'}</td>`;
+      });
+      body += `<tr>${cells}</tr>`;
+    });
+  });
+
+  // Show-neg column labels visible in footer formula
+  const showLoc = document.getElementById('opt-loc').checked;
+
+  // Legend
+  const legend = `
+<div class="legend-row">
+  <div class="leg"><div class="leg-sw" style="background:#fffcf5"></div>Human / personal</div>
+  <div class="leg"><div class="leg-sw" style="background:#f4f9f6"></div>Object / plant classes</div>
+  ${showLoc ? '<div class="leg"><div class="leg-sw" style="background:#f4f4fb"></div>Locative classes</div>' : ''}
+  <div class="leg-right">${d.formula}${showNeg ? ' &nbsp;|&nbsp; NEG: ' + d.neg_formula : ''}</div>
+</div>`;
+
+  // Footer
+  const footer = `
+<div class="poster-footer">
+  <div class="pf-left">
+    <strong>Zambia Languages Toolkit · Gobelo Platform</strong><br>
+    ${url}
+  </div>
+  <div class="pf-right">
+    Generated for classroom use · Verify forms against primary reference grammar<br>
+    Data: GGT ${L.name} v1.0 · Free for educational use
+  </div>
+</div>`;
+
+  return `${header}${morphBar}
+<div class="grid-wrap">
+  <div class="grid-label">Full paradigm — ${d.selected_tam.map(t => t.label).join(' · ')}</div>
+  <table class="pg">
+    <thead>
+      <tr>${thRow}</tr>
+      ${subRow}
+      ${!showNeg ? `<tr><td></td>${d.selected_tam.map((_,i) =>
+        `<td style="${i>0?'border-left:1.5px solid #e0e0e0;':''}border-bottom:1.5px solid #111"></td>`
+      ).join('')}</tr>` : ''}
+    </thead>
+    <tbody>${body}</tbody>
+  </table>
+</div>
+${legend}
+${footer}`;
+}
+</script>
+</body>
+</html>

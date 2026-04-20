@@ -1,0 +1,94 @@
+# ChiTonga Word Bank — gobelo_poster/word_bank/chitonga.yaml
+# Fields: word, nc, prefix, plural, gloss, pos, example, source
+# source: corpus | grammar | verified
+
+words:
+  - word: ubuntu
+    nc: NC14
+    prefix: bu-
+    plural: null
+    gloss: humanity; compassion for others
+    pos: noun
+    example: Ubuntu nduwe wakasolelwa.
+    source: verified
+
+  - word: mwana
+    nc: NC1
+    prefix: mu-
+    plural: bana
+    gloss: child; son or daughter
+    pos: noun
+    example: Mwana uyu ulila.
+    source: verified
+
+  - word: ng'anda
+    nc: NC9
+    prefix: "N-"
+    plural: ing'anda
+    gloss: house; home
+    pos: noun
+    example: Ng'anda ya Mweemba ili ciinda.
+    source: verified
+
+  - word: muntu
+    nc: NC1
+    prefix: mu-
+    plural: bantu
+    gloss: person; human being
+    pos: noun
+    example: Muntu woonse uyanda bulakalo.
+    source: verified
+
+  - word: luyando
+    nc: NC11
+    prefix: lu-
+    plural: null
+    gloss: love; deep affection
+    pos: noun
+    example: Luyando lukainda.
+    source: verified
+
+  - word: busuma
+    nc: NC14
+    prefix: bu-
+    plural: null
+    gloss: goodness; well-being
+    pos: noun
+    example: Busuma bwako buyoowa.
+    source: verified
+
+  - word: kubona
+    nc: NC15
+    prefix: ku-
+    plural: null
+    gloss: to see; to understand
+    pos: verb
+    example: Ndabona luumuno lwako.
+    source: verified
+
+  - word: ciindi
+    nc: NC7
+    prefix: ci-
+    plural: ziindi
+    gloss: time; season; period
+    pos: noun
+    example: Ciindi ca mbila citali.
+    source: verified
+
+  - word: bupe
+    nc: NC14
+    prefix: bu-
+    plural: null
+    gloss: gift; generosity
+    pos: noun
+    example: Bupe bwa Leza tabusoweki.
+    source: verified
+
+  - word: munzi
+    nc: NC3
+    prefix: mu-
+    plural: minzi
+    gloss: village; home settlement
+    pos: noun
+    example: Twaya kumunzi kwatusyalila.
+    source: verified

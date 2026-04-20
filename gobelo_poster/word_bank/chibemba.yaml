@@ -1,0 +1,28 @@
+# ChiBemba Word Bank
+words:
+  - word: umuntu
+    nc: NC1
+    prefix: u-
+    plural: abantu
+    gloss: person; human being
+    pos: noun
+    example: Umuntu uli ku ng'anda.
+    source: verified
+
+  - word: ing'anda
+    nc: NC9
+    prefix: i-
+    plural: ing'anda
+    gloss: house; home
+    pos: noun
+    example: Ing'anda yandi ili ku mulu.
+    source: verified
+
+  - word: amenshi
+    nc: NC6
+    prefix: a-
+    plural: amenshi
+    gloss: water
+    pos: noun
+    example: Amenshi yali yotuba.
+    source: verified
