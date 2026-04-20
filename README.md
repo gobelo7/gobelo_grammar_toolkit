@@ -1,4 +1,4 @@
-# Gobelo Grammar Toolkit
+# Gobelo Grammar Toolkit (GGTK)
 
 A grammar-driven NLP library for the 7 official Zambian Bantu languages, built on a single YAML grammar file as the authoritative linguistic source.
 
@@ -12,7 +12,7 @@ A grammar-driven NLP library for the 7 official Zambian Bantu languages, built o
 
 ```bash
 git clone https://github.com/gobelo/gobelo-grammar-toolkit
-cd gobelo-grammar-toolkit
+cd ggtk
 pip install -e .              # installs ggt CLI + library
 ```
 
