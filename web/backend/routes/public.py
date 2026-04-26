@@ -17,9 +17,9 @@ from cache import (
 )
 from serializers import ser_token, ser_paradigm
 
-from gobelo_grammar_toolkit.core.registry   import list_languages
-from gobelo_grammar_toolkit.core.exceptions import GGTError, LanguageNotFoundError
-from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphFeatureBundle
+from ggt.core.registry   import list_languages
+from ggt.core.exceptions import GGTError, LanguageNotFoundError
+from ggt.apps.morphological_analyzer import MorphFeatureBundle
 
 public_bp = Blueprint("public", __name__)
 

@@ -8,7 +8,7 @@
 This repository already contains both the poster app and the core grammar toolkit.
 
 - `gobelo_poster/` — Flask poster generator, API routes, and conjugation engine
-- `gobelo_grammar_toolkit/` — core package with YAML grammar files in `gobelo_grammar_toolkit/languages`
+- `ggt/` — core package with YAML grammar files in `ggt/languages`
 - `gobelo_poster/app.py` already supports loading `GGT_YAML_DIR` for richer grammar data
 
 Quick start from the repo root:
@@ -16,7 +16,7 @@ Quick start from the repo root:
 ```bash
 pip install -e .
 cd gobelo_poster
-GGT_YAML_DIR="../gobelo_grammar_toolkit/languages" python app.py
+GGT_YAML_DIR="../ggt/languages" python app.py
 ```
 
 Then open `http://localhost:5050/poster`.
@@ -43,10 +43,10 @@ gobelo/                                   ← root of the entire project
 │   ├── ciluvale.yaml                     ✅ done
 │   └── cilunda.yaml                      ✅ done
 │
-├── ggt/                                  ← GGT Python library (gobelo_grammar_toolkit)
+├── ggt/                                  ← GGT Python library (ggt)
 │   ├── pyproject.toml
 │   ├── README.md
-│   └── gobelo_grammar_toolkit/
+│   └── ggt/
 │       ├── __init__.py
 │       ├── models.py                     ← typed dataclass models
 │       ├── config.py                     ← immutable config
@@ -208,8 +208,8 @@ sys.exit(0 if ok else 1)
 ```bash
 mkdir ggt && cd ggt
 
-# If gobelo_grammar_toolkit is already a package on disk, install it editably:
-pip install -e /path/to/gobelo_grammar_toolkit
+# If ggt is already a package on disk, install it editably:
+pip install -e /path/to/ggt
 
 # OR if it is just a folder of .py files, create pyproject.toml:
 cat > pyproject.toml << 'EOF'
@@ -218,7 +218,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.backends.legacy:build"
 
 [project]
-name = "gobelo_grammar_toolkit"
+name = "ggt"
 version = "1.0.0"
 requires-python = ">=3.11"
 dependencies = ["pyyaml>=6.0"]
@@ -227,7 +227,7 @@ dependencies = ["pyyaml>=6.0"]
 where = ["."]
 
 [tool.setuptools.package-data]
-"gobelo_grammar_toolkit" = ["languages/*.yaml"]
+"ggt" = ["languages/*.yaml"]
 EOF
 
 cd ..
@@ -245,15 +245,15 @@ Link (or copy) the grammar files into the package's `languages/` folder:
 # Option A: symlinks (recommended — edits to grammar/ auto-reflect)
 for lang in chitonga chibemba chinyanja silozi cikaonde ciluvale cilunda; do
   ln -sf "$(pwd)/grammar/${lang}.yaml" \
-         "ggt/gobelo_grammar_toolkit/languages/${lang}.yaml"
+         "ggt/ggt/languages/${lang}.yaml"
 done
 
 # Option B: hard copies (simpler if symlinks cause issues on Windows)
-cp grammar/*.yaml ggt/gobelo_grammar_toolkit/languages/
+cp grammar/*.yaml ggt/ggt/languages/
 
 # Verify the GGT loader can find them:
 python3 -c "
-from gobelo_grammar_toolkit import GrammarRegistry
+from ggt import GrammarRegistry
 r = GrammarRegistry()
 r.load_all()
 for lang in r.available():
@@ -284,7 +284,7 @@ flask>=3.0
 pyyaml>=6.0
 gunicorn>=21.0
 python-dotenv>=1.0
-gobelo_grammar_toolkit @ file://../ggt
+ggt @ file://../ggt
 EOF
 
 pip install -r backend/requirements.txt
@@ -309,7 +309,7 @@ load_dotenv()
 
 # ── GGT registry (reads .yaml files from grammar/ directory) ─────────────────
 try:
-    from gobelo_grammar_toolkit import GrammarRegistry
+    from ggt import GrammarRegistry
     _registry = GrammarRegistry()
     _registry.load_all(yaml_dir=Path(os.environ.get('GGT_YAML_DIR', '../grammar')))
     GGT_AVAILABLE = True
@@ -787,7 +787,7 @@ gunicorn -w 4 -b 0.0.0.0:5050 "app:create_app()"
 ```
 grammar/*.yaml
      │
-     ├─→ ggt/gobelo_grammar_toolkit/languages/   (symlinks)
+     ├─→ ggt/ggt/languages/   (symlinks)
      │        └─→ GrammarRegistry.load_all()     ← GGT Python library
      │
      └─→ backend/conjugator/engine.py
@@ -822,7 +822,7 @@ for f in pathlib.Path('grammar').glob('*.yaml'):
 
 # 2. GGT registry loads
 python3 -c "
-from gobelo_grammar_toolkit import GrammarRegistry
+from ggt import GrammarRegistry
 r = GrammarRegistry(); r.load_all(yaml_dir='grammar')
 print([g.metadata.language.iso_code for g in r.all()])
 "

@@ -17,7 +17,7 @@ pip install -e .              # installs ggt CLI + library
 ```
 
 ```python
-from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
+from ggt import GobeloGrammarLoader, GrammarConfig
 
 loader   = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
 analyzer = MorphologicalAnalyzer(loader)
@@ -109,7 +109,7 @@ pytest tests/ -v                                   # full suite
 
 ```
 gobelo/
-├── gobelo_grammar_toolkit/
+├── ggt/
 │   ├── core/          loader.py, normalizer.py, validator.py, models.py
 │   ├── apps/          7 NLP app modules
 │   ├── cli/           ggt_cli.py (6 commands)

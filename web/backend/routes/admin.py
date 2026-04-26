@@ -30,8 +30,8 @@ import cache as _cache_module
 from cache import get_loader, flush, cache_status
 from bootstrap import resolve_grammar_dir
 
-from gobelo_grammar_toolkit.core.registry   import list_languages
-from gobelo_grammar_toolkit.core.exceptions import GGTError, LanguageNotFoundError
+from ggt.core.registry   import list_languages
+from ggt.core.exceptions import GGTError, LanguageNotFoundError
 
 admin_bp = Blueprint("admin", __name__)
 

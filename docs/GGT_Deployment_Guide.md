@@ -74,7 +74,7 @@ ggt-deployment/
 │   └── package.json
 │
 ├── python/                       # GGT Python package
-│   ├── gobelo_grammar_toolkit/
+│   ├── ggt/
 │   │   ├── core/
 │   │   ├── apps/
 │   │   └── languages/
@@ -101,8 +101,8 @@ ggt-deployment/
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
-from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphologicalAnalyzer
+from ggt import GobeloGrammarLoader, GrammarConfig
+from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
 
 app = FastAPI(title="GGT Local Service")
 
@@ -157,12 +157,12 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('../gobelo_grammar_toolkit/languages/*.yaml', 'gobelo_grammar_toolkit/languages'),
+        ('../ggt/languages/*.yaml', 'ggt/languages'),
     ],
     hiddenimports=[
-        'gobelo_grammar_toolkit',
-        'gobelo_grammar_toolkit.core',
-        'gobelo_grammar_toolkit.apps',
+        'ggt',
+        'ggt.core',
+        'ggt.apps',
         'fastapi',
         'uvicorn',
     ],
@@ -306,7 +306,7 @@ nsis:
 extraResources:
   - from: "../python/dist/ggt-service.exe"
     to: "python-backend/ggt-service.exe"
-  - from: "../gobelo_grammar_toolkit/languages"
+  - from: "../ggt/languages"
     to: "python-backend/languages"
 
 files:

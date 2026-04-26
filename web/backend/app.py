@@ -6,7 +6,7 @@ Run:
     python app.py --port 8080
 
 Environment variables:
-    GGT_ROOT          Directory that contains gobelo_grammar_toolkit/
+    GGT_ROOT          Directory that contains ggt/
     GGT_ADMIN_TOKEN   Secret token required for all /admin/* requests
                       (set to any non-empty string before starting)
 """
@@ -104,7 +104,7 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    from gobelo_grammar_toolkit.core.registry import list_languages
+    from ggt.core.registry import list_languages
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=5000)
     parser.add_argument("--host", default="0.0.0.0")

@@ -120,11 +120,11 @@ Usage
 ------
 ::
 
-    from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
-    from gobelo_grammar_toolkit.apps.morphological_analyzer import (
+    from ggt import GobeloGrammarLoader, GrammarConfig
+    from ggt.apps.morphological_analyzer import (
         MorphologicalAnalyzer, MorphFeatureBundle,
     )
-    from gobelo_grammar_toolkit.apps.ud_feature_mapper import UDFeatureMapper
+    from ggt.apps.ud_feature_mapper import UDFeatureMapper
 
     loader   = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     analyzer = MorphologicalAnalyzer(loader)
@@ -153,7 +153,7 @@ import re
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, List, Optional, Tuple
 
-from gobelo_grammar_toolkit.core.exceptions import GGTError
+from ggt.core.exceptions import GGTError
 
 __all__ = [
     "UDFeatureMapper",
@@ -449,8 +449,8 @@ class UDFeatureMapper:
 
     Examples
     --------
-    >>> from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
-    >>> from gobelo_grammar_toolkit.apps.ud_feature_mapper import UDFeatureMapper
+    >>> from ggt import GobeloGrammarLoader, GrammarConfig
+    >>> from ggt.apps.ud_feature_mapper import UDFeatureMapper
     >>> loader = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     >>> mapper = UDFeatureMapper(loader)
     >>> feat = mapper.map_nc("NC7")

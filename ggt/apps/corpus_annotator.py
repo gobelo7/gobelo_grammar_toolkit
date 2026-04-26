@@ -30,8 +30,8 @@ Usage
 -----
 ::
 
-    from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
-    from gobelo_grammar_toolkit.apps.corpus_annotator import CorpusAnnotator
+    from ggt import GobeloGrammarLoader, GrammarConfig
+    from ggt.apps.corpus_annotator import CorpusAnnotator
 
     loader    = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     annotator = CorpusAnnotator(loader)
@@ -49,13 +49,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
-from gobelo_grammar_toolkit.core.exceptions import GGTError
-from gobelo_grammar_toolkit.apps.morphological_analyzer import (
+from ggt.core.exceptions import GGTError
+from ggt.apps.morphological_analyzer import (
     MorphAnalysisError,
     MorphologicalAnalyzer,
     SegmentedToken,
 )
-from gobelo_grammar_toolkit.apps.ud_feature_mapper import (
+from ggt.apps.ud_feature_mapper import (
     UDFeatureBundle,
     UDFeatureMapper,
     UDMappingError,
@@ -302,8 +302,8 @@ class CorpusAnnotator:
 
     Examples
     --------
-    >>> from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
-    >>> from gobelo_grammar_toolkit.apps.corpus_annotator import CorpusAnnotator
+    >>> from ggt import GobeloGrammarLoader, GrammarConfig
+    >>> from ggt.apps.corpus_annotator import CorpusAnnotator
     >>> loader    = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     >>> annotator = CorpusAnnotator(loader)
     >>> result    = annotator.annotate_text("balya cilya.")
@@ -773,7 +773,7 @@ def _make_failed_token(
     """
     # Build a minimal SegmentedToken stub if none provided
     if seg_tok is None:
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import SegmentedToken as ST
+        from ggt.apps.morphological_analyzer import SegmentedToken as ST
         # We can't construct a SegmentedToken easily without an analyzer,
         # so we use a sentinel object with duck-typing
         class _FakeST:
@@ -788,7 +788,7 @@ def _make_failed_token(
 
     # Build a minimal UDFeatureBundle stub
     if ud_bundle is None:
-        from gobelo_grammar_toolkit.apps.ud_feature_mapper import UDFeatureBundle as UDB
+        from ggt.apps.ud_feature_mapper import UDFeatureBundle as UDB
         ud_bundle_to_use = UDB(
             token=form,
             language=language,

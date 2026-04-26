@@ -92,13 +92,13 @@ except ImportError as _e:
         "Install it with:  pip install pyyaml"
     ) from _e
 
-from gobelo_grammar_toolkit.core.config import GrammarConfig
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core.config import GrammarConfig
+from ggt.core.exceptions import (
     ConcordTypeNotFoundError,
     LanguageNotFoundError,
     NounClassNotFoundError,
 )
-from gobelo_grammar_toolkit.core.models import (
+from ggt.core.models import (
     ConcordSet,
     DerivationalPattern,
     GrammarMetadata,
@@ -110,16 +110,16 @@ from gobelo_grammar_toolkit.core.models import (
     VerbSlot,
     VerifyFlag,
 )
-from gobelo_grammar_toolkit.core.normalizer import GrammarNormalizer, _ParsedGrammar
-from gobelo_grammar_toolkit.core.registry import get_yaml_filename, is_registered
-from gobelo_grammar_toolkit.core.validator import LOADER_VERSION, GrammarValidator
+from ggt.core.normalizer import GrammarNormalizer, _ParsedGrammar
+from ggt.core.registry import get_yaml_filename, is_registered
+from ggt.core.validator import LOADER_VERSION, GrammarValidator
 
 __all__ = ["GobeloGrammarLoader"]
 
 
 def list_supported_languages_helper() -> List[str]:
     """Internal helper to avoid circular imports in __init__."""
-    from gobelo_grammar_toolkit.core.registry import list_languages
+    from ggt.core.registry import list_languages
     return list_languages()
 
 # ---------------------------------------------------------------------------
@@ -796,7 +796,7 @@ class GobeloGrammarLoader:
             Alphabetically sorted list, e.g.
             ``["chibemba", "chitonga", "chinyanja", ...]``.
         """
-        from gobelo_grammar_toolkit.core.registry import list_languages
+        from ggt.core.registry import list_languages
 
         return list_languages()
 
@@ -813,7 +813,7 @@ class GobeloGrammarLoader:
         Both paths work with installed wheels and zip archives.
         """
         filename = get_yaml_filename(language)
-        package = "gobelo_grammar_toolkit.languages"
+        package = "ggt.languages"
 
         if _HAS_FILES_API:
             ref = _importlib_resources.files(package).joinpath(filename)
@@ -922,8 +922,8 @@ def _validate_extended(
     List[VerifyFlag]
         Zero or more ``VerifyFlag`` objects (all with ``resolved=False``).
     """
-    from gobelo_grammar_toolkit.core.exceptions import UnverifiedFormError
-    from gobelo_grammar_toolkit.core.validator import GGTWarning
+    from ggt.core.exceptions import UnverifiedFormError
+    from ggt.core.validator import GGTWarning
     import warnings as _warnings
 
     flags: List[VerifyFlag] = []

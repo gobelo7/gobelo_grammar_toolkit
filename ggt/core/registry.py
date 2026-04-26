@@ -6,7 +6,7 @@ Language registry for the Gobelo (Bantu) Grammar Toolkit (GGT).
 The registry is the **single source of truth** for which languages are
 embedded in the package and what YAML filename each one uses.  It is kept
 minimal by design: one private dict that maps the canonical language
-identifier to the filename within ``gobelo_grammar_toolkit/languages/``.
+identifier to the filename within ``ggt/languages/``.
 
 No grammar data, YAML parsing, or model instantiation lives here.  The
 registry's only job is name → filename resolution and resource probing.
@@ -35,11 +35,11 @@ resource-resolution logic co-located without duplicating I/O at load time.
 
 Adding a language (maintainer checklist)
 -----------------------------------------
-1. Create ``gobelo_grammar_toolkit/languages/<id>.yaml``
+1. Create ``ggt/languages/<id>.yaml``
    (follow the GGT-canonical schema).
 2. Add ``"<id>": "<id>.yaml"`` to ``_LANGUAGE_REGISTRY``.
 3. Run: ``python -m pytest tests/ -q``
-4. Run: ``python -m gobelo_grammar_toolkit.core.registry probe <id>``
+4. Run: ``python -m ggt.core.registry probe <id>``
 5. Update ``CHANGELOG.md`` under ``## [Unreleased] → Added``.
 6. Bump version in ``pyproject.toml`` (MINOR if new language, PATCH if
    data-only fix).
@@ -89,7 +89,7 @@ _LANGUAGE_REGISTRY: Dict[str, str] = {
 }
 
 #: Package where YAML files are embedded as ``importlib.resources`` data.
-_LANGUAGES_PACKAGE: str = "gobelo_grammar_toolkit.languages"
+_LANGUAGES_PACKAGE: str = "ggt.languages"
 
 # ---------------------------------------------------------------------------
 # Public constants
@@ -207,7 +207,7 @@ def get_resource_path(language: str):
 
 # ---------------------------------------------------------------------------
 # __main__ probe entrypoint
-# python -m gobelo_grammar_toolkit.core.registry [list | probe <lang>]
+# python -m ggt.core.registry [list | probe <lang>]
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -234,5 +234,5 @@ if __name__ == "__main__":
             sys.exit(2)
 
     else:
-        print("Usage: python -m gobelo_grammar_toolkit.core.registry [list | probe <language>]")
+        print("Usage: python -m ggt.core.registry [list | probe <language>]")
         sys.exit(1)

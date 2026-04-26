@@ -38,8 +38,8 @@ Usage example
 These classes are not instantiated directly by application code.  They are
 returned by ``GobeloGrammarLoader`` methods:
 
->>> from gobelo_grammar_toolkit.core.config import GrammarConfig
->>> from gobelo_grammar_toolkit.core.loader import GobeloGrammarLoader
+>>> from ggt.core.config import GrammarConfig
+>>> from ggt.core.loader import GobeloGrammarLoader
 >>> loader = GobeloGrammarLoader(config=GrammarConfig(language="chitonga"))
 >>> nc1 = loader.get_noun_class("NC1")
 >>> print(nc1.prefix)   # e.g. "mu-"

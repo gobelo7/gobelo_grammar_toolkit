@@ -38,8 +38,8 @@ for p in (_GGT, Path("/mnt/user-data/uploads")):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-_LANGUAGES_DIR = _GGT / "gobelo_grammar_toolkit" / "languages"
-_REGISTRY_PY   = _GGT / "gobelo_grammar_toolkit" / "core" / "registry.py"
+_LANGUAGES_DIR = _GGT / "ggt" / "languages"
+_REGISTRY_PY   = _GGT / "ggt" / "core" / "registry.py"
 _TEMPLATE      = _REPO / "outputs" / "ggt-core" / "canonical_grammar_template.yaml"
 
 # Fall back to the copy in the outputs dir
@@ -217,8 +217,8 @@ def main() -> int:
     print("Next steps:")
     _info(f"Edit:     {_LANGUAGES_DIR / lang}.yaml")
     _info(f"Validate: python scripts/validate_grammar.py languages/{lang}.yaml")
-    _info(f"Reload:   python -c \"from gobelo_grammar_toolkit.core.loader import GobeloGrammarLoader; "
-          f"from gobelo_grammar_toolkit.core.config import GrammarConfig; "
+    _info(f"Reload:   python -c \"from ggt.core.loader import GobeloGrammarLoader; "
+          f"from ggt.core.config import GrammarConfig; "
           f"GobeloGrammarLoader(GrammarConfig(language='{lang}'))\"")
     print()
     print(f"Sections to fill in {lang}.yaml:")

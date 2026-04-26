@@ -37,10 +37,10 @@ for p in (_GGT, Path("/mnt/user-data/uploads")):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from gobelo_grammar_toolkit.core.config     import GrammarConfig
-from gobelo_grammar_toolkit.core.loader     import GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.registry   import is_registered
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core.config     import GrammarConfig
+from ggt.core.loader     import GobeloGrammarLoader
+from ggt.core.registry   import is_registered
+from ggt.core.exceptions import (
     GGTError, LanguageNotFoundError,
     VersionIncompatibleError, SchemaValidationError,
 )
@@ -86,7 +86,7 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
     if not is_registered(lang):
         report.errors.append(
             f"Language '{lang}' is not in the GGT registry. "
-            f"Add it to gobelo_grammar_toolkit/core/registry.py before validating."
+            f"Add it to ggt/core/registry.py before validating."
         )
         return report
 

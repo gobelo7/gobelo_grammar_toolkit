@@ -44,7 +44,7 @@ Usage
 -----
 ::
 
-    from gobelo_grammar_toolkit.apps.feature_comparator import FeatureComparator
+    from ggt.apps.feature_comparator import FeatureComparator
 
     fc = FeatureComparator.for_all_languages()
     table = fc.compare("noun_class.NC7.prefix")
@@ -65,8 +65,8 @@ import io
 from dataclasses import dataclass
 from typing import Any, Dict, FrozenSet, List, Optional, Tuple
 
-from gobelo_grammar_toolkit import GrammarConfig, GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.exceptions import GGTError
+from ggt import GrammarConfig, GobeloGrammarLoader
+from ggt.core.exceptions import GGTError
 
 __all__ = [
     "FeatureComparator",

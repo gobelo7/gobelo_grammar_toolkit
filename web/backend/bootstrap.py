@@ -2,7 +2,7 @@
 web/backend/bootstrap.py — Package and path resolution for Gobelo Grammar Toolkit.
 
 Extracted from app.py. Provides four public functions:
-    resolve_package()        — ensures gobelo_grammar_toolkit is importable
+    resolve_package()        — ensures ggt is importable
     resolve_grammar_dir()    — returns Path to languages/*.yaml, or None
     resolve_frontend()       — returns Path to student/teacher index.html
     resolve_admin_frontend() — returns Path to compiled admin shell, or None
@@ -19,14 +19,14 @@ from pathlib import Path
 from typing import Optional
 
 _HERE = Path(__file__).resolve().parent
-_PKG  = "gobelo_grammar_toolkit"
+_PKG  = "ggt"
 
 _GRAMMAR_DIR: Optional[Path] = None
 _env_root: str = os.environ.get("GGT_ROOT", "").strip()
 
 
 def _find_package_root() -> Optional[Path]:
-    """Walk upward from this file to find the dir that contains gobelo_grammar_toolkit/."""
+    """Walk upward from this file to find the dir that contains ggt/."""
     current = _HERE
     for _ in range(10):
         if (current / _PKG).is_dir():
@@ -43,7 +43,7 @@ def _find_package_root() -> Optional[Path]:
 
 def resolve_package() -> None:
     """
-    Ensure gobelo_grammar_toolkit is importable, setting _GRAMMAR_DIR as a side effect.
+    Ensure ggt is importable, setting _GRAMMAR_DIR as a side effect.
     Raises ImportError with actionable instructions if all four strategies fail.
     """
     global _GRAMMAR_DIR
@@ -56,7 +56,7 @@ def resolve_package() -> None:
 
     # Strategy 2: pip-installed — try import directly
     try:
-        import gobelo_grammar_toolkit as _chk  # noqa: F401
+        import ggt as _chk  # noqa: F401
         del _chk
         try:
             import importlib.resources as _ir
@@ -88,16 +88,16 @@ def resolve_package() -> None:
 
     raise ImportError(
         "\n\n"
-        "  gobelo_grammar_toolkit not found.\n\n"
+        "  ggt not found.\n\n"
         "  Tried:\n"
         "    1. GGT_ROOT environment variable — not set\n"
         "    2. Installed package             — not found\n"
         f"   3. Upward search from {_HERE}\n"
-        f"      — gobelo_grammar_toolkit/ not found in any parent directory\n"
+        f"      — ggt/ not found in any parent directory\n"
         f"   4. Dev layout ({_HERE.parent.parent / 'ggt'}) — not found\n\n"
         "  Fix (choose one):\n"
         "    a) Install from the repo root:  pip install -e .\n"
-        "    b) Set GGT_ROOT to the dir that CONTAINS gobelo_grammar_toolkit/\n"
+        "    b) Set GGT_ROOT to the dir that CONTAINS ggt/\n"
         "         Linux:   export GGT_ROOT=/path/to/src\n"
         "         Windows: set GGT_ROOT=C:\\path\\to\\src\n"
         "    c) Add to PYTHONPATH:\n"

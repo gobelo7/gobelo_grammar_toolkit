@@ -55,8 +55,8 @@ from typing import List, Optional
 
 import click
 
-from gobelo_grammar_toolkit.core import GrammarConfig, GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core import GrammarConfig, GobeloGrammarLoader
+from ggt.core.exceptions import (
     GGTError,
     LanguageNotFoundError,
     ConcordTypeNotFoundError,
@@ -167,7 +167,7 @@ def _ggt_version() -> str:
     except Exception:
         pass
     try:
-        from gobelo_grammar_toolkit.core.validator import LOADER_VERSION
+        from ggt.core.validator import LOADER_VERSION
         return LOADER_VERSION
     except Exception:
         return "unknown"

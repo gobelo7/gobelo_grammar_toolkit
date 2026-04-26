@@ -48,7 +48,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from gobelo_grammar_toolkit.core.models import (
+from ggt.core.models import (
     ConcordSet,
     DerivationalPattern,
     GrammarMetadata,

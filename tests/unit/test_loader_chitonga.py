@@ -22,17 +22,17 @@ for p in (_GGT, Path("/mnt/user-data/uploads")):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from gobelo_grammar_toolkit.core.config     import GrammarConfig
-from gobelo_grammar_toolkit.core.loader     import GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core.config     import GrammarConfig
+from ggt.core.loader     import GobeloGrammarLoader
+from ggt.core.exceptions import (
     LanguageNotFoundError, GGTError,
 )
 
 # ── fixture ───────────────────────────────────────────────────────
-GRAMMAR_PATH = Path(__file__).resolve().parents[2] / "ggt" / "gobelo_grammar_toolkit" / "languages" / "chitonga.yaml"
+GRAMMAR_PATH = Path(__file__).resolve().parents[2] / "ggt" / "ggt" / "languages" / "chitonga.yaml"
 if not GRAMMAR_PATH.exists():
     # fallback dev path
-    GRAMMAR_PATH = Path("/home/claude/ggt/gobelo_grammar_toolkit/languages/chitonga.yaml")
+    GRAMMAR_PATH = Path("/home/claude/ggt/ggt/languages/chitonga.yaml")
 
 
 @pytest.fixture(scope="module")

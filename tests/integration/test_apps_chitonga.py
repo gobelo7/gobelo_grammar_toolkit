@@ -21,13 +21,13 @@ for p in (_REPO / "ggt", Path("/mnt/user-data/uploads")):
         sys.path.insert(0, str(p))
 
 import pytest
-from gobelo_grammar_toolkit.core.config     import GrammarConfig
-from gobelo_grammar_toolkit.core.loader     import GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.exceptions import GGTError
+from ggt.core.config     import GrammarConfig
+from ggt.core.loader     import GobeloGrammarLoader
+from ggt.core.exceptions import GGTError
 
-GRAMMAR_PATH = _REPO / "ggt" / "gobelo_grammar_toolkit" / "languages" / "chitonga.yaml"
+GRAMMAR_PATH = _REPO / "ggt" / "ggt" / "languages" / "chitonga.yaml"
 if not GRAMMAR_PATH.exists():
-    GRAMMAR_PATH = Path("/home/claude/ggt/gobelo_grammar_toolkit/languages/chitonga.yaml")
+    GRAMMAR_PATH = Path("/home/claude/ggt/ggt/languages/chitonga.yaml")
 
 
 @pytest.fixture(scope="module")
@@ -42,11 +42,11 @@ def loader():
 class TestMorphologicalAnalyzer:
     @pytest.fixture(scope="class")
     def az(self, loader):
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphologicalAnalyzer
+        from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
         return MorphologicalAnalyzer(loader)
 
     def test_analyze_returns_segmented_token(self, az):
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import SegmentedToken
+        from ggt.apps.morphological_analyzer import SegmentedToken
         tok = az.analyze("cilya")
         assert isinstance(tok, SegmentedToken)
 
@@ -80,7 +80,7 @@ class TestMorphologicalAnalyzer:
         assert isinstance(tok.is_ambiguous, bool)
 
     def test_generate_nc7_pres(self, az):
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphFeatureBundle, SurfaceForm
+        from ggt.apps.morphological_analyzer import MorphFeatureBundle, SurfaceForm
         feat = MorphFeatureBundle(root="lya", subject_nc="NC7", tam_id="TAM_PRES")
         sf = az.generate(feat)
         assert isinstance(sf, SurfaceForm)
@@ -88,7 +88,7 @@ class TestMorphologicalAnalyzer:
         assert "lya" in sf.surface  # root appears in surface
 
     def test_generate_nc2_past(self, az):
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphFeatureBundle
+        from ggt.apps.morphological_analyzer import MorphFeatureBundle
         feat = MorphFeatureBundle(root="bona", subject_nc="NC2", tam_id="TAM_PST")
         sf = az.generate(feat)
         assert sf.surface
@@ -106,7 +106,7 @@ class TestMorphologicalAnalyzer:
         assert az.language == "chitonga"
 
     def test_analyze_empty_raises(self, az):
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphAnalysisError
+        from ggt.apps.morphological_analyzer import MorphAnalysisError
         with pytest.raises((MorphAnalysisError, GGTError, ValueError)):
             az.analyze("")
 
@@ -118,11 +118,11 @@ class TestMorphologicalAnalyzer:
 class TestParadigmGenerator:
     @pytest.fixture(scope="class")
     def gen(self, loader):
-        from gobelo_grammar_toolkit.apps.paradigm_generator import ParadigmGenerator
+        from ggt.apps.paradigm_generator import ParadigmGenerator
         return ParadigmGenerator(loader)
 
     def test_generate_verb_paradigm_returns_table(self, gen):
-        from gobelo_grammar_toolkit.apps.paradigm_generator import ParadigmTable
+        from ggt.apps.paradigm_generator import ParadigmTable
         table = gen.generate_verb_paradigm("lya")
         assert isinstance(table, ParadigmTable)
 
@@ -185,7 +185,7 @@ class TestParadigmGenerator:
         assert "TAM_REM_PST" in ids
 
     def test_empty_root_raises(self, gen):
-        from gobelo_grammar_toolkit.apps.paradigm_generator import ParadigmGenerationError
+        from ggt.apps.paradigm_generator import ParadigmGenerationError
         with pytest.raises((ParadigmGenerationError, GGTError, ValueError)):
             gen.generate_verb_paradigm("")
 
@@ -197,7 +197,7 @@ class TestParadigmGenerator:
 class TestConcordGenerator:
     @pytest.fixture(scope="class")
     def cg(self, loader):
-        from gobelo_grammar_toolkit.apps.concord_generator import ConcordGenerator
+        from ggt.apps.concord_generator import ConcordGenerator
         return ConcordGenerator(loader)
 
     def test_generate_all_concords_returns_dict(self, cg):
@@ -213,7 +213,7 @@ class TestConcordGenerator:
         assert forms.get("possessive_concords") == "ca"
 
     def test_generate_all_concords_rich(self, cg):
-        from gobelo_grammar_toolkit.apps.concord_generator import AllConcordsResult
+        from ggt.apps.concord_generator import AllConcordsResult
         rich = cg.generate_all_concords_rich("NC7")
         assert isinstance(rich, AllConcordsResult)
         assert rich.nc_id == "NC7"
@@ -230,14 +230,14 @@ class TestConcordGenerator:
         assert result.form == "ci"
 
     def test_generate_paradigm(self, cg):
-        from gobelo_grammar_toolkit.apps.concord_generator import ConcordParadigm
+        from ggt.apps.concord_generator import ConcordParadigm
         paradigm = cg.generate_paradigm("subject_concords")
         assert isinstance(paradigm, ConcordParadigm)
         assert paradigm.concord_type == "subject_concords"
         assert paradigm.entries.get("NC7") == "ci"
 
     def test_cross_tab(self, cg):
-        from gobelo_grammar_toolkit.apps.concord_generator import CrossTab
+        from ggt.apps.concord_generator import CrossTab
         xtab = cg.cross_tab()
         assert isinstance(xtab, CrossTab)
         assert xtab.noun_class_count == 21
@@ -266,11 +266,11 @@ class TestConcordGenerator:
 class TestCorpusAnnotator:
     @pytest.fixture(scope="class")
     def ann(self, loader):
-        from gobelo_grammar_toolkit.apps.corpus_annotator import CorpusAnnotator
+        from ggt.apps.corpus_annotator import CorpusAnnotator
         return CorpusAnnotator(loader)
 
     def test_annotate_text_returns_result(self, ann):
-        from gobelo_grammar_toolkit.apps.corpus_annotator import AnnotationResult
+        from ggt.apps.corpus_annotator import AnnotationResult
         result = ann.annotate_text("Balya muntu.")
         assert isinstance(result, AnnotationResult)
 
@@ -340,12 +340,12 @@ class TestCorpusAnnotator:
 class TestUDFeatureMapper:
     @pytest.fixture(scope="class")
     def az(self, loader):
-        from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphologicalAnalyzer
+        from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
         return MorphologicalAnalyzer(loader)
 
     @pytest.fixture(scope="class")
     def mp(self, loader):
-        from gobelo_grammar_toolkit.apps.ud_feature_mapper import UDFeatureMapper
+        from ggt.apps.ud_feature_mapper import UDFeatureMapper
         return UDFeatureMapper(loader)
 
     def test_map_nc7(self, mp):
@@ -431,11 +431,11 @@ class TestUDFeatureMapper:
 class TestVerbSlotValidator:
     @pytest.fixture(scope="class")
     def vv(self, loader):
-        from gobelo_grammar_toolkit.apps.verb_slot_validator import VerbSlotValidator
+        from ggt.apps.verb_slot_validator import VerbSlotValidator
         return VerbSlotValidator(loader)
 
     def test_validate_returns_result(self, vv):
-        from gobelo_grammar_toolkit.apps.verb_slot_validator import ValidationResult
+        from ggt.apps.verb_slot_validator import ValidationResult
         result = vv.validate("cilya")
         assert isinstance(result, ValidationResult)
 
@@ -482,7 +482,7 @@ class TestFeatureComparator:
         """Load both chitonga and chibemba for cross-language comparison."""
         result = {}
         for lang in ("chitonga", "chibemba"):
-            p = Path("/home/claude/ggt/gobelo_grammar_toolkit/languages") / f"{lang}.yaml"
+            p = Path("/home/claude/ggt/ggt/languages") / f"{lang}.yaml"
             override = str(p) if p.exists() else None
             try:
                 result[lang] = GobeloGrammarLoader(GrammarConfig(language=lang, override_path=override))
@@ -492,7 +492,7 @@ class TestFeatureComparator:
 
     @pytest.fixture(scope="class")
     def fc(self, loaders):
-        from gobelo_grammar_toolkit.apps.feature_comparator import FeatureComparator
+        from ggt.apps.feature_comparator import FeatureComparator
         if len(loaders) < 2:
             pytest.skip("Need both chitonga and chibemba grammars for this test")
         return FeatureComparator(loaders)

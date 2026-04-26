@@ -79,8 +79,8 @@ Usage
 The validator is not called directly by application code; it is invoked
 internally by ``GobeloGrammarLoader.__init__``:
 
->>> from gobelo_grammar_toolkit.core.config import GrammarConfig
->>> from gobelo_grammar_toolkit.core.validator import GrammarValidator
+>>> from ggt.core.config import GrammarConfig
+>>> from ggt.core.validator import GrammarValidator
 >>> validator = GrammarValidator()
 >>> flags = validator.validate(raw_yaml_dict, config, yaml_path="/p/f.yaml")
 >>> # flags is List[VerifyFlag]; empty list means no VERIFY annotations found.
@@ -93,15 +93,15 @@ import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, FrozenSet, List, Optional, Tuple, TYPE_CHECKING
 
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core.exceptions import (
     SchemaValidationError,
     UnverifiedFormError,
     VersionIncompatibleError,
 )
 
 if TYPE_CHECKING:
-    from gobelo_grammar_toolkit.core.config import GrammarConfig
-    from gobelo_grammar_toolkit.core.models import VerifyFlag
+    from ggt.core.config import GrammarConfig
+    from ggt.core.models import VerifyFlag
 
 __all__ = [
     "LOADER_VERSION",
@@ -1201,7 +1201,7 @@ class GrammarValidator:
             Parsed structured flags; empty list if the section is absent or
             contains no valid entries.
         """
-        from gobelo_grammar_toolkit.core.models import VerifyFlag
+        from ggt.core.models import VerifyFlag
 
         flags_data = raw.get("verify_flags")
         if flags_data is None:
@@ -1294,7 +1294,7 @@ class GrammarValidator:
         collector : List[VerifyFlag]
             List to which newly-created ``VerifyFlag`` objects are appended.
         """
-        from gobelo_grammar_toolkit.core.models import VerifyFlag
+        from ggt.core.models import VerifyFlag
 
         if isinstance(node, str):
             match = _VERIFY_INLINE_RE.search(node)

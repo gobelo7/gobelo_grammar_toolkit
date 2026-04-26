@@ -8,16 +8,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from gobelo_grammar_toolkit.core.config      import GrammarConfig
-from gobelo_grammar_toolkit.core.loader      import GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.registry    import list_languages, is_registered
-from gobelo_grammar_toolkit.core.exceptions  import LanguageNotFoundError
-from gobelo_grammar_toolkit.apps.morphological_analyzer import MorphologicalAnalyzer
-from gobelo_grammar_toolkit.apps.paradigm_generator     import ParadigmGenerator
-from gobelo_grammar_toolkit.apps.concord_generator      import ConcordGenerator
-from gobelo_grammar_toolkit.apps.corpus_annotator       import CorpusAnnotator
-from gobelo_grammar_toolkit.apps.ud_feature_mapper      import UDFeatureMapper
-from gobelo_grammar_toolkit.apps.verb_slot_validator    import VerbSlotValidator
+from ggt.core.config      import GrammarConfig
+from ggt.core.loader      import GobeloGrammarLoader
+from ggt.core.registry    import list_languages, is_registered
+from ggt.core.exceptions  import LanguageNotFoundError
+from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
+from ggt.apps.paradigm_generator     import ParadigmGenerator
+from ggt.apps.concord_generator      import ConcordGenerator
+from ggt.apps.corpus_annotator       import CorpusAnnotator
+from ggt.apps.ud_feature_mapper      import UDFeatureMapper
+from ggt.apps.verb_slot_validator    import VerbSlotValidator
 
 _cache: Dict[str, Dict[str, Any]] = {}
 _grammar_dir: Optional[Path] = None
@@ -72,7 +72,7 @@ def get_loader(lang: str) -> GobeloGrammarLoader:
         try:
             return GobeloGrammarLoader(GrammarConfig(language=lang, override_path=override))
         except FileNotFoundError:
-            lang_dir = _grammar_dir or Path("gobelo_grammar_toolkit/languages")
+            lang_dir = _grammar_dir or Path("ggt/languages")
             raise FileNotFoundError(
                 f"Grammar YAML for '{lang}' not found.\n"
                 f"Expected: {lang_dir}/{lang}.yaml\n\n"

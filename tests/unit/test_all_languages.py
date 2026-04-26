@@ -25,7 +25,7 @@ Running
 Dependencies
 ------------
     pytest >= 7.0
-    gobelo_grammar_toolkit (installed or on sys.path)
+    ggt (installed or on sys.path)
 """
 
 from __future__ import annotations
@@ -41,8 +41,8 @@ import pytest
 sys.path.insert(0, ".")
 warnings.filterwarnings("ignore")
 
-from gobelo_grammar_toolkit.core import GrammarConfig, GobeloGrammarLoader  # noqa: E402
-from gobelo_grammar_toolkit.core.exceptions import (  # noqa: E402
+from ggt.core import GrammarConfig, GobeloGrammarLoader  # noqa: E402
+from ggt.core.exceptions import (  # noqa: E402
     ConcordTypeNotFoundError,
     GGTError,
     LanguageNotFoundError,
@@ -51,7 +51,7 @@ from gobelo_grammar_toolkit.core.exceptions import (  # noqa: E402
     UnverifiedFormError,
     VersionIncompatibleError,
 )
-from gobelo_grammar_toolkit.core.models import (  # noqa: E402
+from ggt.core.models import (  # noqa: E402
     ConcordSet,
     DerivationalPattern,
     GrammarMetadata,
@@ -63,7 +63,7 @@ from gobelo_grammar_toolkit.core.models import (  # noqa: E402
     VerbSlot,
     VerifyFlag,
 )
-from gobelo_grammar_toolkit.apps.morphological_analyzer import (  # noqa: E402
+from ggt.apps.morphological_analyzer import (  # noqa: E402
     MorphAnalysisError,
     MorphFeatureBundle,
     MorphologicalAnalyzer,
@@ -71,7 +71,7 @@ from gobelo_grammar_toolkit.apps.morphological_analyzer import (  # noqa: E402
     SegmentedToken,
     SurfaceForm,
 )
-from gobelo_grammar_toolkit.apps.ud_feature_mapper import (  # noqa: E402
+from ggt.apps.ud_feature_mapper import (  # noqa: E402
     UDConcordFeatures,
     UDFeatureBundle,
     UDFeatureMapper,
@@ -80,7 +80,7 @@ from gobelo_grammar_toolkit.apps.ud_feature_mapper import (  # noqa: E402
     UDTAMFeatures,
     UDVoiceFeature,
 )
-from gobelo_grammar_toolkit.apps.verb_slot_validator import (  # noqa: E402
+from ggt.apps.verb_slot_validator import (  # noqa: E402
     SlotAssignment,
     ValidationResult,
     ValidationViolation,

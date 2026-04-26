@@ -29,8 +29,8 @@ import re
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, List, Literal, Optional, Tuple
 
-from gobelo_grammar_toolkit.core.exceptions import GGTError
-from gobelo_grammar_toolkit.apps.morphological_analyzer import (
+from ggt.core.exceptions import GGTError
+from ggt.apps.morphological_analyzer import (
     MorphAnalysisError,
     MorphFeatureBundle,
     MorphologicalAnalyzer,

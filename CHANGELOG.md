@@ -8,7 +8,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] — 2026-03-21
 
-### Added — Core library (`gobelo_grammar_toolkit/core/`)
+### Added — Core library (`ggt/core/`)
 
 - `GobeloGrammarLoader` — single grammar dependency for all apps (14 public methods)
 - `GrammarConfig` dataclass — language identifier + optional override path
@@ -23,7 +23,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `language_registry` — maps 7 language identifiers to grammar YAML filenames
 - `GGTError` exception hierarchy — `LanguageNotFoundError`, `VersionIncompatibleError`, `SchemaValidationError`, `UnverifiedFormError`
 
-### Added — Grammar data (`gobelo_grammar_toolkit/languages/`)
+### Added — Grammar data (`ggt/languages/`)
 
 - `chitonga.yaml` — pilot grammar, 4 236 lines, fully verified (0 VERIFY flags)
   - 21 noun classes (NC1–NC18 + NC1a, NC2a, NC2b), all active
@@ -36,7 +36,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `chibemba.yaml` — stub grammar registered for development; data TBD
 - Stubs registered for: `chinyanja`, `silozi`, `luvale`, `lunda`, `kaonde`
 
-### Added — NLP apps (`gobelo_grammar_toolkit/apps/`)
+### Added — NLP apps (`ggt/apps/`)
 
 - `MorphologicalAnalyzer` (F-01, F-02) — `analyze()`, `generate()`, `segment_text()`, `generate_interlinear()`
   - Verbal path: strips SM → TAM → root → extensions → FV; produces ranked `ParseHypothesis` list
@@ -56,7 +56,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `FeatureComparator` — `compare()`, `compare_many()`, `to_markdown()`, `to_csv()`
   - Cross-language comparison: `noun_class.NC1.prefix` chiTonga=`mu-` vs chiBemba=`u-`
 
-### Added — HFST pipeline (`gobelo_grammar_toolkit/hfst/`)
+### Added — HFST pipeline (`ggt/hfst/`)
 
 - `chitonga.lexc` — 11-slot morphotactics with 185 multichar symbols
   - Flag diacritics: `@P/R/D.NC.1–18@` (NC agreement), `@P/R/D.NEG.ON@` (negation), `@P/R.MOOD.SUBJ@` (mood-FV), `@P/R.NUM.PL@` (reciprocal plural)
@@ -68,7 +68,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Lexicon files: `verbs.yaml`, `nouns.yaml`, `auxiliary_verbs.yaml`, `closed_class.yaml`
 - `chitonga_transform.py` — CSV → structured YAML lexicon pipeline with morphological pre-analysis and stem confidence scoring
 
-### Added — CLI (`gobelo_grammar_toolkit/cli/ggt_cli.py`)
+### Added — CLI (`ggt/cli/ggt_cli.py`)
 
 - `ggt info <language>` — metadata + feature-count summary table
 - `ggt noun-classes <language> [--active-only]` — formatted NC table

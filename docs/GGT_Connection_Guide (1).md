@@ -16,7 +16,7 @@ pip install gobelo-grammar-toolkit
 ### Step 2: Verify GGT Installation
 
 ```bash
-python -c "from gobelo_grammar_toolkit import GobeloGrammarLoader; print('GGT OK')"
+python -c "from ggt import GobeloGrammarLoader; print('GGT OK')"
 ```
 
 ### Step 3: Test the Bridge

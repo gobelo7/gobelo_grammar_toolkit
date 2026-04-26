@@ -46,7 +46,7 @@ from typing import (
     Dict, FrozenSet, List, Optional, Sequence, Tuple
 )
 
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core.exceptions import (
     GGTError,
     NounClassNotFoundError,
 )

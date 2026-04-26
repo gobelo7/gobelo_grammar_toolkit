@@ -38,9 +38,9 @@ Design principles
 
 Importable from the public package surface
 ------------------------------------------
-All exceptions are re-exported from ``gobelo_grammar_toolkit.exceptions``
+All exceptions are re-exported from ``ggt.exceptions``
 (the package-level shim) so that downstream apps do not need to import from
-``gobelo_grammar_toolkit.core.exceptions`` directly.
+``ggt.core.exceptions`` directly.
 """
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ if TYPE_CHECKING:
     # Avoid a circular import at runtime: VerifyFlag is defined in models.py,
     # which does not import from exceptions.py.  The TYPE_CHECKING guard means
     # this import only happens during static analysis (mypy, pyright).
-    from gobelo_grammar_toolkit.core.models import VerifyFlag
+    from ggt.core.models import VerifyFlag
 
 __all__ = [
     "GGTError",

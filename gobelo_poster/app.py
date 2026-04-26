@@ -60,13 +60,13 @@ def create_app(yaml_dir: str | Path | None = None) -> Flask:
     if yaml_dir is None:
         yaml_dir = os.environ.get(
             'GGT_YAML_DIR',
-            Path(__file__).resolve().parents[1] / 'gobelo_grammar_toolkit' / 'languages'
+            Path(__file__).resolve().parents[1] / 'ggt' / 'languages'
         )
 
     if yaml_dir is None:
         yaml_dir = os.environ.get(
             'GGT_YAML_DIR',
-            Path(__file__).resolve().parents[1] / 'gobelo_grammar_toolkit' / 'languages'
+            Path(__file__).resolve().parents[1] / 'ggt' / 'languages'
         )
 
     # Optionally enrich embedded grammar data with .yaml files

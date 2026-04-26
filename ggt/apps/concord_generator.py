@@ -64,8 +64,8 @@ Usage
 -----
 ::
 
-    from gobelo_grammar_toolkit import GobeloGrammarLoader, GrammarConfig
-    from gobelo_grammar_toolkit.apps.concord_generator import ConcordGenerator
+    from ggt import GobeloGrammarLoader, GrammarConfig
+    from ggt.apps.concord_generator import ConcordGenerator
 
     loader = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     gen    = ConcordGenerator(loader)
@@ -101,13 +101,13 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Literal, Optional, Sequence
 
-from gobelo_grammar_toolkit.core.exceptions import (
+from ggt.core.exceptions import (
     ConcordTypeNotFoundError,
     GGTError,
     NounClassNotFoundError,
 )
-from gobelo_grammar_toolkit.core.loader import GobeloGrammarLoader
-from gobelo_grammar_toolkit.core.models import NounClass
+from ggt.core.loader import GobeloGrammarLoader
+from ggt.core.models import NounClass
 
 __all__ = [
     "ConcordGenerator",

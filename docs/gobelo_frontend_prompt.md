@@ -33,7 +33,7 @@ You never use `localStorage` or `sessionStorage`.
 
 ```
 gobelo/
-├── gobelo_grammar_toolkit/
+├── ggt/
 │   ├── core/          loader.py, normalizer.py, validator.py, models.py
 │   ├── apps/          7 NLP app modules (segmenter, UD mapper, paradigm
 │   │                  generator, slot validator, comparator, annotator, ...)
