@@ -1,9 +1,22 @@
-gobelo_corpus/
+gobelo/
 │
-├── gobelo_grammar_toolkit/          # installable Python package
+├── ggt/          # installable Python package
 │   │                                # (package path used in loader.py imports)
 │   ├── __init__.py
+│   │ 
+|   ├── apps/
+│   │   ├── concord_generator.py
+│   │   ├── corpus_annotator.py
+│   │   ├── feature_comporator.py
+│   │   ├── morphological_analyzer.py
+│   │   ├── paradigm_generator.py
+│   │   ├── ud_feature_mapper.py
+│   │   └── verb_slot_validator.py
 │   │
+|   ├── cli/
+│   │   ├── __init__.py
+│   │   └── ggt_cli.py
+
 │   ├── core/                        # grammar engine — zero language logic
 │   │   ├── __init__.py
 │   │   ├── config.py                # GrammarConfig dataclass            [✅ Phase 0]
@@ -19,6 +32,15 @@ gobelo_corpus/
 │   │                                #   ConcordTypeNotFoundError,
 │   │                                #   UnverifiedFormError               [✅ Phase 0]
 │   │
+|   ├── hfst/
+│   │   ├── chitonga_hsft/
+│   │   |   ├── chitonga-full.lexc
+│   │   |   ├── chitonga.lexc
+│   │   |   └── chitonga.twolc
+│   │   ├── bemba_hfst/
+│   │   ├── ....
+│   │   ├── lexicon/
+|   |   
 │   └── languages/                   # GGT YAML grammar files
 │       │                            # (loaded via importlib.resources)
 │       ├── chibemba.yaml            #                                     [✅ complete]

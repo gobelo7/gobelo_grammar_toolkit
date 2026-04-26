@@ -800,7 +800,7 @@ class UnifiedConfig:
     output:       OutputConfig       = field(default_factory=OutputConfig)
 
     # Global settings
-    max_memory_mb: int = 500
+    max_memory_mb: int = 1000
     chunk_size:    int = 5000
     log_level:     str = "INFO"
     recursive:     bool = True
