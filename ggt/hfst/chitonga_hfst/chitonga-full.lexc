@@ -1,0 +1,604 @@
+! ==============================================================
+! Chitonga — Morphotactics Lexicon   chitonga.lexc
+! Helsinki FST (HFST) format
+! ==============================================================
+! Source: chitonga_grammar.yaml  verb_system + concord_system
+! Slot template: NEG(S1) PRE(S2) SM(S3) NEG(S4) TAM(S5)
+!                MODAL(S6) OM(S7) ROOT(S8) EXT(S9) FV(S10) POST(S11)
+!
+! Compile:
+!   hfst-lexc chitonga.lexc -o chitonga-morphotactics.hfst
+! ==============================================================
+
+! ── MULTICHARACTER SYMBOLS ────────────────────────────────────
+! All abstract morpheme tags and flag diacritics must be declared
+! here before any lexicon entries reference them.
+
+Multichar_Symbols
+  +N
+  +V
+  +ADJ
+  +ADV
+  +CONJ
+  +PREP
+  +PRON
+  +DEM
+  +INTERJ
+  +LOC
+  +AUX
+  +NC1
+  +NC1a
+  +NC2
+  +NC2a
+  +NC2b
+  +NC3
+  +NC4
+  +NC5
+  +NC6
+  +NC7
+  +NC8
+  +NC9
+  +NC10
+  +NC11
+  +NC12
+  +NC13
+  +NC14
+  +NC15
+  +NC16
+  +NC17
+  +NC18
+  +SG
+  +PL
+  +PRES
+  +PST
+  +REC_PST
+  +REM_PST
+  +FUT_NEAR
+  +FUT_REM
+  +HAB
+  +PERF
+  +SUBJ
+  +IMP_SG
+  +IMP_PL
+  +COND
+  +POT
+  +PROG
+  +NEG
+  +AFF
+  +APPL
+  +CAUS
+  +TRANS
+  +CONT
+  +RECIP
+  +STAT
+  +PASS
+  +INTENS
+  +REDUP
+  +PERF_EXT
+  +REV
+  +REPET
+  +FREQ
+  +POS
+  +SM1SG
+  +SM2SG
+  +SM1PL
+  +SM1PL_IN
+  +SM2PL
+  +SM1
+  +SM1a
+  +SM2
+  +SM2a
+  +SM2b
+  +SM3
+  +SM4
+  +SM5
+  +SM6
+  +SM7
+  +SM8
+  +SM9
+  +SM10
+  +SM11
+  +SM12
+  +SM13
+  +SM14
+  +SM15
+  +SM16
+  +SM17
+  +SM18
+  +OM1SG
+  +OM2SG
+  +OM1PL
+  +OM2PL
+  +OM1
+  +OM2
+  +OM3
+  +OM4
+  +OM5
+  +OM6
+  +OM7
+  +OM8
+  +OM9
+  +OM10
+  +OM11
+  +OM12
+  +OM13
+  +OM14
+  +OM15
+  +OM16
+  +OM17
+  +OM18
+  +FV_IND
+  +FV_SUBJ
+  +FV_NEG
+  +FV_PERF
+  +FV_IMP_SG
+  +FV_IMP_PL
+  +FV_INF
+  +REL
+  +Q
+  +EMP
+  +NEG_POST
+  +LOC_CLITIC
+  @P.NC.1@
+  @R.NC.1@
+  @D.NC.1@
+  @P.NC.2@
+  @R.NC.2@
+  @D.NC.2@
+  @P.NC.3@
+  @R.NC.3@
+  @D.NC.3@
+  @P.NC.4@
+  @R.NC.4@
+  @D.NC.4@
+  @P.NC.5@
+  @R.NC.5@
+  @D.NC.5@
+  @P.NC.6@
+  @R.NC.6@
+  @D.NC.6@
+  @P.NC.7@
+  @R.NC.7@
+  @D.NC.7@
+  @P.NC.8@
+  @R.NC.8@
+  @D.NC.8@
+  @P.NC.9@
+  @R.NC.9@
+  @D.NC.9@
+  @P.NC.10@
+  @R.NC.10@
+  @D.NC.10@
+  @P.NC.11@
+  @R.NC.11@
+  @D.NC.11@
+  @P.NC.12@
+  @R.NC.12@
+  @D.NC.12@
+  @P.NC.13@
+  @R.NC.13@
+  @D.NC.13@
+  @P.NC.14@
+  @R.NC.14@
+  @D.NC.14@
+  @P.NC.15@
+  @R.NC.15@
+  @D.NC.15@
+  @P.NC.16@
+  @R.NC.16@
+  @D.NC.16@
+  @P.NC.17@
+  @R.NC.17@
+  @D.NC.17@
+  @P.NC.18@
+  @R.NC.18@
+  @D.NC.18@
+  @P.NEG.ON@
+  @R.NEG.ON@
+  @D.NEG.ON@
+  @P.MOOD.SUBJ@
+  @R.MOOD.SUBJ@
+  @P.NUM.PL@
+  @R.NUM.PL@
+
+
+! ── FLAG DIACRITICS ───────────────────────────────────────────
+! Purpose: enforce agreement between noun class features
+! spread across multiple verb slots (SM → OM → demonstrative).
+! Grammar ref: slot_co_occurrence validation rules.
+!
+! Convention:  @P.FEAT.VAL@  =  Positive (set)
+!              @R.FEAT.VAL@  =  Require (must match)
+!              @D.FEAT.VAL@  =  Disallow (must NOT match)
+!
+! NC agreement flags — set by SM lexicon, required by OM lexicon
+@P.NC.1@   @R.NC.1@   @D.NC.1@
+@P.NC.2@   @R.NC.2@   @D.NC.2@
+@P.NC.3@   @R.NC.3@   @D.NC.3@
+@P.NC.4@   @R.NC.4@   @D.NC.4@
+@P.NC.5@   @R.NC.5@   @D.NC.5@
+@P.NC.6@   @R.NC.6@   @D.NC.6@
+@P.NC.7@   @R.NC.7@   @D.NC.7@
+@P.NC.8@   @R.NC.8@   @D.NC.8@
+@P.NC.9@   @R.NC.9@   @D.NC.9@
+@P.NC.10@  @R.NC.10@  @D.NC.10@
+@P.NC.11@  @R.NC.11@  @D.NC.11@
+@P.NC.12@  @R.NC.12@  @D.NC.12@
+@P.NC.13@  @R.NC.13@  @D.NC.13@
+@P.NC.14@  @R.NC.14@  @D.NC.14@
+@P.NC.15@  @R.NC.15@  @D.NC.15@
+@P.NC.16@  @R.NC.16@  @D.NC.16@
+@P.NC.17@  @R.NC.17@  @D.NC.17@
+@P.NC.18@  @R.NC.18@  @D.NC.18@
+
+! Negation constraint flags
+! Grammar rule: FV_NEG (-i) requires SLOT1 negation_pre (ta-)
+! Grammar rule: SLOT1 negation_pre and SLOT4 negation_infix are mutually exclusive
+@P.NEG.ON@   @R.NEG.ON@   @D.NEG.ON@
+
+! Mood-FV agreement flags
+! Grammar rule: modal.SUBJ/POT (nga-) requires FV_SUBJ (-e)
+@P.MOOD.SUBJ@  @R.MOOD.SUBJ@
+@P.MOOD.POT@   @R.MOOD.POT@
+
+! Reciprocal plural constraint
+! Grammar rule: RECIP requires plural subject (SM1PL, SM2PL, or NC2+)
+@P.NUM.PL@  @R.NUM.PL@
+
+! Morpheme boundary gate (for CA.1 l→d rule scoping)
+@P.MORPHBOUND.ON@
+
+
+! ==============================================================
+! ROOT LEXICON — entry point for the transducer
+! ==============================================================
+
+LEXICON Root
+  NounPrefix ;       ! nominal paths (all NC classes)
+  VerbPath ;         ! verbal paths (negation → SM → TAM → OM → root → ext → FV)
+  ClosedClass ;      ! non-inflecting: conj, prep, interj, adv
+
+
+! ==============================================================
+! VERBAL PATH
+! SLOT1 → SLOT2 → SLOT3 → SLOT4 → SLOT5 → SLOT6 →
+! SLOT7 → SLOT8 → SLOT9 → SLOT10 → SLOT11
+! ==============================================================
+
+! ── SLOT 1: Pre-initial negation ─────────────────────────────
+! Grammar: negation_pre.present forms: ["ta"]
+!          negation_pre.past forms: ["tee","tii"]
+!          negation_pre.subjunctive forms: ["tii"]
+! Sets @P.NEG.ON@ so FinalVowel knows to produce -i not -a.
+
+LEXICON VerbPath
+  PreInitialNeg ;       ! SLOT1 — with negation
+  PreInitial ;          ! SLOT2 — no negation (goes direct to pre-initial)
+
+LEXICON PreInitialNeg
+  ta+NEG%@P.NEG.ON@:ta PreInitial ;     ! present negative
+  tee+NEG%@P.NEG.ON@:tee PreInitial ;   ! past emphatic negative
+  tii+NEG%@P.NEG.ON@:tii PreInitial ;   ! subjunctive prohibition
+
+! ── SLOT 2: Pre-initial elements ─────────────────────────────
+! Grammar: pre_initial COND=ka, TEMP1=ni/no, TEMP2=lyo
+
+LEXICON PreInitial
+  ka+COND:ka SubjectMarker ;   ! remote future / conditional
+  ni+TEMP:ni SubjectMarker ;   ! when/if conditional
+  no+TEMP:no SubjectMarker ;
+  lyo+TEMP:lyo SubjectMarker ; ! when (future temporal)
+  SubjectMarker ;              ! zero pre-initial (most common)
+
+! ── SLOT 3: Subject markers ───────────────────────────────────
+! Grammar: concord_system.concords.subject_concords
+! Forms extracted directly from grammar YAML.
+! @P.NC.X@ sets the NC feature for OM agreement downstream.
+
+LEXICON SubjectMarker
+! Personal pronouns
+  ndi%+SM1SG:ndi TenseMarker ;                        ! 1SG
+  u%+SM2SG:u TenseMarker ;                            ! 2SG
+  w%+SM2SG:w TenseMarker ;                            ! 2SG before V
+  tu%+SM1PL%@P.NUM.PL@:tu TenseMarker ;               ! 1PL excl
+  tw%+SM1PL_IN%@P.NUM.PL@:tw TenseMarker ;            ! 1PL incl before V
+  mu%+SM2PL%@P.NUM.PL@:mu TenseMarker ;               ! 2PL
+  mw%+SM2PL%@P.NUM.PL@:mw TenseMarker ;               ! 2PL before V
+! NC1 — u-/w- (3SG human)
+  u%+SM1%@P.NC.1@:u TenseMarker ;
+  w%+SM1%@P.NC.1@:w TenseMarker ;
+! NC2 — ba-/b- (3PL human)
+  ba%+SM2%@P.NC.2@%@P.NUM.PL@:ba TenseMarker ;
+  b%+SM2%@P.NC.2@%@P.NUM.PL@:b TenseMarker ;
+! NC3 — u-/w-
+  u%+SM3%@P.NC.3@:u TenseMarker ;
+  w%+SM3%@P.NC.3@:w TenseMarker ;
+! NC4 — i-/y-
+  i%+SM4%@P.NC.4@:i TenseMarker ;
+  y%+SM4%@P.NC.4@:y TenseMarker ;
+! NC5 — li-/ly-
+  li%+SM5%@P.NC.5@:li TenseMarker ;
+  ly%+SM5%@P.NC.5@:ly TenseMarker ;
+! NC6 — a-/Ø-
+  a%+SM6%@P.NC.6@:a TenseMarker ;
+! NC7 — ci-/c-
+  ci%+SM7%@P.NC.7@:ci TenseMarker ;
+  c%+SM7%@P.NC.7@:c TenseMarker ;
+! NC8 — zi-/zyi-/z-
+  zi%+SM8%@P.NC.8@:zi TenseMarker ;
+  zyi%+SM8%@P.NC.8@:zyi TenseMarker ;
+  z%+SM8%@P.NC.8@:z TenseMarker ;
+! NC9 — i-/y-
+  i%+SM9%@P.NC.9@:i TenseMarker ;
+  y%+SM9%@P.NC.9@:y TenseMarker ;
+! NC10 — zi-/zy-
+  zi%+SM10%@P.NC.10@%@P.NUM.PL@:zi TenseMarker ;
+  zy%+SM10%@P.NC.10@%@P.NUM.PL@:zy TenseMarker ;
+! NC11 — lu-/lw-
+  lu%+SM11%@P.NC.11@:lu TenseMarker ;
+  lw%+SM11%@P.NC.11@:lw TenseMarker ;
+! NC12 — ka-/k-
+  ka%+SM12%@P.NC.12@:ka TenseMarker ;
+  k%+SM12%@P.NC.12@:k TenseMarker ;
+! NC13 — tu-/tw-
+  tu%+SM13%@P.NC.13@%@P.NUM.PL@:tu TenseMarker ;
+  tw%+SM13%@P.NC.13@%@P.NUM.PL@:tw TenseMarker ;
+! NC14 — bu-/bw-
+  bu%+SM14%@P.NC.14@:bu TenseMarker ;
+  bw%+SM14%@P.NC.14@:bw TenseMarker ;
+! NC15 — ku-/kw-
+  ku%+SM15%@P.NC.15@:ku TenseMarker ;
+  kw%+SM15%@P.NC.15@:kw TenseMarker ;
+! NC16 — a-/aa- (locative)
+  a%+SM16%@P.NC.16@:a TenseMarker ;
+  aa%+SM16%@P.NC.16@:aa TenseMarker ;
+! NC17 — ku-/kw- (locative)
+  ku%+SM17%@P.NC.17@:ku TenseMarker ;
+  kw%+SM17%@P.NC.17@:kw TenseMarker ;
+! NC18 — mu-/mw- (locative)
+  mu%+SM18%@P.NC.18@:mu TenseMarker ;
+  mw%+SM18%@P.NC.18@:mw TenseMarker ;
+
+
+! ── SLOT 4: Negation infix (after SM, before TAM) ─────────────
+! Grammar: negation_infix forms: ["-ta-"]
+! Only appears in subordinate clause negatives.
+! Co-occurrence constraint: SLOT1 negation_pre @D.NEG.ON@ blocks this.
+
+LEXICON TenseMarker
+  %@D.NEG.ON@ta%+NEG%@P.NEG.ON@:ta TenseMarkerCore ; ! infix neg (subordinate)
+  TenseMarkerCore ;              ! no infix neg (main clause)
+
+! ── SLOT 5: TAM markers ───────────────────────────────────────
+! Grammar source: verbal_system_components.tam
+! NOTE: PST and REM_PST share surface "aka" — tag distinguishes them.
+
+LEXICON TenseMarkerCore
+  a%+PRES:a ObjectMarkerOrRoot ;              ! present habitual (tone L)
+  aka%+PST:aka ObjectMarkerOrRoot ;           ! general past (tone L-L)
+  ali%+REC_PST:ali ObjectMarkerOrRoot ;       ! recent past
+  aka%+REM_PST:aka ObjectMarkerOrRoot ;       ! remote past (tone H-L — same surface as PST)
+  yo%+FUT_NEAR:yo ObjectMarkerOrRoot ;        ! near future
+  za%+FUT_REM:za ObjectMarkerOrRoot ;         ! remote future
+  la%+HAB:la ObjectMarkerOrRoot ;             ! habitual
+  a%+PERF:a ObjectMarkerOrRoot ;              ! perfect (FV -ide disambiguates from PRES)
+  ObjectMarkerOrRoot ;                        ! zero TAM (subjunctive/consecutive)
+
+! ── SLOT 6: Modal / Auxiliary ─────────────────────────────────
+! Grammar: modal.COND forms: ["nga"], modal.POT forms: ["nga"]
+! These share surface form; tag distinguishes.
+! Sets @P.MOOD.SUBJ@ to enforce FV_SUBJ (-e).
+
+LEXICON ObjectMarkerOrRoot
+  nga%+COND%@P.MOOD.SUBJ@:nga ObjectMarker ; ! conditional
+  nga%+POT%@P.MOOD.SUBJ@:nga ObjectMarker ;  ! potential
+  la%+PROG:la ObjectMarker ;                  ! progressive infix
+  ci%+PROG:ci ObjectMarker ;                  ! progressive variant
+  ObjectMarker ;                              ! zero modal
+
+! ── SLOT 7: Object markers ────────────────────────────────────
+! Grammar: concord_system.concords.object_concords
+! @R.NC.X@ requires that the NC was set by SM in SLOT 3.
+
+LEXICON ObjectMarker
+! Personal OM
+  ndi%+OM1SG:ndi VerbRoot ;     ! 1SG object
+  ku%+OM2SG:ku VerbRoot ;       ! 2SG object
+  tu%+OM1PL:tu VerbRoot ;       ! 1PL object
+  mu%+OM2PL:mu VerbRoot ;       ! 2PL object
+! NC OM — each requires matching NC set by SM
+  mu%+OM1%@R.NC.1@:mu VerbRoot ;
+  ba%+OM2%@R.NC.2@:ba VerbRoot ;
+  u%+OM3%@R.NC.3@:u VerbRoot ;
+  i%+OM4%@R.NC.4@:i VerbRoot ;
+  li%+OM5%@R.NC.5@:li VerbRoot ;
+  a%+OM6%@R.NC.6@:a VerbRoot ;
+  ci%+OM7%@R.NC.7@:ci VerbRoot ;
+  chi%+OM7%@R.NC.7@:chi VerbRoot ;
+  zi%+OM8%@R.NC.8@:zi VerbRoot ;
+  i%+OM9%@R.NC.9@:i VerbRoot ;
+  zi%+OM10%@R.NC.10@:zi VerbRoot ;
+  lu%+OM11%@R.NC.11@:lu VerbRoot ;
+  ka%+OM12%@R.NC.12@:ka VerbRoot ;
+  tu%+OM13%@R.NC.13@:tu VerbRoot ;
+  bu%+OM14%@R.NC.14@:bu VerbRoot ;
+  ku%+OM15%@R.NC.15@:ku VerbRoot ;
+  a%+OM16%@R.NC.16@:a VerbRoot ;
+  ku%+OM17%@R.NC.17@:ku VerbRoot ;
+  mu%+OM18%@R.NC.18@:mu VerbRoot ;
+  VerbRoot ;                     ! zero OM (most common)
+
+
+! ── SLOT 8: Verb root ─────────────────────────────────────────
+! Populated from verbs.yaml by chitonga_transform.py
+! Entries generated by the build script — stub examples below.
+
+! ── VerbRoot: auto-generated from verbs.yaml ──────────────────
+LEXICON VerbRoot
+! STEM_MISSING: Aalila  [Defeat]  — fill stem in verbs.yaml
+! STEM_MISSING: Aba  [Share]  — fill stem in verbs.yaml
+  ban%+V:ban DerivSuffix ; ! Share
+  abana%+V:abana DerivSuffix ; ! Share (full form)
+  bany%+V:bany DerivSuffix ; ! Halve
+  abanya%+V:abanya DerivSuffix ; ! Halve (full form)
+
+
+! ── SLOT 9: Derivational extensions ──────────────────────────
+! Grammar: derivational_extensions, zones Z1-Z4
+! canonical_order: ROOT + [Z1] + [Z2] + [Z3] + [Z4] + FV
+! Zone ordering enforced via continuation classes:
+!   Z1 entries continue to Z2OrFV
+!   Z2 entries continue to Z3OrFV
+!   Z3 entries continue to FinalVowel  (PASS is always last)
+!   Z4 entries continue to Z3OrFV
+
+LEXICON DerivSuffix
+! ── Zone Z1: Valency-increasing ──
+  il%+APPL:il Z2OrFV ;          ! applicative (high-vowel stem)
+  el%+APPL:el Z2OrFV ;          ! applicative (mid-vowel stem) — VH.1
+  en%+APPL:en Z2OrFV ;          ! applicative dialectal variant
+  is%+CAUS:is Z2OrFV ;          ! causative (after consonant)
+  isy%+CAUS:isy Z2OrFV ;        ! causative dialectal variant
+  ish%+CAUS:ish Z2OrFV ;        ! causative after consonant
+  esh%+CAUS:esh Z2OrFV ;        ! causative mid-vowel variant
+  y%+CAUS:y Z2OrFV ;            ! causative after vowel-final stem
+  ol%+TRANS:ol Z2OrFV ;         ! transitiviser
+  ok%+TRANS:ok Z2OrFV ;         ! transitiviser intransitive variant
+  at%+CONT:at Z2OrFV ;          ! contactive
+! ── Zone Z4: Aspectual/lexical (before Z2) ──
+  isy%+INTENS:isy Z2OrFV ;      ! intensive (NB: same surface as CAUS variant — context disambiguates)
+  ishi%+INTENS:ishi Z2OrFV ;
+  esy%+INTENS:esy Z2OrFV ;
+  ilil%+PERF_EXT:ilil Z2OrFV ;  ! perfective extension
+  elel%+PERF_EXT:elel Z2OrFV ;
+  ul%+REV:ul Z2OrFV ;           ! reversive transitive
+  ol%+REV:ol Z2OrFV ;           ! reversive mid-vowel
+  uk%+REV:uk Z2OrFV ;           ! reversive intransitive
+  ulul%+REPET:ulul Z2OrFV ;     ! repetitive
+  olol%+REPET:olol Z2OrFV ;
+  aul%+FREQ:aul Z2OrFV ;        ! frequentative
+  auk%+FREQ:auk Z2OrFV ;
+  am%+POS:am Z2OrFV ;           ! positional
+! Zero extension — go direct to FV
+  FinalVowel ;
+
+LEXICON Z2OrFV
+! ── Zone Z2: Valency-adjusting ──
+  an%+RECIP%@R.NUM.PL@:an Z3OrFV ; ! reciprocal (requires plural SM)
+  ik%+STAT:ik Z3OrFV ;          ! stative high-vowel
+  ek%+STAT:ek Z3OrFV ;          ! stative mid-vowel
+  Z3OrFV ;                      ! skip Z2
+
+LEXICON Z3OrFV
+! ── Zone Z3: Voice ── (PASS is always the final extension)
+  w%+PASS:w FinalVowel ;        ! passive after vowel
+  iw%+PASS:iw FinalVowel ;      ! passive after consonant
+  ew%+PASS:ew FinalVowel ;      ! passive mid-vowel
+  igw%+PASS:igw FinalVowel ;    ! passive after certain consonants
+  FinalVowel ;                  ! skip PASS
+
+
+! ── SLOT 10: Final vowel ─────────────────────────────────────
+! Grammar: final_vowels section
+! NEG FV (-i) requires @R.NEG.ON@ — set only when SLOT1 has ta-.
+! SUBJ FV (-e) requires @R.MOOD.SUBJ@ — set by nga- in SLOT6.
+
+LEXICON FinalVowel
+  a%+FV_IND:a PostFinal ;                          ! indicative (default)
+  e%+FV_SUBJ%@R.MOOD.SUBJ@:e PostFinal ;          ! subjunctive — requires nga-
+  i%+FV_NEG%@R.NEG.ON@:i PostFinal ;              ! negative — requires ta-
+  ide%+FV_PERF:ide PostFinal ;                     ! perfective / perfect
+  eni%+FV_IMP_PL:eni PostFinal ;                   ! imperative plural
+
+! ── SLOT 11: Post-final clitics ───────────────────────────────
+! Grammar: post_final section
+
+LEXICON PostFinal
+  yo%+REL:yo # ;        ! relativiser -yo
+  o%+REL:o # ;          ! relativiser -o
+  na%+Q:na # ;          ! question marker
+  nzi%+Q:nzi # ;        ! question marker variant
+  ko%+EMP:ko # ;        ! emphatic
+  pe%+NEG_POST:pe # ;   ! negation reinforcement
+  mo%+LOC_CLITIC:mo # ; ! locative clitic (in/at)
+  # ;                    ! no post-final clitic (end of word)
+
+
+! ==============================================================
+! NOUN PATH — all 18 noun classes
+! ==============================================================
+
+LEXICON NounPrefix
+! ── NC1 Human singular ──
+  mu%+NC1%+SG:mu NounRootNC1 ;
+  mw%+NC1%+SG:mw NounRootNC1 ;      ! before vowel (SND.1b)
+! ── NC2 Human plural ──
+  ba%+NC2%+PL:ba NounRootNC2 ;
+  b%+NC2%+PL:b NounRootNC2 ;        ! before vowel
+! ── NC1a/NC2a kinship / proper names (zero prefix) ──
+  %+NC1a%+SG: NounRootNC1a ;        ! zero prefix
+! ── NC3 Trees/plants singular ──
+  mu%+NC3%+SG:mu NounRootNC3 ;
+  mw%+NC3%+SG:mw NounRootNC3 ;
+! ── NC4 Trees/plants plural ──
+  mi%+NC4%+PL:mi NounRootNC4 ;
+  my%+NC4%+PL:my NounRootNC4 ;
+! ── NC5 Augmentative/singular ──
+  li%+NC5%+SG:li NounRootNC5 ;
+  %+NC5%+SG: NounRootNC5 ;          ! zero prefix (many NC5 nouns)
+! ── NC6 Liquids/masses/plurals ──
+  ma%+NC6%+PL:ma NounRootNC6 ;
+  m%+NC6%+PL:m NounRootNC6 ;        ! before consonant
+! ── NC7 Things/diminutives singular ──
+  ci%+NC7%+SG:ci NounRootNC7 ;
+  chi%+NC7%+SG:chi NounRootNC7 ;    ! variant form
+  c%+NC7%+SG:c NounRootNC7 ;        ! before vowel
+! ── NC8 Things/diminutives plural ──
+  zi%+NC8%+PL:zi NounRootNC8 ;
+  zy%+NC8%+PL:zy NounRootNC8 ;      ! before vowel (SND.1a)
+! ── NC9 Animals/loanwords singular ──
+  %+NC9%+SG: NounRootNC9 ;          ! zero (before fricatives/vowels, SND.3e)
+  n%+NC9%+SG:n NounRootNC9 ;        ! before alveolars
+  m%+NC9%+SG:m NounRootNC9 ;        ! before bilabials (SND.3a)
+  ng%+NC9%+SG:ng NounRootNC9 ;      ! before velars (SND.3c)
+  ny%+NC9%+SG:ny NounRootNC9 ;      ! before palatals (SND.3d)
+! ── NC10 Animals/loanwords plural ──
+  zi%+NC10%+PL:zi NounRootNC10 ;
+  zy%+NC10%+PL:zy NounRootNC10 ;
+  n%+NC10%+PL:n NounRootNC10 ;      ! nasal plural
+! ── NC11 Long objects singular ──
+  lu%+NC11%+SG:lu NounRootNC11 ;
+  lw%+NC11%+SG:lw NounRootNC11 ;
+! ── NC12 Diminutive singular ──
+  ka%+NC12%+SG:ka NounRootNC12 ;
+  k%+NC12%+SG:k NounRootNC12 ;
+! ── NC13 Diminutive plural ──
+  tu%+NC13%+PL:tu NounRootNC13 ;
+  tw%+NC13%+PL:tw NounRootNC13 ;
+! ── NC14 Abstract/mass ──
+  bu%+NC14%+SG:bu NounRootNC14 ;
+  bw%+NC14%+SG:bw NounRootNC14 ;
+! ── NC15 Infinitives ──
+  ku%+NC15:ku NounRootNC15 ;
+  kw%+NC15:kw NounRootNC15 ;
+! ── NC16 Locative definite ──
+  a%+NC16:a NounRootNC16 ;
+  aa%+NC16:aa NounRootNC16 ;
+! ── NC17 Locative general ──
+  ku%+NC17:ku NounRootNC17 ;
+  kw%+NC17:kw NounRootNC17 ;
+! ── NC18 Locative interior ──
+  mu%+NC18:mu NounRootNC18 ;
+  mw%+NC18:mw NounRootNC18 ;
+
+! ── Noun root lexica ─────────────────────────────────────────
+! These are populated from nouns.yaml by the build script.
+! Each root routes to # (word boundary — nouns don't inflect further).
+
+! ── Noun root lexica: auto-generated from nouns.yaml ──────────
+LEXICON NounRootNC1
+  acaleco%+N:acaleco # ; ! That one also
+
+LEXICON NounRootNC5
+  ajulu%+N:ajulu # ; ! Top
+
