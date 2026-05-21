@@ -26,7 +26,7 @@
 
 ## 1. Architecture overview
 
-The GGT annotation pipeline is a three-layer stack. This guide covers the
+The ggtk annotation pipeline is a three-layer stack. This guide covers the
 bottom two layers.
 
 ```
@@ -49,7 +49,7 @@ bottom two layers.
 **Design invariant: zero Python changes to add a language.** All
 language-specific knowledge — noun-class prefixes, subject/object concords,
 TAM markers, verb extensions, negation, augment — lives exclusively in the
-GGT YAML grammar file. The tokenizer and analyser are fully language-agnostic.
+ggtk YAML grammar file. The tokenizer and analyser are fully language-agnostic.
 
 ---
 
@@ -59,8 +59,8 @@ GGT YAML grammar file. The tokenizer and analyser are fully language-agnostic.
 project/
 │
 │  Grammar files (read-only input)
-├── chibemba.yaml          GGT grammar for ChiBemba (bem)
-├── silozi.yaml            GGT grammar for SiLozi (loz)
+├── chibemba.yaml          ggtk grammar for ChiBemba (bem)
+├── silozi.yaml            ggtk grammar for SiLozi (loz)
 │
 │  Pipeline source files
 ├── models.py              Pipeline data layer: AnnotatedSentence, WordToken,
@@ -69,7 +69,7 @@ project/
 ├── morph_analyser.py      Phase 2 morphological analyser (GobelloMorphAnalyser)
 │
 │  Adapter (new — this session)
-└── ggt_loader_adapter.py  GGTLoaderAdapter: bridges YAML ↔ pipeline interface
+└── ggtk_loader_adapter.py  GGTLoaderAdapter: bridges YAML ↔ pipeline interface
 ```
 
 > **Important:** `models.py` in the pipeline directory is the *pipeline* data
@@ -86,7 +86,7 @@ project/
 
 ```python
 import yaml
-from ggt_loader_adapter import GGTLoaderAdapter
+from ggtk_loader_adapter import GGTLoaderAdapter
 from word_tokenizer      import GobeloWordTokenizer
 from morph_analyser      import GobelloMorphAnalyser
 
@@ -157,7 +157,7 @@ uses the SiLozi `si-` paradigm rather than the ChiBemba `fi-` paradigm.
 
 ## 4. The GGTLoaderAdapter
 
-`GGTLoaderAdapter` is the bridge between the GGT YAML grammar files and the
+`GGTLoaderAdapter` is the bridge between the ggtk YAML grammar files and the
 pipeline. It translates on-demand between the YAML key hierarchy and the
 dotted-key interface that `GobeloWordTokenizer` and `GobelloMorphAnalyser`
 both call via `loader.get(key, default)`.
@@ -181,7 +181,7 @@ YAML structure the adapter finds the data.
 | `loader.get(key)` | YAML path |
 |---|---|
 | `phonology.vowels_nfc` | `phonology.vowels.segments` (single-char only) |
-| `phonology.tone_marks` | always `[]` (GGT corpus text is un-toned) |
+| `phonology.tone_marks` | always `[]` (ggtk corpus text is un-toned) |
 | `engine_features` | `phonology.engine_features[*].default` + augment detection |
 | `clitics` | `tokenization.clitics` |
 | `morphology.subject_markers` | `concord_system.concords.subject_concords` |

@@ -30,8 +30,8 @@ Usage
 -----
 ::
 
-    from ggt import GobeloGrammarLoader, GrammarConfig
-    from ggt.apps.corpus_annotator import CorpusAnnotator
+    from ggtk import GobeloGrammarLoader, GrammarConfig
+    from ggtk.apps.corpus_annotator import CorpusAnnotator
 
     loader    = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     annotator = CorpusAnnotator(loader)
@@ -49,13 +49,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
-from ggt.core.exceptions import GGTError
-from ggt.apps.morphological_analyzer import (
+from ggtk.core.exceptions import GGTError
+from ggtk.apps.morphological_analyzer import (
     MorphAnalysisError,
     MorphologicalAnalyzer,
     SegmentedToken,
 )
-from ggt.apps.ud_feature_mapper import (
+from ggtk.apps.ud_feature_mapper import (
     UDFeatureBundle,
     UDFeatureMapper,
     UDMappingError,
@@ -94,7 +94,7 @@ class CorpusAnnotationError(GGTError):
 # ─────────────────────────────────────────────────────────────────────────────
 
 _CONLLU_EMPTY = "_"
-_GGT_VERSION  = "2.0.0"  # bumped for v2 morphological_analyzer
+_GGTK_VERSION  = "2.0.0"  # bumped for v2 morphological_analyzer
 
 # Sentence boundary punctuation (used when no blank lines found)
 _SENT_PUNCT_RE = re.compile(r"(?<=[.!?።。])\s+")
@@ -207,7 +207,7 @@ class AnnotatedSentence:
     tokens: Tuple[AnnotatedToken, ...]
     language: str
 
-    def to_conllu_block(self, loader_version: str = _GGT_VERSION) -> str:
+    def to_conllu_block(self, loader_version: str = _GGTK_VERSION) -> str:
         """
         Render this sentence as a complete CoNLL-U block (comments +
         token rows + trailing blank line).
@@ -215,7 +215,7 @@ class AnnotatedSentence:
         Parameters
         ----------
         loader_version : str
-            Written into the ``# ggt_annotated`` comment header.
+            Written into the ``# ggtk_annotated`` comment header.
 
         Returns
         -------
@@ -225,7 +225,7 @@ class AnnotatedSentence:
             f"# sent_id = {self.sent_id}",
             f"# text = {self.text}",
             f"# language = {self.language}",
-            f"# ggt_annotated = {loader_version}",
+            f"# ggtk_annotated = {loader_version}",
         ]
         for tok in self.tokens:
             lines.append(tok.to_conllu_row())
@@ -302,8 +302,8 @@ class CorpusAnnotator:
 
     Examples
     --------
-    >>> from ggt import GobeloGrammarLoader, GrammarConfig
-    >>> from ggt.apps.corpus_annotator import CorpusAnnotator
+    >>> from ggtk import GobeloGrammarLoader, GrammarConfig
+    >>> from ggtk.apps.corpus_annotator import CorpusAnnotator
     >>> loader    = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     >>> annotator = CorpusAnnotator(loader)
     >>> result    = annotator.annotate_text("balya cilya.")
@@ -435,7 +435,7 @@ class CorpusAnnotator:
         blocks: List[str] = [
             f"# global.columns = ID FORM LEMMA UPOS XPOS FEATS HEAD DEPREL DEPS MISC",
             f"# language = {result.language}",
-            f"# ggt_annotated = {self._loader_version}",
+            f"# ggtk_annotated = {self._loader_version}",
             f"# total_sentences = {result.total_sentences}",
             f"# total_tokens = {result.total_tokens}",
             f"# ambiguous_tokens = {result.ambiguous_tokens}",
@@ -773,7 +773,7 @@ def _make_failed_token(
     """
     # Build a minimal SegmentedToken stub if none provided
     if seg_tok is None:
-        from ggt.apps.morphological_analyzer import SegmentedToken as ST
+        from ggtk.apps.morphological_analyzer import SegmentedToken as ST
         # We can't construct a SegmentedToken easily without an analyzer,
         # so we use a sentinel object with duck-typing
         class _FakeST:
@@ -788,7 +788,7 @@ def _make_failed_token(
 
     # Build a minimal UDFeatureBundle stub
     if ud_bundle is None:
-        from ggt.apps.ud_feature_mapper import UDFeatureBundle as UDB
+        from ggtk.apps.ud_feature_mapper import UDFeatureBundle as UDB
         ud_bundle_to_use = UDB(
             token=form,
             language=language,

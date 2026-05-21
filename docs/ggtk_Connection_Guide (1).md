@@ -1,22 +1,22 @@
-# Connecting GGT Python Library to Web Application
+# Connecting ggtk Python Library to Web Application
 
 ## Quick Start
 
-### Step 1: Install Your GGT Library
+### Step 1: Install Your ggtk Library
 
 ```bash
 # Option A: Install from source
-cd /path/to/your/ggt/repository
+cd /path/to/your/ggtk/repository
 pip install -e .
 
 # Option B: Install from PyPI (when published)
 pip install ggt
 ```
 
-### Step 2: Verify GGT Installation
+### Step 2: Verify ggtk Installation
 
 ```bash
-python -c "from ggt import GobeloGrammarLoader; print('GGT OK')"
+python -c "from ggtk import GobeloGrammarLoader; print('ggtk OK')"
 ```
 
 ### Step 3: Test the Bridge
@@ -28,7 +28,7 @@ echo '{"action": "languages"}' | python3 python/bridge.py
 
 Expected output:
 ```json
-{"languages": [...], "success": true, "ggt_available": true}
+{"languages": [...], "success": true, "ggtk_available": true}
 ```
 
 ### Step 4: Check Connection
@@ -39,7 +39,7 @@ Expected response:
 ```json
 {
   "ggtAvailable": true,
-  "message": "GGT Python library connected"
+  "message": "ggtk Python library connected"
 }
 ```
 
@@ -47,9 +47,9 @@ Expected response:
 
 ## How It Works
 
-The API route (`/src/app/api/ggt/route.ts`) automatically detects if your GGT Python library is available:
+The API route (`/src/app/api/ggtk/route.ts`) automatically detects if your ggtk Python library is available:
 
-1. **First request**: Checks if Python + GGT is available
+1. **First request**: Checks if Python + ggtk is available
 2. **If available**: Routes all requests through `python/bridge.py`
 3. **If not available**: Falls back to mock data
 
@@ -73,7 +73,7 @@ The API route (`/src/app/api/ggt/route.ts`) automatically detects if your GGT Py
 
 The web app automatically executes Python via `child_process`. Just ensure:
 - Python 3.9+ is installed
-- GGT library is installed (`pip install -e .`)
+- ggtk library is installed (`pip install -e .`)
 - The bridge script is executable
 
 ### Scenario 2: Production Web (Vercel, Netlify)
@@ -85,8 +85,8 @@ For serverless deployment, you have several options:
 Deploy the Python service separately (e.g., Railway, Fly.io, AWS Lambda) and configure the API to call it:
 
 ```typescript
-// In src/app/api/ggt/route.ts, add:
-const PYTHON_API_URL = process.env.GGT_API_URL || 'http://localhost:50051';
+// In src/app/api/ggtk/route.ts, add:
+const PYTHON_API_URL = process.env.ggtk_API_URL || 'http://localhost:50051';
 
 async function callPythonAPI(action: string, params: any) {
   const response = await fetch(`${PYTHON_API_URL}/${action}`, {
@@ -146,7 +146,7 @@ The Electron app bundles the Python executable:
 | `GET /api/ggt?action=noun-classes&lang=chitonga` | Get noun classes |
 | `GET /api/ggt?action=extensions&lang=chitonga` | Get verb extensions |
 | `GET /api/ggt?action=verb-slots&lang=chitonga` | Get verb slot template |
-| `GET /api/ggt?action=check` | Check GGT connection status |
+| `GET /api/ggt?action=check` | Check ggtk connection status |
 
 ### POST Endpoints
 
@@ -200,9 +200,9 @@ curl -X POST "http://localhost:3000/api/ggt?action=paradigm" \
 
 ## Troubleshooting
 
-### Error: "GGT library not available"
+### Error: "ggtk library not available"
 
-**Cause**: Python cannot import GGT module
+**Cause**: Python cannot import ggtk module
 
 **Solutions**:
 1. Verify installation: `pip show ggt`
@@ -233,7 +233,7 @@ curl -X POST "http://localhost:3000/api/ggt?action=paradigm" \
 
 If `ggtAvailable: false`, check:
 1. Python is installed and accessible
-2. GGT library is installed
+2. ggtk library is installed
 3. No import errors in bridge.py
 
 ---
@@ -248,18 +248,18 @@ If `ggtAvailable: false`, check:
 │   │   └── main.py        # FastAPI service
 │   └── build.spec         # PyInstaller config
 │
-├── src/app/api/ggt/
+├── src/app/api/ggtk/
 │   └── route.ts           # Next.js API route (UPDATED)
 │
 └── src/lib/
-    └── ggt-data.ts        # Mock data (fallback)
+    └── ggtk-data.ts        # Mock data (fallback)
 ```
 
 ---
 
 ## Next Steps
 
-1. **Install GGT**: `pip install -e /path/to/ggt/repository`
+1. **Install GGT**: `pip install -e /path/to/ggtk/repository`
 2. **Test Bridge**: `echo '{"action": "languages"}' | python3 python/bridge.py`
 3. **Restart Dev Server**: The connection check happens on first API call
 4. **Verify**: Visit `/api/ggt?action=check`

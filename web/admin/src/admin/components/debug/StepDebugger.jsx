@@ -13,7 +13,7 @@ export default function StepDebugger({ steps = [] }) {
 
   if (steps.length === 0) {
     return (
-      <div className="text-ggt-muted font-sans text-xs text-center py-4">
+      <div className="text-ggtk-muted font-sans text-xs text-center py-4">
         No step data available for this parse.
       </div>
     );
@@ -21,7 +21,7 @@ export default function StepDebugger({ steps = [] }) {
 
   return (
     <div className="step-debugger">
-      <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-accent uppercase mb-3.5">
+      <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-accent uppercase mb-3.5">
         Step Debugger — {steps.length} steps
       </div>
       <StepControls   {...debug} />

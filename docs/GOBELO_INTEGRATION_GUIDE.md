@@ -8,15 +8,15 @@
 This repository already contains both the poster app and the core grammar toolkit.
 
 - `gobelo_poster/` — Flask poster generator, API routes, and conjugation engine
-- `ggt/` — core package with YAML grammar files in `ggt/languages`
-- `gobelo_poster/app.py` already supports loading `GGT_YAML_DIR` for richer grammar data
+- `ggtk/` — core package with YAML grammar files in `ggtk/languages`
+- `gobelo_poster/app.py` already supports loading `ggtk_YAML_DIR` for richer grammar data
 
 Quick start from the repo root:
 
 ```bash
 pip install -e .
 cd gobelo_poster
-GGT_YAML_DIR="../ggt/languages" python app.py
+ggtk_YAML_DIR="../ggtk/languages" python app.py
 ```
 
 Then open `http://localhost:5050/poster`.
@@ -34,7 +34,7 @@ gobelo/                                   ← root of the entire project
 ├── .gitignore
 ├── README.md
 │
-├── grammar/                              ← ALL GGT YAML grammar files
+├── grammar/                              ← ALL ggtk YAML grammar files
 │   ├── chitonga.yaml                     ✅ canonical reference / schema
 │   ├── chibemba.yaml                     ✅ done
 │   ├── chinyanja.yaml                    ✅ done
@@ -43,10 +43,10 @@ gobelo/                                   ← root of the entire project
 │   ├── ciluvale.yaml                     ✅ done
 │   └── cilunda.yaml                      ✅ done
 │
-├── ggt/                                  ← GGT Python library (ggt)
+├── ggtk/                                  ← ggtk Python library (ggt)
 │   ├── pyproject.toml
 │   ├── README.md
-│   └── ggt/
+│   └── ggtk/
 │       ├── __init__.py
 │       ├── models.py                     ← typed dataclass models
 │       ├── config.py                     ← immutable config
@@ -138,8 +138,8 @@ gobelo/                                   ← root of the entire project
         ├── index.html
         └── src/
             ├── main.jsx
-            ├── App.jsx                   ← GGT Grammar Admin root
-            └── components/               ← (existing 55-file GGT Admin components)
+            ├── App.jsx                   ← ggtk Grammar Admin root
+            └── components/               ← (existing 55-file ggtk Admin components)
                 ├── MetadataEditor.jsx
                 ├── NounClassEditor.jsx
                 ├── ConcordEditor.jsx
@@ -203,12 +203,12 @@ sys.exit(0 if ok else 1)
 
 ---
 
-### Step 3 — Install the GGT library
+### Step 3 — Install the ggtk library
 
 ```bash
-mkdir ggt && cd ggt
+mkdir ggtk && cd ggt
 
-# If ggt is already a package on disk, install it editably:
+# If ggtk is already a package on disk, install it editably:
 pip install -e /path/to/ggt
 
 # OR if it is just a folder of .py files, create pyproject.toml:
@@ -218,7 +218,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.backends.legacy:build"
 
 [project]
-name = "ggt"
+name = "ggtk"
 version = "1.0.0"
 requires-python = ">=3.11"
 dependencies = ["pyyaml>=6.0"]
@@ -227,33 +227,33 @@ dependencies = ["pyyaml>=6.0"]
 where = ["."]
 
 [tool.setuptools.package-data]
-"ggt" = ["languages/*.yaml"]
+"ggtk" = ["languages/*.yaml"]
 EOF
 
 cd ..
-pip install -e ggt/
+pip install -e ggtk/
 ```
 
 ---
 
-### Step 4 — Wire the YAML files into the GGT package
+### Step 4 — Wire the YAML files into the ggtk package
 
-The GGT loader uses `importlib.resources` to find embedded YAML files.
+The ggtk loader uses `importlib.resources` to find embedded YAML files.
 Link (or copy) the grammar files into the package's `languages/` folder:
 
 ```bash
 # Option A: symlinks (recommended — edits to grammar/ auto-reflect)
 for lang in chitonga chibemba chinyanja silozi cikaonde ciluvale cilunda; do
   ln -sf "$(pwd)/grammar/${lang}.yaml" \
-         "ggt/ggt/languages/${lang}.yaml"
+         "ggtk/ggtk/languages/${lang}.yaml"
 done
 
 # Option B: hard copies (simpler if symlinks cause issues on Windows)
-cp grammar/*.yaml ggt/ggt/languages/
+cp grammar/*.yaml ggtk/ggtk/languages/
 
-# Verify the GGT loader can find them:
+# Verify the ggtk loader can find them:
 python3 -c "
-from ggt import GrammarRegistry
+from ggtk import GrammarRegistry
 r = GrammarRegistry()
 r.load_all()
 for lang in r.available():
@@ -284,7 +284,7 @@ flask>=3.0
 pyyaml>=6.0
 gunicorn>=21.0
 python-dotenv>=1.0
-ggt @ file://../ggt
+ggtk @ file://../ggt
 EOF
 
 pip install -r backend/requirements.txt
@@ -298,7 +298,7 @@ pip install -r backend/requirements.txt
 cat > backend/app.py << 'EOF'
 """
 Gobelo Platform — Flask application
-Integrates conjugation engine with the full GGT YAML grammar files.
+Integrates conjugation engine with the full ggtk YAML grammar files.
 """
 import os
 from pathlib import Path
@@ -307,21 +307,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── GGT registry (reads .yaml files from grammar/ directory) ─────────────────
+# ── ggtk registry (reads .yaml files from grammar/ directory) ─────────────────
 try:
-    from ggt import GrammarRegistry
+    from ggtk import GrammarRegistry
     _registry = GrammarRegistry()
-    _registry.load_all(yaml_dir=Path(os.environ.get('GGT_YAML_DIR', '../grammar')))
-    GGT_AVAILABLE = True
+    _registry.load_all(yaml_dir=Path(os.environ.get('ggtk_YAML_DIR', '../grammar')))
+    ggtk_AVAILABLE = True
 except Exception as e:
-    print(f"GGT registry unavailable: {e} — falling back to embedded grammar data")
-    GGT_AVAILABLE = False
+    print(f"ggtk registry unavailable: {e} — falling back to embedded grammar data")
+    ggtk_AVAILABLE = False
 
 # ── Conjugation engine (always available) ────────────────────────────────────
 from conjugator import GRAMMARS, build_paradigm, morpheme_key_example, load_yaml_grammar
 
-# Enrich conjugator with .yaml data when GGT is available
-YAML_DIR = Path(os.environ.get('GGT_YAML_DIR', '../grammar'))
+# Enrich conjugator with .yaml data when ggtk is available
+YAML_DIR = Path(os.environ.get('ggtk_YAML_DIR', '../grammar'))
 if YAML_DIR.exists():
     for yaml_path in YAML_DIR.glob('*.yaml'):
         enriched = load_yaml_grammar(yaml_path)
@@ -457,7 +457,7 @@ def create_app():
         return jsonify({
             'status':    'ok',
             'version':   '1.0.0',
-            'ggt':       GGT_AVAILABLE,
+            'ggt':       ggtk_AVAILABLE,
             'languages': list(GRAMMARS.keys()),
             'yaml_dir':  str(YAML_DIR),
         })
@@ -635,7 +635,7 @@ cat > .env << 'EOF'
 # NEVER commit this file
 
 SECRET_KEY=change-this-to-a-random-string-in-production
-GGT_YAML_DIR=../grammar
+ggtk_YAML_DIR=../grammar
 PORT=5050
 
 # Anthropic API key — for AI example sentence generation
@@ -704,8 +704,8 @@ npm create vite@latest admin -- --template react
 cd admin
 npm install js-yaml lodash
 
-# Copy your existing GGT Admin component files into src/
-# (the 55-file GGT Grammar Admin Vite project you already have)
+# Copy your existing ggtk Admin component files into src/
+# (the 55-file ggtk Grammar Admin Vite project you already have)
 
 # Update vite.config.js:
 cat > vite.config.js << 'EOF'
@@ -735,7 +735,7 @@ cd ../..
 ```bash
 cd gobelo/backend
 source ../.venv/bin/activate      # or your virtualenv
-GGT_YAML_DIR=../grammar python app.py
+ggtk_YAML_DIR=../grammar python app.py
 # → http://localhost:5050
 ```
 
@@ -774,7 +774,7 @@ gunicorn -w 4 -b 0.0.0.0:5050 "app:create_app()"
 | `/` | Gobelo Platform (Word of the Day) |
 | `/paradigm` | Paradigm Explorer |
 | `/poster` | Verb Poster Generator |
-| `/admin` | GGT Grammar Admin (private) |
+| `/admin` | ggtk Grammar Admin (private) |
 | `/api/languages` | Language list + TAM data |
 | `/api/conjugate` | Verb paradigm (POST) |
 | `/api/wotd?lang=chitonga` | Word of the Day |
@@ -787,8 +787,8 @@ gunicorn -w 4 -b 0.0.0.0:5050 "app:create_app()"
 ```
 grammar/*.yaml
      │
-     ├─→ ggt/ggt/languages/   (symlinks)
-     │        └─→ GrammarRegistry.load_all()     ← GGT Python library
+     ├─→ ggtk/ggtk/languages/   (symlinks)
+     │        └─→ GrammarRegistry.load_all()     ← ggtk Python library
      │
      └─→ backend/conjugator/engine.py
               └─→ load_yaml_grammar(path)
@@ -820,9 +820,9 @@ for f in pathlib.Path('grammar').glob('*.yaml'):
     print(f'OK {f.name}')
 "
 
-# 2. GGT registry loads
+# 2. ggtk registry loads
 python3 -c "
-from ggt import GrammarRegistry
+from ggtk import GrammarRegistry
 r = GrammarRegistry(); r.load_all(yaml_dir='grammar')
 print([g.metadata.language.iso_code for g in r.all()])
 "
@@ -843,7 +843,7 @@ for g in para:
 
 # 4. Flask health check
 curl http://localhost:5050/api/health
-# → {"ggt":true,"languages":[...],"status":"ok","yaml_loaded":true}
+# → {"ggtk":true,"languages":[...],"status":"ok","yaml_loaded":true}
 
 # 5. Full conjugation round-trip
 curl -s -X POST http://localhost:5050/api/conjugate \
@@ -891,7 +891,7 @@ python3 scripts/corpus_to_wordbank.py \
 web: gunicorn -w 2 -b 0.0.0.0:$PORT "app:create_app()"
 
 # Set environment variables in Railway/Render dashboard:
-GGT_YAML_DIR=/app/grammar     # mount grammar/ as a volume or copy in build
+ggtk_YAML_DIR=/app/grammar     # mount grammar/ as a volume or copy in build
 SECRET_KEY=...
 ANTHROPIC_API_KEY=...
 

@@ -655,7 +655,7 @@ class TestFullFeatsConstruction:
         sp = SlotParse(lang_iso="toi", analyser_version="2.0.0", score=0.60)
         tok = _make_token("muntu", noun_class="NC1")
         feats = _build_full_feats(sp, self.cfg, POSTag.NOUN, "", tok)
-        assert feats.get("GGT_NounClass") == "NC1"
+        assert feats.get("ggtk_NounClass") == "NC1"
         assert feats.get("Number") == "Sing"
         assert "VerbForm" not in feats
 
@@ -685,7 +685,7 @@ class TestXposBuilder:
         assert "INF" in xpos
 
     def test_noun_xpos_includes_nc(self):
-        feats = {"GGT_NounClass": "NC3", "Number": "Sing"}
+        feats = {"ggtk_NounClass": "NC3", "Number": "Sing"}
         tok = _make_token("muti", noun_class="NC3")
         xpos = _build_xpos(POSTag.NOUN, feats, None, tok)
         assert "NC3" in xpos
@@ -725,7 +725,7 @@ class TestGobeloPOSTaggerIntegration:
         result = self.tagger.tag(sent)
         assert tok.upos == POSTag.VERB
         assert tok.xpos is not None
-        assert "GGT_SlotScore" in tok.feats
+        assert "ggtk_SlotScore" in tok.feats
 
     def test_tag_closed_class_conjunction(self):
         tok = _make_token("na")           # "na" = conjunction in mock YAML

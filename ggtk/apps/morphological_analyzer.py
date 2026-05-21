@@ -46,7 +46,7 @@ from typing import (
     Dict, FrozenSet, List, Optional, Sequence, Tuple
 )
 
-from ggt.core.exceptions import (
+from ggtk.core.exceptions import (
     GGTError,
     NounClassNotFoundError,
 )

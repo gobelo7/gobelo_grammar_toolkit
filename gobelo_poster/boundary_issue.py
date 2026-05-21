@@ -908,7 +908,7 @@ pip install -r requirements.txt
 python app.py                          # dev server on :5050
 
 # With your GGT YAML files:
-GGT_YAML_DIR=/path/to/yaml python app.py
+ggtk_YAML_DIR=/path/to/yaml python app.py
 The load_yaml_grammar() function enriches the embedded data with the full YAML content when the files are present — so any edits made in the GGT Admin tool flow directly into the poster generator.
 
 Save this visual from earlier as an artifact: "chitonga_verb_poster_generator"

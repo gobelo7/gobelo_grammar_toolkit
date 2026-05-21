@@ -64,7 +64,7 @@ Usage
 -----
 ::
 
-    from ggt.hfst.hfst_backend import parse_tag, HFSTBackend
+    from ggtk.hfst.hfst_backend import parse_tag, HFSTBackend
 
     # Direct tag parsing
     tags = parse_tag("ba+SM2@P.NC.2@+PRES+ly+V+a+FV_IND")

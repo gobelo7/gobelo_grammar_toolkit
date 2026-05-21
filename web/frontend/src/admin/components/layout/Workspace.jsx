@@ -35,10 +35,10 @@ export default function Workspace() {
   const { activeView } = useUI();
 
   return (
-    <main className="flex-1 overflow-y-auto p-6 bg-ggt-bg">
+    <main className="flex-1 overflow-y-auto p-6 bg-ggtk-bg">
       <Suspense fallback={<Loader text="Loading view…" />}>
         {VIEWS[activeView] ?? (
-          <div className="text-ggt-muted font-sans text-xs p-10 text-center">
+          <div className="text-ggtk-muted font-sans text-xs p-10 text-center">
             View "{activeView}" is not yet implemented.
           </div>
         )}

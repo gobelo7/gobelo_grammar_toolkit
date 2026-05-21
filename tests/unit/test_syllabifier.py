@@ -1,9 +1,9 @@
 import pytest
 
-from ggt.core.config import GrammarConfig
-from ggt.core.loader import GobeloGrammarLoader
-from ggt.core.models import SyllabificationData
-from ggt.core.syllabifier import GrammarDrivenSyllabifier
+from ggtk.core.config import GrammarConfig
+from ggtk.core.loader import GobeloGrammarLoader
+from ggtk.core.models import SyllabificationData
+from ggtk.core.syllabifier import GrammarDrivenSyllabifier
 
 
 @pytest.fixture(scope="module")

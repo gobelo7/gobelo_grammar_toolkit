@@ -1,5 +1,5 @@
 """
-cli/ggt_cli.py
+cli/ggtk_cli.py
 ==============
 ``ggt`` — Gobelo Grammar Toolkit command-line interface.
 
@@ -55,8 +55,8 @@ from typing import List, Optional
 
 import click
 
-from ggt.core import GrammarConfig, GobeloGrammarLoader
-from ggt.core.exceptions import (
+from ggtk.core import GrammarConfig, GobeloGrammarLoader
+from ggtk.core.exceptions import (
     GGTError,
     LanguageNotFoundError,
     ConcordTypeNotFoundError,
@@ -152,7 +152,7 @@ def _table(headers: List[str], rows: List[List[str]]) -> str:
     return "\n".join(lines)
 
 
-def _ggt_version() -> str:
+def _GGTK_version() -> str:
     """
     Return the running GGT version string.
 
@@ -163,11 +163,11 @@ def _ggt_version() -> str:
     """
     try:
         import importlib.metadata as _meta
-        return _meta.version("ggt")
+        return _meta.version("ggtk")
     except Exception:
         pass
     try:
-        from ggt.core.validator import LOADER_VERSION
+        from ggtk.core.validator import LOADER_VERSION
         return LOADER_VERSION
     except Exception:
         return "unknown"
@@ -213,8 +213,8 @@ def _load(language: str, quiet: bool = False) -> GobeloGrammarLoader:
     help="Suppress headers and progress messages.",
 )
 @click.version_option(
-    version=_ggt_version(),
-    prog_name="ggt",
+    version=_GGTK_version(),
+    prog_name="ggtk",
     message="%(prog)s %(version)s (Gobelo Grammar Toolkit)",
 )
 @click.pass_context

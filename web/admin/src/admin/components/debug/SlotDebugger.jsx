@@ -22,7 +22,7 @@ export default function SlotDebugger() {
   if (loading) return <Loader text="Running parser…" />;
 
   if (!parseResult) return (
-    <div className="text-ggt-muted font-sans text-xs text-center py-8">
+    <div className="text-ggtk-muted font-sans text-xs text-center py-8">
       No analysis yet — enter a word above.
     </div>
   );
@@ -37,7 +37,7 @@ export default function SlotDebugger() {
       {/* Step-by-step backtracking debugger */}
       {hasSteps && (
         <div className="step-section mb-6">
-          <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-accent uppercase mb-3.5">
+          <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-accent uppercase mb-3.5">
             Step Debugger
           </div>
           <StepControls  {...debug} />

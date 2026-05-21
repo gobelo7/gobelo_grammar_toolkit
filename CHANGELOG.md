@@ -8,7 +8,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] — 2026-03-21
 
-### Added — Core library (`ggt/core/`)
+### Added — Core library (`ggtk/core/`)
 
 - `GobeloGrammarLoader` — single grammar dependency for all apps (14 public methods)
 - `GrammarConfig` dataclass — language identifier + optional override path
@@ -23,7 +23,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `language_registry` — maps 7 language identifiers to grammar YAML filenames
 - `GGTError` exception hierarchy — `LanguageNotFoundError`, `VersionIncompatibleError`, `SchemaValidationError`, `UnverifiedFormError`
 
-### Added — Grammar data (`ggt/languages/`)
+### Added — Grammar data (`ggtk/languages/`)
 
 - `chitonga.yaml` — pilot grammar, 4 236 lines, fully verified (0 VERIFY flags)
   - 21 noun classes (NC1–NC18 + NC1a, NC2a, NC2b), all active
@@ -36,7 +36,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `chibemba.yaml` — stub grammar registered for development; data TBD
 - Stubs registered for: `chinyanja`, `silozi`, `luvale`, `lunda`, `kaonde`
 
-### Added — NLP apps (`ggt/apps/`)
+### Added — NLP apps (`ggtk/apps/`)
 
 - `MorphologicalAnalyzer` (F-01, F-02) — `analyze()`, `generate()`, `segment_text()`, `generate_interlinear()`
   - Verbal path: strips SM → TAM → root → extensions → FV; produces ranked `ParseHypothesis` list
@@ -56,7 +56,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `FeatureComparator` — `compare()`, `compare_many()`, `to_markdown()`, `to_csv()`
   - Cross-language comparison: `noun_class.NC1.prefix` chiTonga=`mu-` vs chiBemba=`u-`
 
-### Added — HFST pipeline (`ggt/hfst/`)
+### Added — HFST pipeline (`ggtk/hfst/`)
 
 - `chitonga.lexc` — 11-slot morphotactics with 185 multichar symbols
   - Flag diacritics: `@P/R/D.NC.1–18@` (NC agreement), `@P/R/D.NEG.ON@` (negation), `@P/R.MOOD.SUBJ@` (mood-FV), `@P/R.NUM.PL@` (reciprocal plural)
@@ -68,14 +68,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Lexicon files: `verbs.yaml`, `nouns.yaml`, `auxiliary_verbs.yaml`, `closed_class.yaml`
 - `chitonga_transform.py` — CSV → structured YAML lexicon pipeline with morphological pre-analysis and stem confidence scoring
 
-### Added — CLI (`ggt/cli/ggt_cli.py`)
+### Added — CLI (`ggtk/cli/ggtk_cli.py`)
 
-- `ggt info <language>` — metadata + feature-count summary table
-- `ggt noun-classes <language> [--active-only]` — formatted NC table
-- `ggt concords <language> <type> [--all-types]` — concord paradigm
-- `ggt validate <path> [--strict]` — schema validation + VERIFY flag report
-- `ggt verify-flags <language> [--resolved] [--field PREFIX] [--count]` — VERIFY flag listing
-- `ggt diff <lang_a> <lang_b> [--feature]` — semantic diff across 5 feature sections
+- `ggtk info <language>` — metadata + feature-count summary table
+- `ggtk noun-classes <language> [--active-only]` — formatted NC table
+- `ggtk concords <language> <type> [--all-types]` — concord paradigm
+- `ggtk validate <path> [--strict]` — schema validation + VERIFY flag report
+- `ggtk verify-flags <language> [--resolved] [--field PREFIX] [--count]` — VERIFY flag listing
+- `ggtk diff <lang_a> <lang_b> [--feature]` — semantic diff across 5 feature sections
 - Exit codes: 0 = success, 1 = load error, 2 = validation failure, 3 = unknown concord type
 
 ### Added — Web layer (`web/`)

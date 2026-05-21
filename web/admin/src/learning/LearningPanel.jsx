@@ -10,7 +10,7 @@ export default function LearningPanel() {
   const [selectedNC, setNC] = useState(null);
 
   if (!grammar) {
-    return <div className="text-ggt-muted text-xs p-10 text-center">Load a grammar file to explore learning content.</div>;
+    return <div className="text-ggtk-muted text-xs p-10 text-center">Load a grammar file to explore learning content.</div>;
   }
 
   // ✅ Runtime-derived — works for any language
@@ -49,9 +49,9 @@ export default function LearningPanel() {
 
   return (
     <div>
-      <div className="mb-6 pb-3.5 border-b border-ggt-border">
-        <h2 className="m-0 text-ggt-text font-sans font-extrabold text-lg">Learn — {langName}</h2>
-        <p className="mt-1 text-ggt-muted text-[11px] font-sans">
+      <div className="mb-6 pb-3.5 border-b border-ggtk-border">
+        <h2 className="m-0 text-ggtk-text font-sans font-extrabold text-lg">Learn — {langName}</h2>
+        <p className="mt-1 text-ggtk-muted text-[11px] font-sans">
           Grammar concepts derived from the loaded grammar file
         </p>
       </div>
@@ -63,7 +63,7 @@ export default function LearningPanel() {
 
       {/* Noun class explorer */}
       <div>
-        <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-accent uppercase mb-3">
+        <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-accent uppercase mb-3">
           Noun Class Explorer ({ncKeys.length} classes)
         </div>
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -71,8 +71,8 @@ export default function LearningPanel() {
             <button key={k} onClick={() => setNC(k)}
               className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold cursor-pointer border transition-all ${
                 activeNC === k
-                  ? "bg-ggt-accent text-white border-ggt-accent"
-                  : "bg-ggt-card text-ggt-muted border-ggt-border hover:border-ggt-borderL"
+                  ? "bg-ggtk-accent text-white border-ggtk-accent"
+                  : "bg-ggtk-card text-ggtk-muted border-ggtk-border hover:border-ggtk-borderL"
               }`}
             >{k}</button>
           ))}

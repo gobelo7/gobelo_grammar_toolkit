@@ -3,4 +3,4 @@ grep -r "gobelo_grammar_toolkit" . --include="*.py" --include="*.yaml" --include
 
 # Do the replacement across all relevant files
 find . -type f \( -name "*.py" -o -name "*.yaml" -o -name "*.yml" -o -name "*.md" \) \
-  -exec sed -i 's/gobelo_grammar_toolkit/ggt/g' {} +
+  -exec sed -i 's/gobelo_grammar_toolkit/ggtk/g' {} +

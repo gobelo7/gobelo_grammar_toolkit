@@ -59,13 +59,13 @@ def create_app(yaml_dir: str | Path | None = None) -> Flask:
 
     if yaml_dir is None:
         yaml_dir = os.environ.get(
-            'GGT_YAML_DIR',
+            'ggtk_YAML_DIR',
             Path(__file__).resolve().parents[1] / 'ggt' / 'languages'
         )
 
     if yaml_dir is None:
         yaml_dir = os.environ.get(
-            'GGT_YAML_DIR',
+            'ggtk_YAML_DIR',
             Path(__file__).resolve().parents[1] / 'ggt' / 'languages'
         )
 
@@ -260,7 +260,7 @@ def create_app(yaml_dir: str | Path | None = None) -> Flask:
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 app = create_app(
-    yaml_dir=os.environ.get('GGT_YAML_DIR')   # set in environment if YAML files present
+    yaml_dir=os.environ.get('ggtk_YAML_DIR')   # set in environment if YAML files present
 )
 
 if __name__ == '__main__':

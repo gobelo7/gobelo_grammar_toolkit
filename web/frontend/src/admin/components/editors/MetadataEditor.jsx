@@ -8,13 +8,13 @@ function Field({ label, path, grammar, updateGrammar, mono = false }) {
   const value = path.split(".").reduce((o, k) => o?.[k], grammar) ?? "";
   return (
     <div className="mb-3.5">
-      <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1.5">
+      <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1.5">
         {label}
       </label>
       <input
         value={value}
         onChange={e => updateGrammar(path, e.target.value)}
-        className={`w-full bg-ggt-input border border-ggt-border rounded text-ggt-text px-2.5 py-1.5 text-xs outline-none focus:border-ggt-accent ${mono ? "font-mono" : "font-sans"}`}
+        className={`w-full bg-ggtk-input border border-ggtk-border rounded text-ggtk-text px-2.5 py-1.5 text-xs outline-none focus:border-ggtk-accent ${mono ? "font-mono" : "font-sans"}`}
       />
     </div>
   );
@@ -24,7 +24,7 @@ export default function MetadataEditor() {
   const { grammar, updateGrammar } = useGrammar();
 
   if (!grammar) {
-    return <div className="text-ggt-muted text-xs p-10 text-center">Grammar not loaded</div>;
+    return <div className="text-ggtk-muted text-xs p-10 text-center">Grammar not loaded</div>;
   }
 
   const lang = grammar.metadata?.language;
@@ -33,10 +33,10 @@ export default function MetadataEditor() {
   return (
     <div>
       {/* Section header */}
-      <div className="mb-6 pb-3.5 border-b border-ggt-border flex items-start justify-between">
+      <div className="mb-6 pb-3.5 border-b border-ggtk-border flex items-start justify-between">
         <div>
-          <h2 className="m-0 text-ggt-text font-sans font-extrabold text-lg">Language Metadata</h2>
-          <p className="mt-1 text-ggt-muted text-[11px] font-sans">Core language identification and bibliographic data</p>
+          <h2 className="m-0 text-ggtk-text font-sans font-extrabold text-lg">Language Metadata</h2>
+          <p className="mt-1 text-ggtk-muted text-[11px] font-sans">Core language identification and bibliographic data</p>
         </div>
       </div>
 
@@ -58,11 +58,11 @@ export default function MetadataEditor() {
             <CardHeader label="Dialects" />
             <div className="flex flex-wrap gap-1.5 mb-2">
               {(lang?.dialects ?? []).map((d, i) => (
-                <span key={i} className="inline-flex items-center gap-1 bg-ggt-accentBg text-ggt-accent font-mono text-xs px-2 py-0.5 rounded border border-ggt-accent/20">
+                <span key={i} className="inline-flex items-center gap-1 bg-ggtk-accentBg text-ggtk-accent font-mono text-xs px-2 py-0.5 rounded border border-ggtk-accent/20">
                   {d}
                   <button
                     onClick={() => updateGrammar(`${b}.dialects`, (lang.dialects ?? []).filter((_, j) => j !== i))}
-                    className="text-ggt-accent hover:opacity-70 leading-none bg-transparent border-none cursor-pointer"
+                    className="text-ggtk-accent hover:opacity-70 leading-none bg-transparent border-none cursor-pointer"
                   >×</button>
                 </span>
               ))}
@@ -75,7 +75,7 @@ export default function MetadataEditor() {
                   e.target.value = "";
                 }
               }}
-              className="w-full bg-ggt-input border border-dashed border-ggt-borderL rounded text-ggt-muted font-mono text-xs px-2.5 py-1.5 outline-none"
+              className="w-full bg-ggtk-input border border-dashed border-ggtk-borderL rounded text-ggtk-muted font-mono text-xs px-2.5 py-1.5 outline-none"
             />
           </Card>
 
@@ -94,7 +94,7 @@ export default function MetadataEditor() {
             value={lang?.description ?? ""}
             onChange={e => updateGrammar(`${b}.description`, e.target.value)}
             rows={4}
-            className="w-full bg-ggt-input border border-ggt-border rounded text-ggt-text font-sans text-xs px-2.5 py-1.5 outline-none focus:border-ggt-accent resize-y"
+            className="w-full bg-ggtk-input border border-ggtk-border rounded text-ggtk-text font-sans text-xs px-2.5 py-1.5 outline-none focus:border-ggtk-accent resize-y"
           />
         </Card>
       </div>

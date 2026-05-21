@@ -6,7 +6,7 @@
 
 ## 1. Architecture Overview
 
-`GobeloWordTokenizer` is a six-stage pipeline that converts a raw sentence string into an `AnnotatedSentence` populated with `WordToken` objects. All language-specific knowledge flows from two external sources — the GGT YAML grammar file (via a loader) and `corpus_config.yaml` — so **adding a new language requires zero Python changes**.
+`GobeloWordTokenizer` is a six-stage pipeline that converts a raw sentence string into an `AnnotatedSentence` populated with `WordToken` objects. All language-specific knowledge flows from two external sources — the ggtk YAML grammar file (via a loader) and `corpus_config.yaml` — so **adding a new language requires zero Python changes**.
 
 ```
 raw text
@@ -364,7 +364,7 @@ class MockLoader:
 ## 13. Extending the tokeniser
 
 ### Adding a new language
-1. Create a GGT YAML grammar file following the existing schema.
+1. Create a ggtk YAML grammar file following the existing schema.
 2. Add the language to `corpus_config.yaml` with its specific settings.
 3. Register it in the loader registry.
 4. **Zero Python changes required.**

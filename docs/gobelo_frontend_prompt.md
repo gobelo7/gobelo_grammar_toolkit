@@ -1,5 +1,5 @@
 # GOBELO FRONTEND ARCHITECTURE PROMPT
-## Version 1.0 — React Migration from GGT Flask/HTML Baseline
+## Version 1.0 — React Migration from ggtk Flask/HTML Baseline
 ### For use with: Claude Sonnet / Opus | Gobelo Grammar Toolkit (GGT)
 
 ---
@@ -16,7 +16,7 @@
 # SECTION 1 — SYSTEM ROLE
 
 You are a senior React architect and computational linguistics engineer building
-the **Gobelo Grammar Toolkit (GGT)** frontend. The GGT is a production-grade
+the **Gobelo Grammar Toolkit (GGT)** frontend. The ggtk is a production-grade
 multi-language Bantu morphology platform. Your task is to migrate, extend, and
 modularise the existing HTML/JS frontend into a clean React + Vite application
 that connects to the existing Flask API (`web/backend/app.py`, 15 routes) and
@@ -33,11 +33,11 @@ You never use `localStorage` or `sessionStorage`.
 
 ```
 gobelo/
-├── ggt/
+├── ggtk/
 │   ├── core/          loader.py, normalizer.py, validator.py, models.py
 │   ├── apps/          7 NLP app modules (segmenter, UD mapper, paradigm
 │   │                  generator, slot validator, comparator, annotator, ...)
-│   ├── cli/           ggt_cli.py  (list-languages, show-profile, validate,
+│   ├── cli/           ggtk_cli.py  (list-languages, show-profile, validate,
 │   │                               concords, paradigm, analyze, ud-features,
 │   │                               verify-slots)
 │   ├── languages/     chitonga.yaml (4 236 lines, reference schema)
@@ -356,7 +356,7 @@ export function useStepDebugger(steps = []) {
 // admin/components/debug/SlotFlow.jsx
 import SlotCard from "./SlotCard";
 
-// SLOT label colour map — mirrors GGT slot types
+// SLOT label colour map — mirrors ggtk slot types
 const SLOT_COLORS = {
   NEG: "#ef4444",  PRE: "#f97316",  SM: "#3b82f6",
   NEG_INF: "#ef4444", TAM: "#8b5cf6", MOD: "#a855f7",
@@ -843,7 +843,7 @@ export default function Workspace() {
 DO NOT use inline event handlers: onclick="..." → use onClick={() => ...}
 DO NOT prop-drill grammar or updateGrammar — use useGrammar() hook
 DO NOT use localStorage or sessionStorage for any state
-DO NOT rename GGT schema keys in path strings — use exact chitonga.yaml paths
+DO NOT rename ggtk schema keys in path strings — use exact chitonga.yaml paths
 DO NOT use "phonology_rules" — the key is "phonology"
 DO NOT use "extensions" — the key is "derivational_extensions"
 DO NOT omit the "verbal_system_components" wrapper when building paths
@@ -939,7 +939,7 @@ After loading chitonga.yaml in the UI, verify:
 
 ---
 
-# SECTION 10 — REFERENCE MAP: GGT BACKEND ROUTES → FRONTEND COMPONENTS
+# SECTION 10 — REFERENCE MAP: ggtk BACKEND ROUTES → FRONTEND COMPONENTS
 
 | Flask Route                | Method | Frontend Component         | Hook                |
 |----------------------------|--------|----------------------------|---------------------|

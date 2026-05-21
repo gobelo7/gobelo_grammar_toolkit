@@ -489,7 +489,7 @@ class GobeloAgreementChain:
             return tok.noun_class
 
         # FEATS NounClass from Phase 3
-        nc_feat = tok.feats.get("NounClass") or tok.feats.get("GGT_NounClass")
+        nc_feat = tok.feats.get("NounClass") or tok.feats.get("ggtk_NounClass")
         if nc_feat:
             return nc_feat
 

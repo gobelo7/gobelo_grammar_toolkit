@@ -66,17 +66,17 @@ hfst = []
 
 # ── Entry points ──────────────────────────────────────────────
 [project.scripts]
-ggt = "ggt.cli.ggt_cli:main"
+ggtk = "ggtk.cli.ggtk_cli:main"
 
 # ── Package discovery ─────────────────────────────────────────
 [tool.setuptools.packages.find]
 where   = ["."]
-include = ["ggt*"]
+include = ["ggtk*"]
 
 # CRITICAL: grammar YAML files must be bundled in the wheel.
 # Without this, grammars are absent from installed packages.
 [tool.setuptools.package-data]
-ggt = [
+ggtk = [
   "languages/*.yaml",
 ]
 
@@ -104,7 +104,7 @@ ignore         = ["E501"]   # line-length is a guide, not a hard rule
 
 # ── coverage ──────────────────────────────────────────────────
 [tool.coverage.run]
-source = ["ggt"]
+source = ["ggtk"]
 omit   = ["*/tests/*", "*/scripts/*"]
 
 [tool.coverage.report]

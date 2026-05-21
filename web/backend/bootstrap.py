@@ -8,10 +8,10 @@ Extracted from app.py. Provides four public functions:
     resolve_admin_frontend() — returns Path to compiled admin shell, or None
 
 PATH RESOLUTION — four strategies tried in order:
-  1. GGT_ROOT env var
+  1. ggtk_ROOT env var
   2. Pip-installed package (importlib.resources)
   3. Upward directory search from this file
-  4. Dev sandbox layout: <this file>/../../ggt/
+  4. Dev sandbox layout: <this file>/../../ggtk/
 """
 from __future__ import annotations
 import os, sys
@@ -19,19 +19,19 @@ from pathlib import Path
 from typing import Optional
 
 _HERE = Path(__file__).resolve().parent
-_PKG  = "ggt"
+_PKG  = "ggtk"
 
 _GRAMMAR_DIR: Optional[Path] = None
-_env_root: str = os.environ.get("GGT_ROOT", "").strip()
+_env_root: str = os.environ.get("ggtk_ROOT", "").strip()
 
 
 def _find_package_root() -> Optional[Path]:
-    """Walk upward from this file to find the dir that contains ggt/."""
+    """Walk upward from this file to find the dir that contains ggtk/."""
     current = _HERE
     for _ in range(10):
         if (current / _PKG).is_dir():
             return current
-        for sub in ("ggt", "src", "lib"):
+        for sub in ("ggtk", "src", "lib"):
             if (current / sub / _PKG).is_dir():
                 return current / sub
         parent = current.parent
@@ -48,7 +48,7 @@ def resolve_package() -> None:
     """
     global _GRAMMAR_DIR
 
-    # Strategy 1: explicit GGT_ROOT environment variable
+    # Strategy 1: explicit ggtk_ROOT environment variable
     if _env_root:
         env_path = Path(_env_root)
         if str(env_path) not in sys.path:
@@ -80,7 +80,7 @@ def resolve_package() -> None:
         return
 
     # Strategy 4: dev sandbox layout
-    dev = _HERE.parent.parent / "ggt"
+    dev = _HERE.parent.parent / "ggtk"
     if dev.is_dir():
         sys.path.insert(0, str(dev))
         _GRAMMAR_DIR = dev / _PKG / "languages"
@@ -90,16 +90,16 @@ def resolve_package() -> None:
         "\n\n"
         "  ggt not found.\n\n"
         "  Tried:\n"
-        "    1. GGT_ROOT environment variable — not set\n"
+        "    1. ggtk_ROOT environment variable — not set\n"
         "    2. Installed package             — not found\n"
         f"   3. Upward search from {_HERE}\n"
-        f"      — ggt/ not found in any parent directory\n"
+        f"      — ggtk/ not found in any parent directory\n"
         f"   4. Dev layout ({_HERE.parent.parent / 'ggt'}) — not found\n\n"
         "  Fix (choose one):\n"
         "    a) Install from the repo root:  pip install -e .\n"
-        "    b) Set GGT_ROOT to the dir that CONTAINS ggt/\n"
-        "         Linux:   export GGT_ROOT=/path/to/src\n"
-        "         Windows: set GGT_ROOT=C:\\path\\to\\src\n"
+        "    b) Set ggtk_ROOT to the dir that CONTAINS ggtk/\n"
+        "         Linux:   export ggtk_ROOT=/path/to/src\n"
+        "         Windows: set ggtk_ROOT=C:\\path\\to\\src\n"
         "    c) Add to PYTHONPATH:\n"
         "         Linux:   export PYTHONPATH=/path/to/src:$PYTHONPATH\n"
         "         Windows: set PYTHONPATH=C:\\path\\to\\src;%PYTHONPATH%\n"
@@ -113,7 +113,7 @@ def resolve_grammar_dir() -> Optional[Path]:
 
 def resolve_frontend() -> Path:
     """
-    Locate the student/teacher frontend (ggt_index_v1.html served as index.html).
+    Locate the student/teacher frontend (ggtk_index_v1.html served as index.html).
     Falls back to _HERE so Flask 404s clearly rather than crashing.
     """
     candidates = [

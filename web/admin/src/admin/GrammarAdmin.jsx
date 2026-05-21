@@ -24,7 +24,7 @@ function IDEShell() {
   const { toast } = useUI();
 
   return (
-    <div className="min-h-screen bg-ggt-bg flex flex-col font-sans text-ggt-text">
+    <div className="min-h-screen bg-ggtk-bg flex flex-col font-sans text-ggtk-text">
       <TopBar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
@@ -34,7 +34,7 @@ function IDEShell() {
       {/* Toast overlay */}
       {toast && (
         <div className={`fixed bottom-5 right-5 z-[999] px-4 py-2.5 rounded-lg font-sans text-xs text-white font-bold shadow-[0_4px_24px_rgba(0,0,0,0.5)] ${
-          toast.type === "err" ? "bg-ggt-danger" : "bg-ggt-success"
+          toast.type === "err" ? "bg-ggtk-danger" : "bg-ggtk-success"
         }`}>
           {toast.msg}
         </div>

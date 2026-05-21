@@ -41,8 +41,8 @@ import pytest
 sys.path.insert(0, ".")
 warnings.filterwarnings("ignore")
 
-from ggt.core import GrammarConfig, GobeloGrammarLoader  # noqa: E402
-from ggt.core.exceptions import (  # noqa: E402
+from ggtk.core import GrammarConfig, GobeloGrammarLoader  # noqa: E402
+from ggtk.core.exceptions import (  # noqa: E402
     ConcordTypeNotFoundError,
     GGTError,
     LanguageNotFoundError,
@@ -51,7 +51,7 @@ from ggt.core.exceptions import (  # noqa: E402
     UnverifiedFormError,
     VersionIncompatibleError,
 )
-from ggt.core.models import (  # noqa: E402
+from ggtk.core.models import (  # noqa: E402
     ConcordSet,
     DerivationalPattern,
     GrammarMetadata,
@@ -63,7 +63,7 @@ from ggt.core.models import (  # noqa: E402
     VerbSlot,
     VerifyFlag,
 )
-from ggt.apps.morphological_analyzer import (  # noqa: E402
+from ggtk.apps.morphological_analyzer import (  # noqa: E402
     MorphAnalysisError,
     MorphFeatureBundle,
     MorphologicalAnalyzer,
@@ -71,7 +71,7 @@ from ggt.apps.morphological_analyzer import (  # noqa: E402
     SegmentedToken,
     SurfaceForm,
 )
-from ggt.apps.ud_feature_mapper import (  # noqa: E402
+from ggtk.apps.ud_feature_mapper import (  # noqa: E402
     UDConcordFeatures,
     UDFeatureBundle,
     UDFeatureMapper,
@@ -80,7 +80,7 @@ from ggt.apps.ud_feature_mapper import (  # noqa: E402
     UDTAMFeatures,
     UDVoiceFeature,
 )
-from ggt.apps.verb_slot_validator import (  # noqa: E402
+from ggtk.apps.verb_slot_validator import (  # noqa: E402
     SlotAssignment,
     ValidationResult,
     ValidationViolation,
@@ -238,7 +238,7 @@ class TestLoaderInit:
         with pytest.raises(LanguageNotFoundError):
             GobeloGrammarLoader(GrammarConfig(language="klingon"))
 
-    def test_language_not_found_is_ggt_error(self) -> None:
+    def test_language_not_found_is_GGTK_error(self) -> None:
         with pytest.raises(GGTError):
             GobeloGrammarLoader(GrammarConfig(language="klingon"))
 
@@ -340,7 +340,7 @@ class TestGetNounClasses:
         with pytest.raises(NounClassNotFoundError):
             loader.get_noun_class("NC_DOES_NOT_EXIST_99")
 
-    def test_noun_class_not_found_is_ggt_error(self, loader: GobeloGrammarLoader) -> None:
+    def test_noun_class_not_found_is_GGTK_error(self, loader: GobeloGrammarLoader) -> None:
         with pytest.raises(GGTError):
             loader.get_noun_class("NC_DOES_NOT_EXIST_99")
 
@@ -420,7 +420,7 @@ class TestGetConcords:
         with pytest.raises(ConcordTypeNotFoundError):
             loader.get_concords("not_a_real_concord_type")
 
-    def test_concord_type_not_found_is_ggt_error(self, loader: GobeloGrammarLoader) -> None:
+    def test_concord_type_not_found_is_GGTK_error(self, loader: GobeloGrammarLoader) -> None:
         with pytest.raises(GGTError):
             loader.get_concords("not_a_real_concord_type")
 
@@ -1553,7 +1553,7 @@ class TestExceptionHierarchy:
             VerbSlotValidationError,
         ],
     )
-    def test_is_ggt_error_subclass(self, exc_class: Type[GGTError]) -> None:
+    def test_is_GGTK_error_subclass(self, exc_class: Type[GGTError]) -> None:
         assert issubclass(exc_class, GGTError)
 
     def test_language_not_found_is_raised_for_unknown_language(self) -> None:
@@ -1571,13 +1571,13 @@ class TestExceptionHierarchy:
         with pytest.raises(ConcordTypeNotFoundError):
             L.get_concords("totally_fake_concord")
 
-    def test_verb_slot_validation_error_is_ggt_error(self) -> None:
+    def test_verb_slot_validation_error_is_GGTK_error(self) -> None:
         assert issubclass(VerbSlotValidationError, GGTError)
 
-    def test_ud_mapping_error_is_ggt_error(self) -> None:
+    def test_ud_mapping_error_is_GGTK_error(self) -> None:
         assert issubclass(UDMappingError, GGTError)
 
-    def test_morph_analysis_error_is_ggt_error(self) -> None:
+    def test_morph_analysis_error_is_GGTK_error(self) -> None:
         assert issubclass(MorphAnalysisError, GGTError)
 
 

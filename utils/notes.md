@@ -4,7 +4,7 @@ provide small architectural improvement: a language registry that auto-discovers
 want the registry loaded immediately when the package is importedHere’s a clean, Pythonic pattern:
 
 1️⃣ Directory Structure
-src/ggt/
+src/ggtk/
 ├── languages/
 │   ├── chitonga.yaml
 │   ├── chibemba.yaml
@@ -50,7 +50,7 @@ class LanguageRegistry:
         """Return a list of all registered language names"""
         return list(cls._registry.keys())
 3️⃣ How to Use
-from ggt.core.language_registry import LanguageRegistry
+from ggtk.core.language_registry import LanguageRegistry
 
 # Load all grammars at startup
 LanguageRegistry.load_all()
@@ -82,7 +82,7 @@ LanguageRegistry.load_all()
 
 Then any module can just call:
 
-from ggt.core.language_registry import LanguageRegistry
+from ggtk.core.language_registry import LanguageRegistry
 
 grammar = LanguageRegistry.get("chibemba")
 

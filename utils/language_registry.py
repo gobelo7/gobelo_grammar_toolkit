@@ -36,7 +36,7 @@ class LanguageRegistry:
 
 ###   How to use
 ### ==========================
-from ggt.core.language_registry import LanguageRegistry
+from ggtk.core.language_registry import LanguageRegistry
 
 # Load all grammars at startup
 LanguageRegistry.load_all()
@@ -58,7 +58,7 @@ Here’s a clean, Pythonic pattern:
 ## 1️⃣ Directory Structure
 
 ```
-src/ggt/
+src/ggtk/
 ├── languages/
 │   ├── chitonga.yaml
 │   ├── chibemba.yaml
@@ -116,7 +116,7 @@ class LanguageRegistry:
 ## 3️⃣ How to Use
 
 ```python
-from ggt.core.language_registry import LanguageRegistry
+from ggtk.core.language_registry import LanguageRegistry
 
 # Load all grammars at startup
 LanguageRegistry.load_all()
@@ -154,7 +154,7 @@ LanguageRegistry.load_all()
 Then any module can just call:
 
 ```python
-from ggt.core.language_registry import LanguageRegistry
+from ggtk.core.language_registry import LanguageRegistry
 
 grammar = LanguageRegistry.get("chibemba")
 ```

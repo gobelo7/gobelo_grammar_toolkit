@@ -74,7 +74,7 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
 
     # ── grammar (BGT YAML — single source of truth) ─────────────────────────
     # Note: HFST transducers and .lexc/.twolc source files live inside the
-    # GGT package (ggt/hfst/) and are managed there. Gobelo consumes GGT as
+    # GGT package (ggtk/hfst/) and are managed there. Gobelo consumes GGT as
     # a pip dependency — do not duplicate FST resources here.
     d("grammar")
     for code, name in langs.items():
@@ -96,10 +96,10 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
         "#!/usr/bin/env bash\n"
         "# Build all HFST transducers from GGT package source\n"
         "# Assumes GGT is installed (pip install -e ../ggt) and\n"
-        "# that ggt/hfst/{lang}_hfst/ folders contain .lexc + .twolc files.\n"
+        "# that ggtk/hfst/{lang}_hfst/ folders contain .lexc + .twolc files.\n"
         "set -euo pipefail\n\n"
-        "GGT_HFST=\"$(python -c 'import ggt; import pathlib; "
-        "print(pathlib.Path(ggt.__file__).parent / \"hfst\")')\"\n\n"
+        "ggtk_HFST=\"$(python -c 'import ggt; import pathlib; "
+        "print(pathlib.Path(ggtk.__file__).parent / \"hfst\")')\"\n\n"
         f"LANGS=({' '.join(langs.keys())})\n\n"
         "declare -A LANG_FOLDERS=(\n"
         "    [bem]=bemba_hfst [toi]=chitonga_hfst [nya]=chinyanja_hfst\n"
@@ -107,8 +107,8 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
         ")\n\n"
         "for lang in \"${LANGS[@]}\"; do\n"
         '    folder="${LANG_FOLDERS[$lang]}"\n'
-        '    src="$GGT_HFST/$folder/$lang.lexc"\n'
-        '    out="$GGT_HFST/$folder/$lang.hfst"\n'
+        '    src="$ggtk_HFST/$folder/$lang.lexc"\n'
+        '    out="$ggtk_HFST/$folder/$lang.hfst"\n'
         '    echo "Building $lang ($folder)..."\n'
         '    hfst-lexc "$src" -o "$out"\n'
         "done\n"

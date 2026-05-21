@@ -78,11 +78,11 @@ UD feature reference
 All feature names and values follow UD v2 guidelines:
   https://universaldependencies.org/u/feat/index.html
 
-Bantu-specific extensions (not in UD v2 core) stored with a GGT_ prefix in
+Bantu-specific extensions (not in UD v2 core) stored with a ggtk_ prefix in
 FEATS until they are standardised:
-  GGT_NounClass   : NC1 … NC18
-  GGT_TonePattern : H, L, HL, LH, LHL (when determinable from YAML)
-  GGT_SlotScore   : float 0–1 (analyser confidence, round to 2dp)
+  ggtk_NounClass   : NC1 … NC18
+  ggtk_TonePattern : H, L, HL, LH, LHL (when determinable from YAML)
+  ggtk_SlotScore   : float 0–1 (analyser confidence, round to 2dp)
 """
 
 from __future__ import annotations
@@ -296,7 +296,7 @@ class _TaggerConfig:
     # e.g. "NC1": ("Sing", "3"), "1SG": ("Sing", "1")
     sm_np: Dict[str, Tuple[str, str]] = field(default_factory=dict)
 
-    # ── NC → GGT_NounClass string ──────────────────────────────────────
+    # ── NC → ggtk_NounClass string ──────────────────────────────────────
     nc_tag: Dict[str, str] = field(default_factory=dict)
 
     # ── NC15 prefix forms → flag as infinitive ─────────────────────────
@@ -757,7 +757,7 @@ def _build_full_feats(
     if upos == POSTag.NOUN:
         nc = _get_nc_from_parse(sp) or token.noun_class
         if nc:
-            feats["GGT_NounClass"] = nc
+            feats["ggtk_NounClass"] = nc
             # UD Number from NC pairing
             if nc in ("NC2", "NC2a", "NC2b", "NC4", "NC6", "NC8",
                       "NC10", "NC13"):
@@ -774,7 +774,7 @@ def _build_full_feats(
         feats.pop("Mood", None)
 
     # ── Confidence score ────────────────────────────────────────────────
-    feats["GGT_SlotScore"] = f"{sp.score:.2f}"
+    feats["ggtk_SlotScore"] = f"{sp.score:.2f}"
 
     return feats
 
@@ -813,7 +813,7 @@ def _build_xpos(
             parts.append(voice.upper())
 
     elif upos == POSTag.NOUN:
-        nc = feats.get("GGT_NounClass") or token.noun_class or ""
+        nc = feats.get("ggtk_NounClass") or token.noun_class or ""
         if nc:
             parts.append(nc)
         num = feats.get("Number", "")
@@ -824,12 +824,12 @@ def _build_xpos(
         pt = feats.get("PronType", "")
         if pt:
             parts.append(pt.upper())
-        nc = feats.get("GGT_NounClass") or token.noun_class or ""
+        nc = feats.get("ggtk_NounClass") or token.noun_class or ""
         if nc:
             parts.append(nc)
 
     elif upos == POSTag.ADP:
-        nc = feats.get("GGT_NounClass") or token.noun_class or ""
+        nc = feats.get("ggtk_NounClass") or token.noun_class or ""
         if nc:
             parts.append(f"LOC.{nc}")
 
@@ -897,7 +897,7 @@ def _propagate_agreement(
     for idx, token in enumerate(sentence.tokens):
         # ── Update last-seen NOUN NC ──────────────────────────────────
         if token.upos == POSTag.NOUN:
-            nc = token.noun_class or token.feats.get("GGT_NounClass")
+            nc = token.noun_class or token.feats.get("ggtk_NounClass")
             if nc:
                 state.last_noun_nc  = nc
                 state.last_noun_idx = idx
@@ -943,7 +943,7 @@ def _update_misc(token: WordToken, sp: Optional[SlotParse]) -> None:
         token.set_misc("SlotScore", f"{sp.score:.3f}")
 
     # NounClass
-    nc = token.noun_class or token.feats.get("GGT_NounClass")
+    nc = token.noun_class or token.feats.get("ggtk_NounClass")
     if nc:
         token.set_misc("NounClass", nc)
 
@@ -957,7 +957,7 @@ def _update_misc(token: WordToken, sp: Optional[SlotParse]) -> None:
 # ---------------------------------------------------------------------------
 
 class GobeloPOSTagger:
-    """Deterministic rule-based PoS tagger and UD feature mapper for GGT.
+    """Deterministic rule-based PoS tagger and UD feature mapper for ggtk.
 
     Parameters
     ----------
@@ -1095,7 +1095,7 @@ class GobeloPOSTagger:
                 token.upos  = upos
                 token.xpos  = xpos
                 token.feats.update(feats)
-                token.feats["GGT_SlotScore"] = f"{best.score:.2f}"
+                token.feats["ggtk_SlotScore"] = f"{best.score:.2f}"
                 _update_misc(token, best)
                 token.add_flag("POS_TAGGED_LOW_CONF")
                 return
@@ -1108,7 +1108,7 @@ class GobeloPOSTagger:
         feats: Dict[str, str] = {}
         nc = token.noun_class
         if nc:
-            feats["GGT_NounClass"] = nc
+            feats["ggtk_NounClass"] = nc
             if nc in ("NC2", "NC2a", "NC2b", "NC4", "NC6", "NC8",
                       "NC10", "NC13"):
                 feats["Number"] = "Plur"

@@ -8,7 +8,7 @@ py
 
 To the gcbt  toolkit, want add a language agnostic (not only chitonga language) tokenizer plus POS tagger which builds on the output of gcbt (i.e text files) and uses the grammar YAML  to POS tag and segment the tokens into morphemes.  I have attached files for a single/mono language  tokenizer as a background. See pipeline example below. Let us discuss this.
 
-GGT YAML (languages/chitonga.yaml, etc.)
+ggtk YAML (languages/chitonga.yaml, etc.)
     ↓  Layer 1: linguistic authority
     ↓  phonology, morphology, noun classes, verb agreement, POS inventory
 
@@ -24,7 +24,7 @@ gcbt pipeline
 GobeloTokenizer  ← what we're building
     reads gcbt output, inherits language_iso from JSON metadata
     per-sentence: tokenise → morpheme-segment → POS-tag
-    drives all language-specific rules from the same GGT YAML that gcbt uses
+    drives all language-specific rules from the same ggtk YAML that gcbt uses
 
 GobeloTokenizerCLI
     extends existing production CLI pattern (streaming, workers, checkpoint)
@@ -33,8 +33,8 @@ Advise onthe way forward.
 Show less
 4 Apr
 
-Architected language-agnostic tokenizer leveraging GGT YAML grammar specifications
-Architected language-agnostic tokenizer leveraging GGT YAML grammar specifications
+Architected language-agnostic tokenizer leveraging ggtk YAML grammar specifications
+Architected language-agnostic tokenizer leveraging ggtk YAML grammar specifications
 Good — this is a rich design conversation. Let me lay out what I see in the existing tokenizer, the gaps, and a proposed architecture before we make any code decisions.
 
 What the existing tokenizer does and doesn't do
@@ -48,7 +48,7 @@ Special token types (numbers, URLs, dates)
 What it doesn't do — and what you want to add:
 
 Morpheme segmentation — splitting baya → [ba-|ya] using NC prefix/verb slot knowledge
-POS tagging — assigning VERB.3PL or NOUN.NC6 driven by the GGT YAML
+POS tagging — assigning VERB.3PL or NOUN.NC6 driven by the ggtk YAML
 Language-agnosticism — it's wired to TOI; adding a second language requires forking the class
 It also has a hard dependency on chitonga_grammar (an FST module) that doesn't exist for other languages.
 
@@ -79,7 +79,7 @@ GobeloGrammarLoader (existing)
 
 GobeloTokenizer                          ← replaces ChitongaTokenizer
     __init__(language_iso, corpus_config_path)
-        - loads GGT YAML via GobeloGrammarLoader
+        - loads ggtk YAML via GobeloGrammarLoader
         - loads corpus_config.yaml (clitics, false_positives, code-switch lists)
         - builds all rule tables from the union of both
     
@@ -114,7 +114,7 @@ GobeloAnnotationPipeline
     inherits language_iso from gcbt JSON metadata
     CLI: mirrors existing gcbt CLI (--lang, --all, --list-langs, streaming, workers)
 The key linguistic engine — the prefix trie
-All three Bantu morpheme categories (NC nominal prefixes, SM/OM concords, TAM prefixes) are short (1–4 characters). A prefix trie built from the GGT YAML covers them all without any FST dependency. The trie is built once per language at __init__ time from:
+All three Bantu morpheme categories (NC nominal prefixes, SM/OM concords, TAM prefixes) are short (1–4 characters). A prefix trie built from the ggtk YAML covers them all without any FST dependency. The trie is built once per language at __init__ time from:
 
 noun_class_system.noun_classes[*].prefix + .allomorphs
 concord_system.subject_concords[*].forms
@@ -147,7 +147,7 @@ Full slot analysis means the verb baya doesn't just become two tokens — it bec
 
 Full UD means the output must be valid CoNLL-U, with UPOS from the UD tagset and language-specific FEATS. For Bantu, the key UD-compatible features are:
 
-GGT source	UD FEATS
+ggtk source	UD FEATS
 Subject concord class	`Person=3
 TAM marker	`Tense=Past
 Verb extension PASS	Voice=Pass
@@ -203,7 +203,7 @@ Final vowel set — from verb_system.final_vowels
 Two analysis paths — nominal and verbal — are tried in parallel, scored, and returned ranked.
 
 GobeloPOSTagger
-Deterministic rule-based: given a SlotParse, maps to UPOS + FEATS using a small rule table that is the same for all languages (because the GGT YAML already uses canonical slot codes). SLOT3 filled + SLOT8 filled = VERB. NC prefix matched + no SLOT3/5 = NOUN. NC15 prefix = VERB with VerbForm=Inf.
+Deterministic rule-based: given a SlotParse, maps to UPOS + FEATS using a small rule table that is the same for all languages (because the ggtk YAML already uses canonical slot codes). SLOT3 filled + SLOT8 filled = VERB. NC prefix matched + no SLOT3/5 = NOUN. NC15 prefix = VERB with VerbForm=Inf.
 
 Output writers
 JsonWriter extends the existing gcbt JSON schema by adding slots, upos, feats, lemma per token. CoNLLUWriter produces standard CoNLL-U with morpheme segmentation in the MISC field.
@@ -242,9 +242,9 @@ A — Structural only, no lexicon. Return all valid parses ranked by coverage. M
 
 B — Seed lexicon from gcbt corpus. After running gcbt on a language, mine the most frequent word types, manually tag a few hundred, use that as a disambiguation prior. More accurate but requires initial human effort per language.
 
-C — Agreement chain resolution. Within a sentence, track NC agreement: if ba- (NC2 SM) appears on a verb, find the NC2 noun it agrees with. This works without a lexicon but requires a sentence-level pass after initial word-by-word parse. This is linguistically the right approach for Bantu and is fully driven by the GGT YAML's concord tables.
+C — Agreement chain resolution. Within a sentence, track NC agreement: if ba- (NC2 SM) appears on a verb, find the NC2 noun it agrees with. This works without a lexicon but requires a sentence-level pass after initial word-by-word parse. This is linguistically the right approach for Bantu and is fully driven by the ggtk YAML's concord tables.
 
-My recommendation: start with A, implement C in Phase 2. Option C is elegant because the GGT concord tables are exactly the data needed — you're not adding anything outside the YAML.
+My recommendation: start with A, implement C in Phase 2. Option C is elegant because the ggtk concord tables are exactly the data needed — you're not adding anything outside the YAML.
 
 Phased build plan
 Phase	Deliverable	New code	Depends on
@@ -294,7 +294,7 @@ GobeloGrammarLoader (existing)
 
 GobeloTokenizer                          ← replaces ChitongaTokenizer
     __init__(language_iso, corpus_config_path)
-        - loads GGT YAML via GobeloGrammarLoader
+        - loads ggtk YAML via GobeloGrammarLoader
         - loads corpus_config.yaml (clitics, false_positives, code-switch lists)
         - builds all rule tables from the union of both
     
@@ -346,7 +346,7 @@ The `ChitongaTokenizer` is a solid word-level tokenizer. It handles:
 What it **doesn't** do — and what you want to add:
 
 - **Morpheme segmentation** — splitting `baya` → `[ba-|ya]` using NC prefix/verb slot knowledge
-- **POS tagging** — assigning `VERB.3PL` or `NOUN.NC6` driven by the GGT YAML
+- **POS tagging** — assigning `VERB.3PL` or `NOUN.NC6` driven by the ggtk YAML
 - **Language-agnosticism** — it's wired to `TOI`; adding a second language requires forking the class
 
 It also has a hard dependency on `chitonga_grammar` (an FST module) that doesn't exist for other languages.
@@ -388,7 +388,7 @@ GobeloGrammarLoader (existing)
 
 GobeloTokenizer                          ← replaces ChitongaTokenizer
     __init__(language_iso, corpus_config_path)
-        - loads GGT YAML via GobeloGrammarLoader
+        - loads ggtk YAML via GobeloGrammarLoader
         - loads corpus_config.yaml (clitics, false_positives, code-switch lists)
         - builds all rule tables from the union of both
     
@@ -428,7 +428,7 @@ GobeloAnnotationPipeline
 
 ## The key linguistic engine — the prefix trie
 
-All three Bantu morpheme categories (NC nominal prefixes, SM/OM concords, TAM prefixes) are short (1–4 characters). A prefix trie built from the GGT YAML covers them all without any FST dependency. The trie is built once per language at `__init__` time from:
+All three Bantu morpheme categories (NC nominal prefixes, SM/OM concords, TAM prefixes) are short (1–4 characters). A prefix trie built from the ggtk YAML covers them all without any FST dependency. The trie is built once per language at `__init__` time from:
 
 - `noun_class_system.noun_classes[*].prefix` + `.allomorphs`
 - `concord_system.subject_concords[*].forms`
@@ -466,7 +466,7 @@ Good. Those three answers significantly increase the scope but also the linguist
 
 **Full UD** means the output must be valid CoNLL-U, with UPOS from the UD tagset and language-specific FEATS. For Bantu, the key UD-compatible features are:
 
-| GGT source | UD FEATS |
+| ggtk source | UD FEATS |
 |---|---|
 | Subject concord class | `Person=3|Number=Plur|NounClass=NC2` |
 | TAM marker | `Tense=Past|Aspect=Perf|Mood=Ind` |
@@ -534,7 +534,7 @@ The core engine. Takes a word token and returns a `SlotParse` — a dict mapping
 Two analysis paths — **nominal** and **verbal** — are tried in parallel, scored, and returned ranked.
 
 ### GobeloPOSTagger
-Deterministic rule-based: given a `SlotParse`, maps to UPOS + FEATS using a small rule table that is the same for all languages (because the GGT YAML already uses canonical slot codes). SLOT3 filled + SLOT8 filled = VERB. NC prefix matched + no SLOT3/5 = NOUN. NC15 prefix = VERB with `VerbForm=Inf`.
+Deterministic rule-based: given a `SlotParse`, maps to UPOS + FEATS using a small rule table that is the same for all languages (because the ggtk YAML already uses canonical slot codes). SLOT3 filled + SLOT8 filled = VERB. NC prefix matched + no SLOT3/5 = NOUN. NC15 prefix = VERB with `VerbForm=Inf`.
 
 ### Output writers
 `JsonWriter` extends the existing gcbt JSON schema by adding `slots`, `upos`, `feats`, `lemma` per token. `CoNLLUWriter` produces standard CoNLL-U with morpheme segmentation in the MISC field.
@@ -582,9 +582,9 @@ You didn't answer this and it determines how far the slot parser can go without 
 
 **B — Seed lexicon from gcbt corpus.** After running gcbt on a language, mine the most frequent word types, manually tag a few hundred, use that as a disambiguation prior. More accurate but requires initial human effort per language.
 
-**C — Agreement chain resolution.** Within a sentence, track NC agreement: if `ba-` (NC2 SM) appears on a verb, find the NC2 noun it agrees with. This works without a lexicon but requires a sentence-level pass after initial word-by-word parse. This is linguistically the right approach for Bantu and is fully driven by the GGT YAML's concord tables.
+**C — Agreement chain resolution.** Within a sentence, track NC agreement: if `ba-` (NC2 SM) appears on a verb, find the NC2 noun it agrees with. This works without a lexicon but requires a sentence-level pass after initial word-by-word parse. This is linguistically the right approach for Bantu and is fully driven by the ggtk YAML's concord tables.
 
-My recommendation: **start with A, implement C in Phase 2**. Option C is elegant because the GGT concord tables are exactly the data needed — you're not adding anything outside the YAML.
+My recommendation: **start with A, implement C in Phase 2**. Option C is elegant because the ggtk concord tables are exactly the data needed — you're not adding anything outside the YAML.
 
 ---
 
@@ -646,5 +646,5 @@ token.flags — VERB_ANALYSED or NOUN_ANALYSED
 Key design note
 The analyser accepts any GobeloGrammarLoader-compatible object and works across all 7 Zambian languages with zero Python changes. SiLozi's periphrastic TAM (NE auxiliary) will be handled naturally once its YAML grammar loads the appropriate TAM entries — the engine sees it as just another TAM prefix form.Morph analyserPY DownloadTest phase2PY DownloadDownload allif done with Phase 2, Proceed with Phase 3Sonnet 4.6
 
-now Continue with the GGT gobelo_tokenizer project- Phase 3 to deliver: pos_tagger.py.
+now Continue with the ggtk gobelo_tokenizer project- Phase 3 to deliver: pos_tagger.py.
 

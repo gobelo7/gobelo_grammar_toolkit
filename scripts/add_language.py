@@ -24,9 +24,9 @@ Steps performed:
 The generated YAML is a VALID stub that the loader can parse immediately —
 it will raise 0 errors (but many VERIFY flags until data is filled in).
 
-NOTE: ISO 639-3 codes are used as the primary identifier throughout GGT.
+NOTE: ISO 639-3 codes are used as the primary identifier throughout ggtk.
       YAML files are always named {iso_code}.yaml.
-      After running this script, also add the language to ggt/__init__.py
+      After running this script, also add the language to ggtk/__init__.py
       LANGUAGE_REGISTRY with its canonical name and all known aliases.
 """
 
@@ -41,21 +41,21 @@ from datetime import date
 # ── path bootstrap ─────────────────────────────────────────────────
 _SCRIPT = Path(__file__).resolve().parent
 _REPO   = _SCRIPT.parent
-_GGT    = _REPO / "ggt"
-for p in (_GGT,):
+_GGTK    = _REPO / "ggtk"
+for p in (_GGTK,):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-_LANGUAGES_DIR = _GGT / "languages"
-_REGISTRY_PY   = _GGT / "core" / "registry.py"
-_INIT_PY       = _GGT / "__init__.py"
-_TEMPLATE      = _REPO / "outputs" / "ggt-core" / "canonical_grammar_template.yaml"
+_LANGUAGES_DIR = _GGTK / "languages"
+_REGISTRY_PY   = _GGTK / "core" / "registry.py"
+_INIT_PY       = _GGTK / "__init__.py"
+_TEMPLATE      = _REPO / "outputs" / "ggtk-core" / "canonical_grammar_template.yaml"
 
 if not _TEMPLATE.exists():
-    _TEMPLATE = Path("/mnt/user-data/outputs/ggt-core/canonical_grammar_template.yaml")
+    _TEMPLATE = Path("/mnt/user-data/outputs/ggtk-core/canonical_grammar_template.yaml")
 
 # ── Known languages keyed by ISO 639-3 code ────────────────────────
-# This mirrors ggt/__init__.py LANGUAGE_REGISTRY — keep in sync.
+# This mirrors ggtk/__init__.py LANGUAGE_REGISTRY — keep in sync.
 _KNOWN: dict[str, dict] = {
     "bem": dict(guthrie="M.42", display="Bemba"),
     "toi": dict(guthrie="M.64", display="Chitonga"),
@@ -232,13 +232,13 @@ def main() -> int:
     _info(f"Validate:       python scripts/validate_grammar.py languages/{iso_code}.yaml")
     _info(
         f"Reload check:   python -c \""
-        f"from ggt.core.loader import GobeloGrammarLoader; "
-        f"from ggt.core.config import GrammarConfig; "
+        f"from ggtk.core.loader import GobeloGrammarLoader; "
+        f"from ggtk.core.config import GrammarConfig; "
         f"GobeloGrammarLoader(GrammarConfig(language='{iso_code}'))\""
     )
     print()
     _warn(
-        f"Also add '{iso_code}' to ggt/__init__.py LANGUAGE_REGISTRY with "
+        f"Also add '{iso_code}' to ggtk/__init__.py LANGUAGE_REGISTRY with "
         f"its canonical name and all known aliases — alias resolution "
         f"(e.g. 'chichewa' → 'nya') is not automatic."
     )

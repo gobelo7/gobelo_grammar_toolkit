@@ -16,7 +16,7 @@ export default function QuizPanel() {
   const [done, setDone]                          = useState(false);
 
   if (!grammar) {
-    return <div className="text-ggt-muted text-xs p-10 text-center">Load a grammar file to generate quiz questions.</div>;
+    return <div className="text-ggtk-muted text-xs p-10 text-center">Load a grammar file to generate quiz questions.</div>;
   }
 
   const start = () => {
@@ -52,9 +52,9 @@ export default function QuizPanel() {
   if (questions.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="mb-6 pb-3.5 border-b border-ggt-border">
-          <h2 className="m-0 text-ggt-text font-sans font-extrabold text-lg">Grammar Quiz</h2>
-          <p className="mt-1 text-ggt-muted text-[11px] font-sans">
+        <div className="mb-6 pb-3.5 border-b border-ggtk-border">
+          <h2 className="m-0 text-ggtk-text font-sans font-extrabold text-lg">Grammar Quiz</h2>
+          <p className="mt-1 text-ggtk-muted text-[11px] font-sans">
             Questions generated from the loaded grammar — noun classes, TAM markers, concords
           </p>
         </div>
@@ -66,8 +66,8 @@ export default function QuizPanel() {
   if (done) {
     return (
       <div>
-        <div className="mb-6 pb-3.5 border-b border-ggt-border">
-          <h2 className="m-0 text-ggt-text font-sans font-extrabold text-lg">Quiz Complete</h2>
+        <div className="mb-6 pb-3.5 border-b border-ggtk-border">
+          <h2 className="m-0 text-ggtk-text font-sans font-extrabold text-lg">Quiz Complete</h2>
         </div>
         <ResultPanel score={score} total={questions.length} onRetry={start} />
       </div>
@@ -77,13 +77,13 @@ export default function QuizPanel() {
   const q = questions[current];
   return (
     <div>
-      <div className="mb-6 pb-3.5 border-b border-ggt-border flex items-center justify-between">
+      <div className="mb-6 pb-3.5 border-b border-ggtk-border flex items-center justify-between">
         <div>
-          <h2 className="m-0 text-ggt-text font-sans font-extrabold text-lg">Grammar Quiz</h2>
-          <p className="mt-1 text-ggt-muted text-[11px] font-sans">Question {current + 1} of {questions.length}</p>
+          <h2 className="m-0 text-ggtk-text font-sans font-extrabold text-lg">Grammar Quiz</h2>
+          <p className="mt-1 text-ggtk-muted text-[11px] font-sans">Question {current + 1} of {questions.length}</p>
         </div>
-        <div className="w-40 h-1.5 bg-ggt-border rounded-full overflow-hidden">
-          <div className="h-full bg-ggt-accent rounded-full transition-all" style={{ width: `${((current) / questions.length) * 100}%` }} />
+        <div className="w-40 h-1.5 bg-ggtk-border rounded-full overflow-hidden">
+          <div className="h-full bg-ggtk-accent rounded-full transition-all" style={{ width: `${((current) / questions.length) * 100}%` }} />
         </div>
       </div>
 

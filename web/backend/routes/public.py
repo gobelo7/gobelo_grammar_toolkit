@@ -17,9 +17,9 @@ from cache import (
 )
 from serializers import ser_token, ser_paradigm
 
-from ggt.core.registry   import list_languages
-from ggt.core.exceptions import GGTError, LanguageNotFoundError
-from ggt.apps.morphological_analyzer import MorphFeatureBundle
+from ggtk.core.registry   import list_languages
+from ggtk.core.exceptions import GGTError, LanguageNotFoundError
+from ggtk.apps.morphological_analyzer import MorphFeatureBundle
 
 public_bp = Blueprint("public", __name__)
 

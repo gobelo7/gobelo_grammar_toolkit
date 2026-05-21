@@ -38,9 +38,9 @@ Design principles
 
 Importable from the public package surface
 ------------------------------------------
-All exceptions are re-exported from ``ggt.exceptions``
+All exceptions are re-exported from ``ggtk.exceptions``
 (the package-level shim) so that downstream apps do not need to import from
-``ggt.core.exceptions`` directly.
+``ggtk.core.exceptions`` directly.
 """
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ if TYPE_CHECKING:
     # Avoid a circular import at runtime: VerifyFlag is defined in models.py,
     # which does not import from exceptions.py.  The TYPE_CHECKING guard means
     # this import only happens during static analysis (mypy, pyright).
-    from ggt.core.models import VerifyFlag
+    from ggtk.core.models import VerifyFlag
 
 __all__ = [
     "GGTError",
@@ -274,7 +274,7 @@ class VersionIncompatibleError(GGTError):
     Raised when the grammar YAML's declared version range is incompatible
     with the running GGT loader version.
 
-    Every GGT-conformant YAML file declares ``min_loader_version`` and
+    Every ggtk-conformant YAML file declares ``min_loader_version`` and
     ``max_loader_version`` in its ``metadata`` block.  The loader checks
     these values against its own version at initialisation time and raises
     this exception if the running loader falls outside the declared window.

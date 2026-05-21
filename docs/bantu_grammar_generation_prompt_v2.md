@@ -75,7 +75,7 @@ Reference Dictionary:   <AUTHOR_YEAR_TITLE>
 
 The `chitonga.yaml` file has 6 flat top-level keys with no language-name wrapper.
 Generated files ADD a language-name root key to support multi-language loading
-in the GGT library.
+in the ggtk library.
 
 ```yaml
 # chitonga.yaml actual top-level keys (no wrapper):

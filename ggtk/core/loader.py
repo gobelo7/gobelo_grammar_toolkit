@@ -50,9 +50,9 @@ YAML resolution
 When ``GrammarConfig.override_path`` is ``None``:
     The loader accepts an ISO 639-3 code as the language identifier.
     Any display name or alias (e.g. "chichewa", "silozi") must be resolved
-    to an ISO code via ``ggt.resolve_language()`` before constructing
+    to an ISO code via ``ggtk.resolve_language()`` before constructing
     ``GrammarConfig``.  The ISO code maps directly to the YAML filename
-    (``f"{iso_code}.yaml"``) in ``ggt/languages/``, resolved as a package
+    (``f"{iso_code}.yaml"``) in ``ggtk/languages/``, resolved as a package
     resource via ``importlib.resources.files()``.  This works whether the
     package is installed as a wheel, a zip, or a plain directory.
 
@@ -94,13 +94,13 @@ except ImportError as _e:
         "Install it with:  pip install pyyaml"
     ) from _e
 
-from ggt.core.config import GrammarConfig
-from ggt.core.exceptions import (
+from ggtk.core.config import GrammarConfig
+from ggtk.core.exceptions import (
     ConcordTypeNotFoundError,
     LanguageNotFoundError,
     NounClassNotFoundError,
 )
-from ggt.core.models import (
+from ggtk.core.models import (
     ConcordSet,
     DerivationalPattern,
     GrammarMetadata,
@@ -113,16 +113,16 @@ from ggt.core.models import (
     VerbSlot,
     VerifyFlag,
 )
-from ggt.core.normalizer import GrammarNormalizer, _ParsedGrammar
-from ggt.core.registry import get_yaml_filename, is_registered
-from ggt.core.validator import LOADER_VERSION, GrammarValidator
+from ggtk.core.normalizer import GrammarNormalizer, _ParsedGrammar
+from ggtk.core.registry import get_yaml_filename, is_registered
+from ggtk.core.validator import LOADER_VERSION, GrammarValidator
 
 __all__ = ["GobeloGrammarLoader"]
 
 
 def list_supported_languages_helper() -> List[str]:
     """Internal helper to avoid circular imports in __init__."""
-    from ggt.core.registry import list_languages
+    from ggtk.core.registry import list_languages
     return list_languages()
 
 # ---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ class GobeloGrammarLoader:
         # Unwrap any '<language>_grammar:' top-level wrapper
         raw = self._unwrap_language_wrapper(raw)
 
-        # ③ Normalise legacy / variant schema → GGT-canonical flat form
+        # ③ Normalise legacy / variant schema → ggtk-canonical flat form
         # This MUST run before the validator so the validator always sees
         # the canonical key names (noun_classes, concord_systems, etc.).
         raw = self._normalize_legacy_schema(raw)
@@ -209,7 +209,7 @@ class GobeloGrammarLoader:
         # config.language is an ISO 639-3 code (e.g. "toi").
         # metadata.language may be a display name ("Chitonga") or ISO code —
         # resolve both sides via resolve_language() so aliases are handled.
-        from ggt import resolve_language as _resolve_language, LanguageNotFoundError as _AliasLNFError
+        from ggtk import resolve_language as _resolve_language, LanguageNotFoundError as _AliasLNFError
         if "metadata" in raw:
             meta_lang_raw = raw["metadata"].get("language")
             # Production format: metadata.language is a nested dict with a 'name' key.
@@ -278,14 +278,14 @@ class GobeloGrammarLoader:
     # --- New insert ---
     def _normalize_legacy_schema(self, raw: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Translate every known Gobelo YAML variant into the GGT-canonical
+        Translate every known Gobelo YAML variant into the ggtk-canonical
         flat schema that the validator and normalizer both expect.
 
         Handles YAML variants that use non-canonical key names, nested
         structures, or sub-dict metadata — including the legacy
         {lang}_grammar wrapper format (e.g. toi.yaml pre-rename).
         """
-        from ggt import resolve_language as _resolve_language, LanguageNotFoundError as _AliasLNFError
+        from ggtk import resolve_language as _resolve_language, LanguageNotFoundError as _AliasLNFError
         if not isinstance(raw, dict):
             return raw
 
@@ -840,7 +840,7 @@ class GobeloGrammarLoader:
             Alphabetically sorted list, e.g.
             ``["bem", "kqn", "loz", "lue", "lun", "nya", "toi"]``.
         """
-        from ggt.core.registry import list_languages
+        from ggtk.core.registry import list_languages
 
         return list_languages()
 
@@ -860,7 +860,7 @@ class GobeloGrammarLoader:
         # get_yaml_filename() is kept as a registry consistency check;
         # it will return None if the code is not registered (caught upstream).
         filename = get_yaml_filename(language) or f"{language}.yaml"
-        package = "ggt.languages"
+        package = "ggtk.languages"
 
         if _HAS_FILES_API:
             ref = _importlib_resources.files(package).joinpath(filename)
@@ -948,7 +948,7 @@ def _validate_extended(
     Lightweight validation pass for the extended YAML wrapper format.
 
     The extended format (top-level key ``{lang}_grammar``) does not
-    conform to the GGT-canonical flat schema, so the full
+    conform to the ggtk-canonical flat schema, so the full
     ``GrammarValidator`` is not applicable.  This function:
 
     * Checks the ``{lang}_grammar`` wrapper key is present and is a mapping.
@@ -969,8 +969,8 @@ def _validate_extended(
     List[VerifyFlag]
         Zero or more ``VerifyFlag`` objects (all with ``resolved=False``).
     """
-    from ggt.core.exceptions import UnverifiedFormError
-    from ggt.core.validator import GGTWarning
+    from ggtk.core.exceptions import UnverifiedFormError
+    from ggtk.core.validator import GGTWarning
     import warnings as _warnings
 
     flags: List[VerifyFlag] = []

@@ -10,13 +10,13 @@ import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_GGT = _REPO / "ggt"
-for p in (_GGT, Path("/mnt/user-data/uploads")):
+_GGTKK = _REPO / "ggtk"
+for p in (_GGTKK, Path("/mnt/user-data/uploads")):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from ggt.core.config import GrammarConfig
-from ggt.core.validator import GrammarValidator
+from ggtk.core.config import GrammarConfig
+from ggtk.core.validator import GrammarValidator
 
 
 def test_validator_accepts_legacy_tones_and_syllable_structure() -> None:

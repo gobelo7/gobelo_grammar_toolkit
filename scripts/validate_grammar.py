@@ -36,15 +36,15 @@ from typing import List, Optional
 # ── path bootstrap ─────────────────────────────────────────────────
 _SCRIPT = Path(__file__).resolve().parent
 _REPO   = _SCRIPT.parent
-_GGT    = _REPO / "ggt"
-for p in (_GGT,):
+_GGTK    = _REPO / "ggtk"
+for p in (_GGTK,):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from ggt.core.config     import GrammarConfig
-from ggt.core.loader     import GobeloGrammarLoader
-from ggt.core.registry   import is_registered
-from ggt.core.exceptions import (
+from ggtk.core.config     import GrammarConfig
+from ggtk.core.loader     import GobeloGrammarLoader
+from ggtk.core.registry   import is_registered
+from ggtk.core.exceptions import (
     GGTError, LanguageNotFoundError,
     VersionIncompatibleError, SchemaValidationError,
 )
@@ -91,8 +91,8 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
     if not is_registered(iso_code):
         report.errors.append(
             f"ISO code '{iso_code}' is not in the GGT registry. "
-            f"Add it to both ggt/core/registry.py (_LANGUAGE_REGISTRY) "
-            f"and ggt/__init__.py (LANGUAGE_REGISTRY with aliases) "
+            f"Add it to both ggtk/core/registry.py (_LANGUAGE_REGISTRY) "
+            f"and ggtk/__init__.py (LANGUAGE_REGISTRY with aliases) "
             f"before validating."
         )
         return report

@@ -1,7 +1,7 @@
 Got it — the naming was inverted from what I assumed. So the correct mapping is:
 
 - **`index.html`** (dark, React/Tailwind) = **Linguist Admin Shell**
-- **`ggt_index_v1.html`** (warm, vanilla JS) = **Student/Teacher Frontend**
+- **`ggtk_index_v1.html`** (warm, vanilla JS) = **Student/Teacher Frontend**
 
 Let me put together a structured implementation guideline.Here is the full implementation guideline.
 
@@ -14,7 +14,7 @@ Add one directory, keep everything else:
 ```
 web/
 ├── backend/       app.py
-├── frontend/      ggt_index_v1.html   ← served at /
+├── frontend/      ggtk_index_v1.html   ← served at /
 └── admin/         index.html (+ src/) ← served at /admin
 ```
 
@@ -71,11 +71,11 @@ This app owns everything a linguist needs to manage the grammar:
 - **Route monitor** — live table of all 15 Flask routes with last-called timestamps
 - **Apps dashboard** — health/status of the 7 NLP modules
 
-The dark GGT color theme (`#080c10` background, `#e8934a` accent) is already defined in `tailwind.config`. Keep it — it visually distinguishes the admin shell from the student frontend at a glance.
+The dark ggtk color theme (`#080c10` background, `#e8934a` accent) is already defined in `tailwind.config`. Keep it — it visually distinguishes the admin shell from the student frontend at a glance.
 
 ---
 
-## 3. Student/teacher frontend (ggt_index_v1.html)
+## 3. Student/teacher frontend (ggtk_index_v1.html)
 
 No structural changes needed. The existing vanilla JS app continues to call `/api/*` routes only. The only updates required:
 

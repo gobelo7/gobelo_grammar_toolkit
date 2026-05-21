@@ -144,7 +144,7 @@ write_conllu(result: AnnotationResult, path: str | Path, encoding: str = "utf-8"
 # sent_id = sent_0001
 # text = balya cilya
 # language = chitonga
-# ggt_annotated = 1.0.0
+# ggtk_annotated = 1.0.0
 ```
 
 **Large file handling** — `annotate_file()` reads the file in full (not streaming) since `segment_text()` operates on strings. For production scale this is sufficient given the spec's `Medium` priority and research-corpus use case. A streaming mode can be added later.
@@ -223,7 +223,7 @@ Each segment is validated against a hard-coded set of known `entity_type` prefix
 > ✓ Feature is uniform across all 7 languages.
 ```
 
-**`compare_many()`** — takes a list of paths, calls `compare()` for each, returns a dict. This is the primary entry point for the CLI `ggt compare --all-languages` command since a user will typically want to compare several features at once.
+**`compare_many()`** — takes a list of paths, calls `compare()` for each, returns a dict. This is the primary entry point for the CLI `ggtk compare --all-languages` command since a user will typically want to compare several features at once.
 
 ---
 

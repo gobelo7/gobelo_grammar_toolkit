@@ -7,7 +7,7 @@ export default function StepControls({ prev, next, reset, index, total, isFirst,
       <Button onClick={reset} disabled={isFirst} variant="secondary">↺ Reset</Button>
       <Button onClick={prev}  disabled={isFirst} variant="secondary">← Prev</Button>
       <Button onClick={next}  disabled={isLast}  variant="secondary">Next →</Button>
-      <span className="font-mono text-xs text-ggt-muted ml-1">
+      <span className="font-mono text-xs text-ggtk-muted ml-1">
         Step {index + 1} / {total}
       </span>
     </div>

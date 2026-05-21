@@ -12,7 +12,7 @@ YAML format support
 -------------------
 The normalizer handles two YAML layouts transparently:
 
-* **GGT-canonical format** — flat top-level keys ``metadata``,
+* **ggtk-canonical format** — flat top-level keys ``metadata``,
   ``noun_classes``, ``concord_systems``, ``verb_system``, ``phonology``,
   ``tokenization`` (the format used by generated/simplified files).
 * **chiTonga extended format** — a top-level ``chitonga_grammar`` wrapper
@@ -48,7 +48,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from ggt.core.models import (
+from ggtk.core.models import (
     ConcordSet,
     DerivationalPattern,
     GrammarMetadata,
@@ -162,7 +162,7 @@ class GrammarNormalizer:
     ----------------
     If the raw dict contains a ``chitonga_grammar`` key the normalizer
     treats it as the *extended* Gobelo reference-grammar format.  Otherwise
-    it falls back to the *GGT-canonical* flat format.  Both paths produce
+    it falls back to the *ggtk-canonical* flat format.  Both paths produce
     identical ``_ParsedGrammar`` outputs.
 
     Usage
@@ -189,7 +189,7 @@ class GrammarNormalizer:
         ----------
         raw : Dict[str, Any]
             Raw YAML dict from ``yaml.safe_load()``.  May use either the
-            GGT-canonical flat schema or the chiTonga extended schema.
+            ggtk-canonical flat schema or the chiTonga extended schema.
         verify_flags : List[VerifyFlag]
             Flag list produced by ``GrammarValidator.validate()`` (or an
             empty list if the validator was skipped).
@@ -476,7 +476,7 @@ class GrammarNormalizer:
         verify_flags: List[VerifyFlag],
     ) -> _ParsedGrammar:
         """
-        Normalize the GGT-canonical flat YAML schema.
+        Normalize the ggtk-canonical flat YAML schema.
 
         Handles two sub-variants of the canonical schema:
 

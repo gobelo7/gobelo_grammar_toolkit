@@ -6,15 +6,15 @@ Run:
     python app.py --port 8080
 
 Environment variables:
-    GGT_ROOT          Directory that contains ggt/
-    GGT_ADMIN_TOKEN   Secret token required for all /admin/* requests
+    ggtk_ROOT          Directory that contains ggtk/
+    ggtk_ADMIN_TOKEN   Secret token required for all /admin/* requests
                       (set to any non-empty string before starting)
 """
 from __future__ import annotations
 import os, argparse
 from pathlib import Path
 
-# ── 1. Resolve package location before any GGT imports ───────────────
+# ── 1. Resolve package location before any ggtk imports ───────────────
 from bootstrap import (
     resolve_package,
     resolve_grammar_dir,
@@ -36,7 +36,7 @@ def create_app() -> Flask:
     admin_frontend = resolve_admin_frontend()   # None if Vite build not yet run
 
     app = Flask(__name__, static_folder=str(frontend), static_url_path="")
-    app.config["ADMIN_TOKEN"] = os.environ.get("GGT_ADMIN_TOKEN", "")
+    app.config["ADMIN_TOKEN"] = os.environ.get("ggtk_ADMIN_TOKEN", "")
 
     init_cache(resolve_grammar_dir())
 
@@ -51,7 +51,7 @@ def create_app() -> Flask:
         o for o in [
             "http://localhost:5173",
             "http://localhost:5174",
-            os.environ.get("GGT_ADMIN_ORIGIN", "").strip(),
+            os.environ.get("ggtk_ADMIN_ORIGIN", "").strip(),
         ] if o
     }
 
@@ -104,7 +104,7 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    from ggt.core.registry import list_languages
+    from ggtk.core.registry import list_languages
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=5000)
     parser.add_argument("--host", default="0.0.0.0")
@@ -116,6 +116,6 @@ if __name__ == "__main__":
     print(f"Admin UI        →  {admin_frontend or '(not built — run: cd web/admin && npm run build)'}")
     print(f"Grammars        →  {resolve_grammar_dir() or '(embedded package data)'}")
     print(f"Languages       →  {list_languages()}")
-    print(f"Admin token set →  {'yes' if app.config['ADMIN_TOKEN'] else 'NO — set GGT_ADMIN_TOKEN before use'}\n")
+    print(f"Admin token set →  {'yes' if app.config['ADMIN_TOKEN'] else 'NO — set ggtk_ADMIN_TOKEN before use'}\n")
 
     app.run(host=args.host, port=args.port, debug=True)

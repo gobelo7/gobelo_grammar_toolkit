@@ -1,5 +1,5 @@
 """
-ggt_loader_adapter.py — GGTLoaderAdapter
+ggtk_loader_adapter.py — GGTLoaderAdapter
 =========================================
 Wraps a raw GGT YAML grammar dict and exposes exactly the interface
 expected by GobeloWordTokenizer and GobelloMorphAnalyser.
@@ -7,7 +7,7 @@ expected by GobeloWordTokenizer and GobelloMorphAnalyser.
 Usage
 -----
     import yaml
-    from ggt_loader_adapter import GGTLoaderAdapter
+    from ggtk_loader_adapter import GGTLoaderAdapter
     from word_tokenizer import GobeloWordTokenizer
     from morph_analyser import GobelloMorphAnalyser
 
@@ -45,7 +45,7 @@ class GGTLoaderAdapter:
 
     Parameters
     ----------
-    grammar     : dict from yaml.safe_load(ggt_yaml_file)
+    grammar     : dict from yaml.safe_load(ggtk_yaml_file)
     lang_iso    : ISO 639-3 code, e.g. "bem", "loz"
     lexicon_verb: optional {root: LexiconEntry}
     lexicon_noun: optional {stem: LexiconEntry}

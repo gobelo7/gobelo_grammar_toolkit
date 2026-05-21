@@ -121,7 +121,7 @@ def _make_corpus_config(extra_global=None, extra_languages=None):
         },
         "languages": {
             "tst": {
-                "ggt_yaml": "",
+                "ggtk_yaml": "",
                 "path_keywords": ["testlang", "tst"],
                 "chapter_words": ["Chapta"],
                 "book_abbreviations": ["Mw"],
@@ -170,7 +170,7 @@ class TestCorpusConfigLoader(unittest.TestCase):
             CorpusConfigLoader("/tmp/does_not_exist_abc123.yaml")
 
     # ── Minimal config with no GGT YAML ─────────────────────────────────────
-    def test_minimal_config_no_ggt(self):
+    def test_minimal_config_no_GGTK(self):
         cfg_path = _make_corpus_config()
         try:
             loader = CorpusConfigLoader(cfg_path)
@@ -208,7 +208,7 @@ class TestCorpusConfigLoader(unittest.TestCase):
         cfg_path = _make_corpus_config(
             extra_global={"strip_patterns": [r"^\s*PAGE\s+\d+"]},
             extra_languages={"tst": {
-                "ggt_yaml": "",
+                "ggtk_yaml": "",
                 "path_keywords": ["tst"],
                 "strip_patterns": [r"^\s*Footnote\s+\d+"],
             }},
@@ -1167,7 +1167,7 @@ class TestYAMLSafety(unittest.TestCase):
             },
             # Need at least one language so loader doesn't raise ConfigError
             "languages": {
-                "tst": {"ggt_yaml": "", "path_keywords": ["tst"]}
+                "tst": {"ggtk_yaml": "", "path_keywords": ["tst"]}
             }
         }
         tf = tempfile.NamedTemporaryFile(

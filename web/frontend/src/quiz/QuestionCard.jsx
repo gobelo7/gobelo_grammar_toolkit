@@ -6,8 +6,8 @@ export default function QuestionCard({ question, onAnswer, answered, selected })
     .sort(() => Math.random() - 0.5);  // shuffle options on first render
 
   return (
-    <div className="bg-ggt-card border border-ggt-border rounded-xl p-6 max-w-2xl">
-      <p className="font-sans text-ggt-text text-sm font-bold mb-5">{question.prompt}</p>
+    <div className="bg-ggtk-card border border-ggtk-border rounded-xl p-6 max-w-2xl">
+      <p className="font-sans text-ggtk-text text-sm font-bold mb-5">{question.prompt}</p>
       <div className="flex flex-col gap-2">
         {options.map((opt, i) => {
           const isSelected = opt === selected;
@@ -16,10 +16,10 @@ export default function QuestionCard({ question, onAnswer, answered, selected })
           return (
             <button key={i} onClick={() => !answered && onAnswer(opt)}
               className={`text-left px-4 py-2.5 rounded-lg border font-mono text-xs transition-all cursor-pointer ${
-                isCorrect ? "bg-ggt-success/20 border-ggt-success text-ggt-success" :
-                isWrong   ? "bg-ggt-danger/20 border-ggt-danger text-ggt-danger" :
-                isSelected ? "bg-ggt-accent/20 border-ggt-accent text-ggt-accent" :
-                "bg-ggt-input border-ggt-border text-ggt-text hover:border-ggt-borderL"
+                isCorrect ? "bg-ggtk-success/20 border-ggtk-success text-ggtk-success" :
+                isWrong   ? "bg-ggtk-danger/20 border-ggtk-danger text-ggtk-danger" :
+                isSelected ? "bg-ggtk-accent/20 border-ggtk-accent text-ggtk-accent" :
+                "bg-ggtk-input border-ggtk-border text-ggtk-text hover:border-ggtk-borderL"
               } ${answered ? "cursor-default" : ""}`}
             >{opt}</button>
           );

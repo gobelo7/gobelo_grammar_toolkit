@@ -17,14 +17,14 @@
 #      Source: https://hfst.github.io
 #
 #  Output:
-#    ggt/hfst/compiled/<language>-analyser.hfst
-#    ggt/hfst/compiled/<language>-generator.hfst
+#    ggtk/hfst/compiled/<language>-analyser.hfst
+#    ggtk/hfst/compiled/<language>-generator.hfst
 # =============================================================
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-FST_DIR="$REPO_ROOT/ggt/hfst"
+FST_DIR="$REPO_ROOT/ggtk/hfst"
 LEXICON_DIR="$FST_DIR/lexicons"
 COMPILED_DIR="$FST_DIR/compiled"
 BUILD_PY="$FST_DIR/build_fst.py"

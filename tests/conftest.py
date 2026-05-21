@@ -22,15 +22,15 @@ import pytest
 
 # ── path bootstrap ────────────────────────────────────────────────
 _ROOT    = Path(__file__).resolve().parent.parent
-_GGT     = _ROOT / "ggt"
+_GGTK     = _ROOT / "ggtk"
 _UPLOADS = Path("/mnt/user-data/uploads")
 
-for p in (_GGT, _UPLOADS):
+for p in (_GGTK, _UPLOADS):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
 # ── grammar file locations ────────────────────────────────────────
-_LANG_DIR     = _GGT / "ggt" / "languages"
+_LANG_DIR     = _GGTK / "ggtk" / "languages"
 _FIXTURE_DIR  = Path(__file__).parent / "fixtures"
 
 _CHITONGA_FULL     = _LANG_DIR / "chitonga.yaml"
@@ -50,8 +50,8 @@ def loader_minimal():
     Use this in unit tests that only need the loader API and don't
     require the full linguistic inventory.  Loads in < 50 ms.
     """
-    from ggt.core.config import GrammarConfig
-    from ggt.core.loader import GobeloGrammarLoader
+    from ggtk.core.config import GrammarConfig
+    from ggtk.core.loader import GobeloGrammarLoader
 
     if not _CHITONGA_MINIMAL.exists():
         pytest.skip(f"Minimal fixture not found: {_CHITONGA_MINIMAL}")
@@ -70,8 +70,8 @@ def loader():
     inventory (21 NCs, 8 TAMs, 18 concord types, 14 extensions).
     Loads in ~200 ms; shared across all tests in one module.
     """
-    from ggt.core.config import GrammarConfig
-    from ggt.core.loader import GobeloGrammarLoader
+    from ggtk.core.config import GrammarConfig
+    from ggtk.core.loader import GobeloGrammarLoader
 
     if not _CHITONGA_FULL.exists():
         pytest.skip(f"Full chiTonga grammar not found: {_CHITONGA_FULL}")
@@ -89,8 +89,8 @@ def loader_chibemba():
     Use this in multi-language tests (FeatureComparator, cross-language
     API route tests).  NC1.prefix is 'u-' (vs chiTonga 'mu-').
     """
-    from ggt.core.config import GrammarConfig
-    from ggt.core.loader import GobeloGrammarLoader
+    from ggtk.core.config import GrammarConfig
+    from ggtk.core.loader import GobeloGrammarLoader
 
     if not _CHIBEMBA_STUB.exists():
         pytest.skip(f"chiBemba fixture not found: {_CHIBEMBA_STUB}")
@@ -107,49 +107,49 @@ def loader_chibemba():
 @pytest.fixture(scope="module")
 def analyzer(loader):
     """Module-scoped MorphologicalAnalyzer for chiTonga."""
-    from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
+    from ggtk.apps.morphological_analyzer import MorphologicalAnalyzer
     return MorphologicalAnalyzer(loader)
 
 
 @pytest.fixture(scope="module")
 def paradigm_gen(loader):
     """Module-scoped ParadigmGenerator for chiTonga."""
-    from ggt.apps.paradigm_generator import ParadigmGenerator
+    from ggtk.apps.paradigm_generator import ParadigmGenerator
     return ParadigmGenerator(loader)
 
 
 @pytest.fixture(scope="module")
 def concord_gen(loader):
     """Module-scoped ConcordGenerator for chiTonga."""
-    from ggt.apps.concord_generator import ConcordGenerator
+    from ggtk.apps.concord_generator import ConcordGenerator
     return ConcordGenerator(loader)
 
 
 @pytest.fixture(scope="module")
 def annotator(loader):
     """Module-scoped CorpusAnnotator for chiTonga."""
-    from ggt.apps.corpus_annotator import CorpusAnnotator
+    from ggtk.apps.corpus_annotator import CorpusAnnotator
     return CorpusAnnotator(loader)
 
 
 @pytest.fixture(scope="module")
 def ud_mapper(loader):
     """Module-scoped UDFeatureMapper for chiTonga."""
-    from ggt.apps.ud_feature_mapper import UDFeatureMapper
+    from ggtk.apps.ud_feature_mapper import UDFeatureMapper
     return UDFeatureMapper(loader)
 
 
 @pytest.fixture(scope="module")
 def slot_validator(loader):
     """Module-scoped VerbSlotValidator for chiTonga."""
-    from ggt.apps.verb_slot_validator import VerbSlotValidator
+    from ggtk.apps.verb_slot_validator import VerbSlotValidator
     return VerbSlotValidator(loader)
 
 
 @pytest.fixture(scope="module")
 def feature_comparator(loader, loader_chibemba):
     """Module-scoped FeatureComparator with chiTonga + chiBemba."""
-    from ggt.apps.feature_comparator import FeatureComparator
+    from ggtk.apps.feature_comparator import FeatureComparator
     return FeatureComparator({"chitonga": loader, "chibemba": loader_chibemba})
 
 

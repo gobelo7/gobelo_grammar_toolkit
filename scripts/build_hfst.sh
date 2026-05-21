@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Build all HFST transducers from GGT package source
 # Assumes GGT is installed (pip install -e ../ggt) and
-# that ggt/hfst/{lang}_hfst/ folders contain .lexc + .twolc files.
+# that ggtk/hfst/{lang}_hfst/ folders contain .lexc + .twolc files.
 set -euo pipefail
 
-GGT_HFST="$(python -c 'import ggt; import pathlib; print(pathlib.Path(ggt.__file__).parent / "hfst")')"
+ggtk_HFST="$(python -c 'import ggt; import pathlib; print(pathlib.Path(ggtk.__file__).parent / "hfst")')"
 
 LANGS=(bem toi nya lue lun kqn loz)
 
@@ -15,8 +15,8 @@ declare -A LANG_FOLDERS=(
 
 for lang in "${LANGS[@]}"; do
     folder="${LANG_FOLDERS[$lang]}"
-    src="$GGT_HFST/$folder/$lang.lexc"
-    out="$GGT_HFST/$folder/$lang.hfst"
+    src="$ggtk_HFST/$folder/$lang.lexc"
+    out="$ggtk_HFST/$folder/$lang.hfst"
     echo "Building $lang ($folder)..."
     hfst-lexc "$src" -o "$out"
 done

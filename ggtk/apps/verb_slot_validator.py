@@ -98,11 +98,11 @@ Usage
 ------
 ::
 
-    from ggt import GobeloGrammarLoader, GrammarConfig
-    from ggt.apps.morphological_analyzer import (
+    from ggtk import GobeloGrammarLoader, GrammarConfig
+    from ggtk.apps.morphological_analyzer import (
         MorphologicalAnalyzer,
     )
-    from ggt.apps.verb_slot_validator import (
+    from ggtk.apps.verb_slot_validator import (
         VerbSlotValidator,
     )
 
@@ -118,7 +118,7 @@ Usage
         print(v.severity, v.rule_id, v.message)
 
     # Direct slot-assignment path (no MorphologicalAnalyzer needed)
-    from ggt.apps.verb_slot_validator import SlotAssignment
+    from ggtk.apps.verb_slot_validator import SlotAssignment
     assignments = [
         SlotAssignment("SLOT3", "subject_concord", "ba", "3PL_HUMAN.SUBJ", None),
         SlotAssignment("SLOT8", "verb_root",       "ly", "ly",              None),
@@ -133,7 +133,7 @@ import re
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
-from ggt.core.exceptions import GGTError
+from ggtk.core.exceptions import GGTError
 
 __all__ = [
     "VerbSlotValidator",
@@ -387,8 +387,8 @@ class VerbSlotValidator:
 
     Examples
     --------
-    >>> from ggt import GobeloGrammarLoader, GrammarConfig
-    >>> from ggt.apps.verb_slot_validator import VerbSlotValidator
+    >>> from ggtk import GobeloGrammarLoader, GrammarConfig
+    >>> from ggtk.apps.verb_slot_validator import VerbSlotValidator
     >>> loader    = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
     >>> validator = VerbSlotValidator(loader)
     >>> # … (see module docstring for full usage)

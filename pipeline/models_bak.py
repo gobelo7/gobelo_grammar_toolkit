@@ -421,7 +421,7 @@ class WordToken:
     feats     : Morphological features as ordered dict
                 (e.g. {"Tense": "Past", "Number": "Sing"}).
     head      : Token id of dependency head (0 = root).
-    deprel    : Dependency relation label (UD or GGT-extended).
+    deprel    : Dependency relation label (UD or ggtk-extended).
     deps      : Enhanced dependencies list of (head_id, deprel) tuples.
     misc      : CoNLL-U MISC field encoded as key=value pairs dict.
 

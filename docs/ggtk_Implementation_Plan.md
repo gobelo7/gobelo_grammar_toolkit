@@ -1,4 +1,4 @@
-# GGT Multi-Platform Deployment - Implementation Plan
+# ggtk Multi-Platform Deployment - Implementation Plan
 
 ## Executive Summary
 
@@ -51,7 +51,7 @@ This document provides a comprehensive implementation plan for packaging the Gob
 ┌───────────┼──────────────────────┼─────────────────────────────┐
 │           ▼                      ▼                             │
 │  ┌──────────────────────────────────────────┐                  │
-│  │      GGT Python Library                  │                  │
+│  │      ggtk Python Library                  │                  │
 │  │  (GobeloGrammarLoader + Apps)            │   Core Layer     │
 │  │  + YAML Grammar Files (7 languages)      │                  │
 │  └──────────────────────────────────────────┘                  │
@@ -132,12 +132,12 @@ This document provides a comprehensive implementation plan for packaging the Gob
 /home/z/my-project/
 ├── src/                          # Next.js web app
 │   ├── app/
-│   │   ├── api/ggt/route.ts     # API endpoints
+│   │   ├── api/ggtk/route.ts     # API endpoints
 │   │   ├── page.tsx             # Main UI
 │   │   ├── layout.tsx           # Root layout
 │   │   └── globals.css          # Global styles
 │   ├── lib/
-│   │   └── ggt-data.ts          # Type definitions & data
+│   │   └── ggtk-data.ts          # Type definitions & data
 │   └── components/ui/           # shadcn/ui components
 │
 ├── desktop/                      # Electron desktop app
@@ -154,8 +154,8 @@ This document provides a comprehensive implementation plan for packaging the Gob
 │   └── build.spec               # PyInstaller config
 │
 ├── download/                     # Generated documents
-│   ├── GGT_Multi_Platform_Deployment_Prompt.docx
-│   └── GGT_Deployment_Guide.md
+│   ├── ggtk_Multi_Platform_Deployment_Prompt.docx
+│   └── ggtk_Deployment_Guide.md
 │
 └── build.sh                      # Main build script
 ```
@@ -165,7 +165,7 @@ This document provides a comprehensive implementation plan for packaging the Gob
 ### Prerequisites
 
 1. **Node.js**: v18+ (for Electron build)
-2. **Python**: v3.9+ (for GGT backend)
+2. **Python**: v3.9+ (for ggtk backend)
 3. **pip**: For Python package management
 
 ### Quick Build
@@ -241,7 +241,7 @@ npm run electron:build
 2. **Build Installer**:
    ```bash
    npm run electron:build:win
-   # Output: desktop/release/GGT Setup 1.0.0.exe
+   # Output: desktop/release/ggtk Setup 1.0.0.exe
    ```
 
 3. **Distribution**:
@@ -307,7 +307,7 @@ npm run electron:build
 ## Next Steps
 
 1. **Testing**: Test the web application in the preview panel
-2. **Python Integration**: Connect to actual GGT Python library
+2. **Python Integration**: Connect to actual ggtk Python library
 3. **Production Build**: Create signed Windows installer
 4. **Distribution**: Set up download page for schools
 5. **Training**: Create teacher training materials

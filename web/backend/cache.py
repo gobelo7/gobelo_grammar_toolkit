@@ -8,16 +8,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from ggt.core.config      import GrammarConfig
-from ggt.core.loader      import GobeloGrammarLoader
-from ggt.core.registry    import list_languages, is_registered
-from ggt.core.exceptions  import LanguageNotFoundError
-from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
-from ggt.apps.paradigm_generator     import ParadigmGenerator
-from ggt.apps.concord_generator      import ConcordGenerator
-from ggt.apps.corpus_annotator       import CorpusAnnotator
-from ggt.apps.ud_feature_mapper      import UDFeatureMapper
-from ggt.apps.verb_slot_validator    import VerbSlotValidator
+from ggtk.core.config      import GrammarConfig
+from ggtk.core.loader      import GobeloGrammarLoader
+from ggtk.core.registry    import list_languages, is_registered
+from ggtk.core.exceptions  import LanguageNotFoundError
+from ggtk.apps.morphological_analyzer import MorphologicalAnalyzer
+from ggtk.apps.paradigm_generator     import ParadigmGenerator
+from ggtk.apps.concord_generator      import ConcordGenerator
+from ggtk.apps.corpus_annotator       import CorpusAnnotator
+from ggtk.apps.ud_feature_mapper      import UDFeatureMapper
+from ggtk.apps.verb_slot_validator    import VerbSlotValidator
 
 _cache: Dict[str, Dict[str, Any]] = {}
 _grammar_dir: Optional[Path] = None
@@ -72,7 +72,7 @@ def get_loader(lang: str) -> GobeloGrammarLoader:
         try:
             return GobeloGrammarLoader(GrammarConfig(language=lang, override_path=override))
         except FileNotFoundError:
-            lang_dir = _grammar_dir or Path("ggt/languages")
+            lang_dir = _grammar_dir or Path("ggtk/languages")
             raise FileNotFoundError(
                 f"Grammar YAML for '{lang}' not found.\n"
                 f"Expected: {lang_dir}/{lang}.yaml\n\n"

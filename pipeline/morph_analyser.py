@@ -990,7 +990,7 @@ def _build_morpheme_spans(sp: SlotParse, form: str) -> List[MorphemeSpan]:
 # ---------------------------------------------------------------------------
 
 class GobelloMorphAnalyser:
-    """Language-agnostic morphological analyser for GGT.
+    """Language-agnostic morphological analyser for ggtk.
 
     Parameters
     ----------

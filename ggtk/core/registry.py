@@ -6,7 +6,7 @@ Language registry for the Gobelo (Bantu) Grammar Toolkit (GGT).
 The registry is the **single source of truth** for which languages are
 embedded in the package and what YAML filename each one uses.  It is kept
 minimal by design: one private dict that maps the canonical language
-identifier to the filename within ``ggt/languages/``.
+identifier to the filename within ``ggtk/languages/``.
 
 No grammar data, YAML parsing, or model instantiation lives here.  The
 registry's only job is name → filename resolution and resource probing.
@@ -35,22 +35,22 @@ resource-resolution logic co-located without duplicating I/O at load time.
 
 Adding a language (maintainer checklist)
 -----------------------------------------
-1. Create ``ggt/languages/<iso_code>.yaml``
-   (follow the GGT-canonical schema; filename = ISO 639-3 code).
+1. Create ``ggtk/languages/<iso_code>.yaml``
+   (follow the ggtk-canonical schema; filename = ISO 639-3 code).
 2. Add ``"<iso_code>"`` to ``_LANGUAGE_REGISTRY`` (value is auto-derived
    as ``f"{iso_code}.yaml"`` — no separate mapping needed).
-3. Add the ISO code, canonical name, and aliases to ``ggt/__init__.py``
+3. Add the ISO code, canonical name, and aliases to ``ggtk/__init__.py``
    ``LANGUAGE_REGISTRY``.
 4. Run: ``python -m pytest tests/ -q``
-5. Run: ``python -m ggt.core.registry probe <iso_code>``
+5. Run: ``python -m ggtk.core.registry probe <iso_code>``
 6. Update ``CHANGELOG.md`` under ``## [Unreleased] → Added``.
 7. Bump version in ``pyproject.toml`` (MINOR if new language, PATCH if
    data-only fix).
 
 Language identifiers
 --------------------
-ISO 639-3 codes are used directly as identifiers throughout GGT.
-Alias resolution (e.g. "chichewa" → "nya") is handled in ``ggt/__init__.py``.
+ISO 639-3 codes are used directly as identifiers throughout ggtk.
+Alias resolution (e.g. "chichewa" → "nya") is handled in ``ggtk/__init__.py``.
 
     ISO 639-3   Guthrie   Canonical name   Notes
     ---------   -------   --------------   -----
@@ -95,7 +95,7 @@ _LANGUAGE_REGISTRY: Dict[str, str] = {
 }
 
 #: Package where YAML files are embedded as ``importlib.resources`` data.
-_LANGUAGES_PACKAGE: str = "ggt.languages"
+_LANGUAGES_PACKAGE: str = "ggtk.languages"
 
 # ---------------------------------------------------------------------------
 # Public constants
@@ -213,7 +213,7 @@ def get_resource_path(language: str):
 
 # ---------------------------------------------------------------------------
 # __main__ probe entrypoint
-# python -m ggt.core.registry [list | probe <lang>]
+# python -m ggtk.core.registry [list | probe <lang>]
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -240,5 +240,5 @@ if __name__ == "__main__":
             sys.exit(2)
 
     else:
-        print("Usage: python -m ggt.core.registry [list | probe <language>]")
+        print("Usage: python -m ggtk.core.registry [list | probe <language>]")
         sys.exit(1)

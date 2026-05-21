@@ -1,6 +1,6 @@
 gobelo/
 │
-├── ggt/          # installable Python package
+├── ggtk/          # installable Python package
 │   │                                # (package path used in loader.py imports)
 │   ├── __init__.py
 │   │ 
@@ -15,7 +15,7 @@ gobelo/
 │   │
 |   ├── cli/
 │   │   ├── __init__.py
-│   │   └── ggt_cli.py
+│   │   └── ggtk_cli.py
 
 │   ├── core/                        # grammar engine — zero language logic
 │   │   ├── __init__.py
@@ -41,7 +41,7 @@ gobelo/
 │   │   ├── ....
 │   │   ├── lexicon/
 |   |   
-│   └── languages/                   # GGT YAML grammar files
+│   └── languages/                   # ggtk YAML grammar files
 │       │                            # (loaded via importlib.resources)
 │       ├── chibemba.yaml            #                                     [✅ complete]
 │       ├── silozi.yaml              #                                     [✅ complete]
@@ -67,7 +67,7 @@ gobelo/
 │   │                                #   checkpointing, multiprocessing     [✅ Phase 5]
 │   ├── agreement_chain.py           # GobeloAgreementChain — 4-pass
 │   │                                #   SM/OM/modifier agreement resolver  [✅ Phase 6]
-│   └── ggt_loader_adapter.py        # GGTLoaderAdapter — bridges raw YAML
+│   └── ggtk_loader_adapter.py        # GGTLoaderAdapter — bridges raw YAML
 │                                    #   dict → pipeline loader interface   [✅ bridge]
 │
 ├── gcbt/                            # Gobelo Corpus Building Toolkit
@@ -97,9 +97,9 @@ gobelo/
 │       └── test_loader.py
 │
 ├── docs/
-│   ├── GGT_Tokenizer_Guide.md               # Phase 1 implementation guide [✅]
-│   ├── GGT_Tokenizer_Guide_2.md             # Phase 1–2 extended guide     [✅]
-│   ├── GGT_Tokenizer_Interactive_Guide.html # interactive HTML guide        [✅]
+│   ├── ggtk_Tokenizer_Guide.md               # Phase 1 implementation guide [✅]
+│   ├── ggtk_Tokenizer_Guide_2.md             # Phase 1–2 extended guide     [✅]
+│   ├── ggtk_Tokenizer_Interactive_Guide.html # interactive HTML guide        [✅]
 │   └── grammar_documentation.yaml          # referenced in YAML metadata
 │
 ├── outputs/                         # pipeline run artefacts (gitignored)

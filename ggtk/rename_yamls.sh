@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rename_yamls.sh — Rename ggt/languages/ files to ISO 639-3 code names.
+# rename_yamls.sh — Rename ggtk/languages/ files to ISO 639-3 code names.
 #
 # Run from inside your GGT repo root.
 # Uses git mv so full history is preserved on each file.
@@ -15,7 +15,7 @@
 
 set -euo pipefail
 
-LANG_DIR="ggt/languages"
+LANG_DIR="ggtk/languages"
 
 declare -A RENAMES=(
     [chibemba]=bem

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ggt/apps/dictionary_manager.py
+ggtk/apps/dictionary_manager.py
 ================================
 Community-driven dictionary manager for Gobelo lexicon data.
 
@@ -34,11 +34,11 @@ Operations
 
 Usage (CLI)
 -----------
-    python -m ggt.apps.dictionary_manager lookup bem --word "umulandu"
-    python -m ggt.apps.dictionary_manager import_csv bem path/to/words.csv
-    python -m ggt.apps.dictionary_manager export_csv bem output.csv
-    python -m ggt.apps.dictionary_manager stats bem
-    python -m ggt.apps.dictionary_manager merge bem --source path/to/extra.csv
+    python -m ggtk.apps.dictionary_manager lookup bem --word "umulandu"
+    python -m ggtk.apps.dictionary_manager import_csv bem path/to/words.csv
+    python -m ggtk.apps.dictionary_manager export_csv bem output.csv
+    python -m ggtk.apps.dictionary_manager stats bem
+    python -m ggtk.apps.dictionary_manager merge bem --source path/to/extra.csv
 """
 
 from __future__ import annotations
@@ -53,9 +53,9 @@ from pathlib import Path
 from typing import Iterator, List, Optional
 
 # ── resolve lexicon root ───────────────────────────────────────────────────────
-_GGT_ROOT = Path(__file__).resolve().parent.parent
-# Lexicon lives at gobelo/data/lexicon/ — two levels up from ggt/
-LEXICON_ROOT = _GGT_ROOT.parent / "data" / "lexicon"
+_GGTK_ROOT = Path(__file__).resolve().parent.parent
+# Lexicon lives at gobelo/data/lexicon/ — two levels up from ggtk/
+LEXICON_ROOT = _GGTK_ROOT.parent / "data" / "lexicon"
 
 logger = logging.getLogger(__name__)
 
@@ -190,7 +190,7 @@ class DictionaryManager:
     """
 
     def __init__(self, iso_code: str, lexicon_root: Optional[Path] = None) -> None:
-        from ggt import resolve_language, LanguageNotFoundError
+        from ggtk import resolve_language, LanguageNotFoundError
         try:
             self.iso_code = resolve_language(iso_code)
         except LanguageNotFoundError:

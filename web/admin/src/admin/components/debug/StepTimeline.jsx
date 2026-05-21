@@ -3,15 +3,15 @@ export default function StepTimeline({ steps = [], index, jumpTo }) {
   const bgFor = (s, i) => {
     if (i === index)            return "bg-cyan-500 text-white border-white/20";
     if (s.type === "BACKTRACK") return "bg-orange-500 text-white border-orange-600";
-    if (s.status === "fail")    return "bg-ggt-danger text-white border-red-700";
-    if (s.status === "success") return "bg-ggt-success text-white border-green-700";
-    if (s.type === "COMMIT")    return "bg-ggt-blue text-white border-blue-700";
-    return "bg-ggt-card text-ggt-muted border-ggt-border";
+    if (s.status === "fail")    return "bg-ggtk-danger text-white border-red-700";
+    if (s.status === "success") return "bg-ggtk-success text-white border-green-700";
+    if (s.type === "COMMIT")    return "bg-ggtk-blue text-white border-blue-700";
+    return "bg-ggtk-card text-ggtk-muted border-ggtk-border";
   };
 
   return (
     <div>
-      <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-muted uppercase mb-2">
+      <div className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-muted uppercase mb-2">
         Timeline ({steps.length} steps)
       </div>
       <div className="flex flex-wrap gap-1.5 timeline">

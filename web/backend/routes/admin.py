@@ -5,7 +5,7 @@ New routes for the React admin shell. All endpoints are under /admin/api/
 (the Blueprint is registered with url_prefix="/admin" in create_app).
 
 Auth: every request must carry the X-Admin-Token header matching
-ADMIN_TOKEN in the Flask app config (set via the GGT_ADMIN_TOKEN env var).
+ADMIN_TOKEN in the Flask app config (set via the ggtk_ADMIN_TOKEN env var).
 
 Routes
 ──────
@@ -30,8 +30,8 @@ import cache as _cache_module
 from cache import get_loader, flush, cache_status
 from bootstrap import resolve_grammar_dir
 
-from ggt.core.registry   import list_languages
-from ggt.core.exceptions import GGTError, LanguageNotFoundError
+from ggtk.core.registry   import list_languages
+from ggtk.core.exceptions import GGTError, LanguageNotFoundError
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -45,7 +45,7 @@ def _require_token():
     expected = current_app.config.get("ADMIN_TOKEN", "")
     if not expected:
         # Token not configured — block all admin access until it is set.
-        return _err("Admin token not configured on server. Set GGT_ADMIN_TOKEN env var.", "misconfigured", 503)
+        return _err("Admin token not configured on server. Set ggtk_ADMIN_TOKEN env var.", "misconfigured", 503)
     if request.headers.get("X-Admin-Token", "") != expected:
         return _err("Invalid or missing X-Admin-Token header.", "unauthorized", 401)
 

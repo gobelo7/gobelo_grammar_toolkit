@@ -4,7 +4,7 @@ Gobelo Grammar Toolkit (GGT)
 Canonical language registry with ISO 639-3 alias resolution.
 
 All apps and tools must identify languages by ISO 639-3 code internally.
-YAML grammar files in ggt/languages/ are named by ISO code: {code}.yaml.
+YAML grammar files in ggtk/languages/ are named by ISO code: {code}.yaml.
 Use resolve_language() to normalise any user-supplied name or spelling.
 
 Supported languages (7):
@@ -16,8 +16,8 @@ Not yet in scope:
     tum  Tumbuka  (corpus only — no GGT YAML)
 """
 
-from ggt.core.loader import GobeloGrammarLoader  # noqa: F401  (re-exported)
-from ggt.core.exceptions import LanguageNotFoundError
+from ggtk.core.loader import GobeloGrammarLoader  # noqa: F401  (re-exported)
+from ggtk.core.exceptions import LanguageNotFoundError
 
 __version__ = "0.2.0"
 __all__ = [
@@ -37,7 +37,7 @@ __all__ = [
 #       "aliases" : list of all known alternate names / spellings (lowercase),
 #   }
 #
-# YAML files are always ggt/languages/{iso_code}.yaml — no separate mapping
+# YAML files are always ggtk/languages/{iso_code}.yaml — no separate mapping
 # needed. Alias lists reflect real-world variation found in Zambian govt
 # documents, academic literature, and community usage. Kept lowercase —
 # matching is always case-insensitive via resolve_language().
@@ -183,8 +183,8 @@ def resolve_language(name: str) -> str:
     raise LanguageNotFoundError(
         f"Unknown language: '{name}'.\n"
         f"Supported ISO codes: {sorted(LANGUAGE_REGISTRY.keys())}.\n"
-        f"Call ggt.language_info('<code>') to see all aliases per language,\n"
-        f"or inspect ggt.LANGUAGE_REGISTRY for the full registry."
+        f"Call ggtk.language_info('<code>') to see all aliases per language,\n"
+        f"or inspect ggtk.LANGUAGE_REGISTRY for the full registry."
     )
 
 
@@ -206,7 +206,7 @@ def language_info(name: str) -> dict:
 
     Examples
     --------
-    >>> ggt.language_info("chichewa")
+    >>> ggtk.language_info("chichewa")
     {'name': 'Nyanja', 'yaml': 'chinyanja', 'aliases': [...]}
     """
     return LANGUAGE_REGISTRY[resolve_language(name)]
@@ -223,7 +223,7 @@ def list_languages() -> list[dict]:
 
     Examples
     --------
-    >>> for lang in ggt.list_languages():
+    >>> for lang in ggtk.list_languages():
     ...     print(lang["iso"], lang["name"])
     bem Bemba
     toi Chitonga

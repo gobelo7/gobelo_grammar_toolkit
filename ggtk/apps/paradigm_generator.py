@@ -29,8 +29,8 @@ import re
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, List, Literal, Optional, Tuple
 
-from ggt.core.exceptions import GGTError
-from ggt.apps.morphological_analyzer import (
+from ggtk.core.exceptions import GGTError
+from ggtk.apps.morphological_analyzer import (
     MorphAnalysisError,
     MorphFeatureBundle,
     MorphologicalAnalyzer,
@@ -563,7 +563,7 @@ class ParadigmGenerator:
         str
         """
         lines: List[str] = []
-        lines.append('<table class="ggt-paradigm">')
+        lines.append('<table class="ggtk-paradigm">')
 
         if title:
             lines.append(f"  <caption>{html.escape(title)}</caption>")

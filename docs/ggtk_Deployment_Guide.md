@@ -1,4 +1,4 @@
-# GGT Multi-Platform Deployment Guide
+# ggtk Multi-Platform Deployment Guide
 
 This guide provides comprehensive instructions for packaging the Gobelo Grammar Toolkit (GGT) for web and desktop deployment.
 
@@ -6,7 +6,7 @@ This guide provides comprehensive instructions for packaging the Gobelo Grammar 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     GGT Multi-Platform Stack                    │
+│                     ggtk Multi-Platform Stack                    │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
@@ -42,21 +42,21 @@ This guide provides comprehensive instructions for packaging the Gobelo Grammar 
 - **Communication**: IPC (Inter-Process Communication) or HTTP localhost
 
 ### Python Backend
-- **Library**: GGT Python package
+- **Library**: ggtk Python package
 - **Bundling**: PyInstaller for standalone executable
 - **Data**: YAML grammar files bundled in executable
 
 ## Directory Structure
 
 ```
-ggt-deployment/
+ggtk-deployment/
 ├── web/                          # Next.js web application
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── api/ggt/         # API routes
+│   │   │   ├── api/ggtk/         # API routes
 │   │   │   └── page.tsx         # Main UI
 │   │   ├── lib/
-│   │   │   └── ggt-data.ts      # Type definitions & mock data
+│   │   │   └── ggtk-data.ts      # Type definitions & mock data
 │   │   └── components/ui/       # shadcn/ui components
 │   ├── public/
 │   ├── package.json
@@ -68,13 +68,13 @@ ggt-deployment/
 │   │   ├── preload.ts           # Preload script (IPC bridge)
 │   │   └── renderer/            # React app (same as web)
 │   ├── python-backend/          # Bundled Python executable
-│   │   ├── ggt-service.exe      # PyInstaller output
+│   │   ├── ggtk-service.exe      # PyInstaller output
 │   │   └── languages/           # Grammar YAML files
 │   ├── electron-builder.yml     # Build configuration
 │   └── package.json
 │
-├── python/                       # GGT Python package
-│   ├── ggt/
+├── python/                       # ggtk Python package
+│   ├── ggtk/
 │   │   ├── core/
 │   │   ├── apps/
 │   │   └── languages/
@@ -101,10 +101,10 @@ ggt-deployment/
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from ggt import GobeloGrammarLoader, GrammarConfig
-from ggt.apps.morphological_analyzer import MorphologicalAnalyzer
+from ggtk import GobeloGrammarLoader, GrammarConfig
+from ggtk.apps.morphological_analyzer import MorphologicalAnalyzer
 
-app = FastAPI(title="GGT Local Service")
+app = FastAPI(title="ggtk Local Service")
 
 app.add_middleware(
     CORSMiddleware,
@@ -157,12 +157,12 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('../ggt/languages/*.yaml', 'ggt/languages'),
+        ('../ggtk/languages/*.yaml', 'ggtk/languages'),
     ],
     hiddenimports=[
         'ggt',
-        'ggt.core',
-        'ggt.apps',
+        'ggtk.core',
+        'ggtk.apps',
         'fastapi',
         'uvicorn',
     ],
@@ -185,7 +185,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='ggt-service',
+    name='ggtk-service',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -232,7 +232,7 @@ function startPythonBackend() {
   const exePath = path.join(
     process.resourcesPath,
     'python-backend',
-    'ggt-service.exe'
+    'ggtk-service.exe'
   );
   
   pythonProcess = spawn(exePath, ['--port', '50051'], {
@@ -304,9 +304,9 @@ nsis:
   uninstallerIcon: assets/icon.ico
 
 extraResources:
-  - from: "../python/dist/ggt-service.exe"
-    to: "python-backend/ggt-service.exe"
-  - from: "../ggt/languages"
+  - from: "../python/dist/ggtk-service.exe"
+    to: "python-backend/ggtk-service.exe"
+  - from: "../ggtk/languages"
     to: "python-backend/languages"
 
 files:
@@ -351,8 +351,8 @@ Tauri provides a smaller bundle size by using the OS webview instead of Chromium
 
 1. **Install Tauri**:
 ```bash
-npm create tauri-app@latest ggt-desktop
-cd ggt-desktop
+npm create tauri-app@latest ggtk-desktop
+cd ggtk-desktop
 npm install
 ```
 
@@ -423,7 +423,7 @@ npm install
 | Next.js Web Build | ~15-25 MB |
 | Electron Framework | ~150 MB |
 | Tauri Framework | ~10-15 MB |
-| Python + GGT | ~50-80 MB |
+| Python + ggtk | ~50-80 MB |
 | Grammar YAML files | ~1-2 MB |
 | **Total (Electron)** | ~200-250 MB |
 | **Total (Tauri)** | ~60-100 MB |

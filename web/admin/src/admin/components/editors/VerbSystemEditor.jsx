@@ -18,19 +18,19 @@ function TagInput({ values = [], onChange }) {
   return (
     <div className="flex flex-wrap gap-1 items-center">
       {vals.map((v, i) => (
-        <span key={i} className="inline-flex items-center gap-1 bg-ggt-accentBg text-ggt-accent font-mono text-xs px-2 py-0.5 rounded border border-ggt-accent/20">
-          {v}<button onClick={() => onChange(vals.filter((_,j)=>j!==i))} className="bg-transparent border-none text-ggt-accent cursor-pointer leading-none">×</button>
+        <span key={i} className="inline-flex items-center gap-1 bg-ggtk-accentBg text-ggtk-accent font-mono text-xs px-2 py-0.5 rounded border border-ggtk-accent/20">
+          {v}<button onClick={() => onChange(vals.filter((_,j)=>j!==i))} className="bg-transparent border-none text-ggtk-accent cursor-pointer leading-none">×</button>
         </span>
       ))}
       <input value={draft} onChange={e=>setDraft(e.target.value)}
         onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();add();}}}
         placeholder="+ form"
-        className="bg-transparent border border-dashed border-ggt-borderL text-ggt-muted font-mono text-xs px-2 py-0.5 rounded outline-none w-16"/>
+        className="bg-transparent border border-dashed border-ggtk-borderL text-ggtk-muted font-mono text-xs px-2 py-0.5 rounded outline-none w-16"/>
     </div>
   );
 }
 
-// Sub-tab definitions — subsystem keys are GGT-internal, not language-specific
+// Sub-tab definitions — subsystem keys are ggtk-internal, not language-specific
 const SUBSYSTEMS = [
   { key: "tam",                     label: "TAM Markers"  },
   { key: "derivational_extensions", label: "Extensions"   },
@@ -44,7 +44,7 @@ export default function VerbSystemEditor() {
   const [selExt, setSelExt] = useState(null);   // selected extension key
 
   if (!grammar) {
-    return <div className="text-ggt-muted text-xs p-10 text-center">Grammar not loaded</div>;
+    return <div className="text-ggtk-muted text-xs p-10 text-center">Grammar not loaded</div>;
   }
 
   // ✅ All keys derived at runtime from the loaded grammar
@@ -59,9 +59,9 @@ export default function VerbSystemEditor() {
 
   return (
     <div>
-      <div className="mb-6 pb-3.5 border-b border-ggt-border">
-        <h2 className="m-0 text-ggt-text font-sans font-extrabold text-lg">Verb System</h2>
-        <p className="mt-1 text-ggt-muted text-[11px] font-sans">TAM markers, extensions (Z1–Z4), final vowels, negation</p>
+      <div className="mb-6 pb-3.5 border-b border-ggtk-border">
+        <h2 className="m-0 text-ggtk-text font-sans font-extrabold text-lg">Verb System</h2>
+        <p className="mt-1 text-ggtk-muted text-[11px] font-sans">TAM markers, extensions (Z1–Z4), final vowels, negation</p>
       </div>
 
       {/* Sub-tab selector */}
@@ -70,15 +70,15 @@ export default function VerbSystemEditor() {
           <button key={s.key} onClick={() => setSub(s.key)}
             className={`px-4 py-1.5 rounded text-xs font-sans font-bold cursor-pointer border transition-all ${
               sub === s.key
-                ? "bg-ggt-accent/20 text-ggt-accent border-ggt-accent"
-                : "bg-transparent text-ggt-muted border-ggt-border"
+                ? "bg-ggtk-accent/20 text-ggtk-accent border-ggtk-accent"
+                : "bg-transparent text-ggtk-muted border-ggtk-border"
             }`}
           >{s.label}</button>
         ))}
       </div>
 
       {entries.length === 0 && (
-        <div className="text-ggt-muted text-xs p-8 text-center">No {sub} entries in this grammar.</div>
+        <div className="text-ggtk-muted text-xs p-8 text-center">No {sub} entries in this grammar.</div>
       )}
 
       {/* ── TAM / Final Vowels / Negation — table view ── */}
@@ -87,43 +87,43 @@ export default function VerbSystemEditor() {
           {entries.map(([key, entry]) => (
             <Card key={key}>
               <div className="flex items-center gap-2.5 mb-3">
-                <span className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-accent uppercase">{key}</span>
-                <span className="font-mono text-xs text-ggt-muted">{entry.gloss ?? ""}</span>
+                <span className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-accent uppercase">{key}</span>
+                <span className="font-mono text-xs text-ggtk-muted">{entry.gloss ?? ""}</span>
                 {entry.zone && (
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-ggt-accentBg text-ggt-accent border border-ggt-accent/20">{entry.zone}</span>
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-ggtk-accentBg text-ggtk-accent border border-ggtk-accent/20">{entry.zone}</span>
                 )}
               </div>
               <div className="grid grid-cols-4 gap-2.5">
                 <div>
-                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Forms</label>
+                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Forms</label>
                   <TagInput
                     values={Array.isArray(entry.forms) ? entry.forms : entry.forms ? [String(entry.forms)] : []}
                     onChange={v => updateGrammar(`${basePath}.${key}.forms`, v.length === 1 ? v[0] : v)}
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Gloss</label>
+                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Gloss</label>
                   <input value={entry.gloss ?? ""} onChange={e => updateGrammar(`${basePath}.${key}.gloss`, e.target.value)}
-                    className="w-full bg-ggt-input border border-ggt-border rounded font-mono text-xs text-ggt-text px-2 py-1 outline-none"/>
+                    className="w-full bg-ggtk-input border border-ggtk-border rounded font-mono text-xs text-ggtk-text px-2 py-1 outline-none"/>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Tone</label>
+                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Tone</label>
                   <input value={entry.tone ?? ""} onChange={e => updateGrammar(`${basePath}.${key}.tone`, e.target.value)}
-                    className="w-full bg-ggt-input border border-ggt-border rounded font-mono text-xs text-ggt-text px-2 py-1 outline-none"/>
+                    className="w-full bg-ggtk-input border border-ggtk-border rounded font-mono text-xs text-ggtk-text px-2 py-1 outline-none"/>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Function</label>
+                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Function</label>
                   <input value={entry.function ?? ""} onChange={e => updateGrammar(`${basePath}.${key}.function`, e.target.value)}
-                    className="w-full bg-ggt-input border border-ggt-border rounded font-sans text-xs text-ggt-text px-2 py-1 outline-none"/>
+                    className="w-full bg-ggtk-input border border-ggtk-border rounded font-sans text-xs text-ggtk-text px-2 py-1 outline-none"/>
                 </div>
               </div>
               {(entry.note !== undefined || entry.notes !== undefined) && (
                 <div className="mt-2.5">
-                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Notes</label>
+                  <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Notes</label>
                   <textarea value={entry.note ?? entry.notes ?? ""} rows={2}
                     onChange={e => updateGrammar(`${basePath}.${key}.${entry.note !== undefined ? "note" : "notes"}`, e.target.value)}
-                    className={`w-full bg-ggt-input border rounded font-mono text-xs text-ggt-text px-2 py-1 outline-none resize-y ${
-                      (entry.note ?? entry.notes ?? "").includes("VERIFY") ? "border-ggt-verify/50" : "border-ggt-border"
+                    className={`w-full bg-ggtk-input border rounded font-mono text-xs text-ggtk-text px-2 py-1 outline-none resize-y ${
+                      (entry.note ?? entry.notes ?? "").includes("VERIFY") ? "border-ggtk-verify/50" : "border-ggtk-border"
                     }`}/>
                 </div>
               )}
@@ -141,12 +141,12 @@ export default function VerbSystemEditor() {
               <button key={key} onClick={() => setSelExt(key)}
                 className={`px-3 py-2 rounded text-left cursor-pointer border transition-all ${
                   activeExtKey === key
-                    ? "bg-ggt-accent/10 border-ggt-accent text-ggt-accent"
-                    : "bg-ggt-card border-ggt-border text-ggt-text hover:border-ggt-borderL"
+                    ? "bg-ggtk-accent/10 border-ggtk-accent text-ggtk-accent"
+                    : "bg-ggtk-card border-ggtk-border text-ggtk-text hover:border-ggtk-borderL"
                 }`}
               >
                 <span className="font-mono text-xs font-bold">{key}</span>
-                <span className="block text-ggt-muted text-[9px] mt-0.5">{entry.zone ?? ""}</span>
+                <span className="block text-ggtk-muted text-[9px] mt-0.5">{entry.zone ?? ""}</span>
               </button>
             ))}
           </div>
@@ -159,11 +159,11 @@ export default function VerbSystemEditor() {
               <div className="flex flex-col gap-3.5">
                 <Card>
                   <div className="flex items-center justify-between mb-3.5">
-                    <span className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-accent uppercase">{activeExtKey}</span>
-                    {ext.zone && <span className="px-2 py-0.5 rounded text-[9px] font-mono bg-ggt-accentBg text-ggt-accent border border-ggt-accent/20">{ext.zone}</span>}
+                    <span className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-accent uppercase">{activeExtKey}</span>
+                    {ext.zone && <span className="px-2 py-0.5 rounded text-[9px] font-mono bg-ggtk-accentBg text-ggtk-accent border border-ggtk-accent/20">{ext.zone}</span>}
                   </div>
                   <div className="mb-3.5">
-                    <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1.5">Forms</label>
+                    <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1.5">Forms</label>
                     <TagInput
                       values={Array.isArray(ext.form) ? ext.form : ext.form ? [String(ext.form)] : []}
                       onChange={v => updateGrammar(`${base}.form`, v)}
@@ -171,30 +171,30 @@ export default function VerbSystemEditor() {
                   </div>
                   <div className="grid grid-cols-2 gap-2.5 mb-3.5">
                     <div>
-                      <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Gloss</label>
+                      <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Gloss</label>
                       <input value={ext.gloss ?? ""} onChange={e => updateGrammar(`${base}.gloss`, e.target.value)}
-                        className="w-full bg-ggt-input border border-ggt-border rounded font-mono text-xs text-ggt-text px-2 py-1 outline-none"/>
+                        className="w-full bg-ggtk-input border border-ggtk-border rounded font-mono text-xs text-ggtk-text px-2 py-1 outline-none"/>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Zone</label>
+                      <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Zone</label>
                       <select value={ext.zone ?? "Z1"} onChange={e => updateGrammar(`${base}.zone`, e.target.value)}
-                        className="w-full bg-ggt-input border border-ggt-border rounded font-mono text-xs text-ggt-text px-2 py-1 outline-none cursor-pointer">
+                        className="w-full bg-ggtk-input border border-ggtk-border rounded font-mono text-xs text-ggtk-text px-2 py-1 outline-none cursor-pointer">
                         {["Z1","Z2","Z3","Z4"].map(z => <option key={z} value={z}>{z}</option>)}
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggt-muted mb-1">Function</label>
+                    <label className="block text-[10px] font-sans tracking-[0.09em] uppercase text-ggtk-muted mb-1">Function</label>
                     <input value={ext.function ?? ""} onChange={e => updateGrammar(`${base}.function`, e.target.value)}
-                      className="w-full bg-ggt-input border border-ggt-border rounded font-sans text-xs text-ggt-text px-2 py-1 outline-none"/>
+                      className="w-full bg-ggtk-input border border-ggtk-border rounded font-sans text-xs text-ggtk-text px-2 py-1 outline-none"/>
                   </div>
                 </Card>
                 <Card>
-                  <span className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggt-accent uppercase">Notes</span>
+                  <span className="text-[9px] font-sans font-extrabold tracking-[0.18em] text-ggtk-accent uppercase">Notes</span>
                   <textarea value={ext.notes ?? ""} rows={4}
                     onChange={e => updateGrammar(`${base}.notes`, e.target.value)}
-                    className={`w-full mt-2 bg-ggt-input border rounded font-mono text-xs text-ggt-text px-2 py-1.5 outline-none resize-y ${
-                      (ext.notes ?? "").includes("VERIFY") ? "border-ggt-verify/50" : "border-ggt-border"
+                    className={`w-full mt-2 bg-ggtk-input border rounded font-mono text-xs text-ggtk-text px-2 py-1.5 outline-none resize-y ${
+                      (ext.notes ?? "").includes("VERIFY") ? "border-ggtk-verify/50" : "border-ggtk-border"
                     }`}/>
                 </Card>
               </div>

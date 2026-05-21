@@ -452,7 +452,7 @@ class _LexiconProbe:
 # ---------------------------------------------------------------------------
 
 class GobeloWordTokenizer:
-    """Language-agnostic word tokeniser for GGT.
+    """Language-agnostic word tokeniser for ggtk.
 
     Parameters
     ----------

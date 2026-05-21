@@ -17,22 +17,22 @@ from pathlib import Path
 # ── path bootstrap ────────────────────────────────────────────────
 import sys
 _REPO = Path(__file__).resolve().parents[2]
-_GGT  = _REPO / "ggt"
-for p in (_GGT, Path("/mnt/user-data/uploads")):
+_GGTK  = _REPO / "ggtk"
+for p in (_GGTK, Path("/mnt/user-data/uploads")):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from ggt.core.config     import GrammarConfig
-from ggt.core.loader     import GobeloGrammarLoader
-from ggt.core.exceptions import (
+from ggtk.core.config     import GrammarConfig
+from ggtk.core.loader     import GobeloGrammarLoader
+from ggtk.core.exceptions import (
     LanguageNotFoundError, GGTError,
 )
 
 # ── fixture ───────────────────────────────────────────────────────
-GRAMMAR_PATH = Path(__file__).resolve().parents[2] / "ggt" / "ggt" / "languages" / "chitonga.yaml"
+GRAMMAR_PATH = Path(__file__).resolve().parents[2] / "ggtk" / "ggtk" / "languages" / "chitonga.yaml"
 if not GRAMMAR_PATH.exists():
     # fallback dev path
-    GRAMMAR_PATH = Path("/home/claude/ggt/ggt/languages/chitonga.yaml")
+    GRAMMAR_PATH = Path("/home/claude/ggtk/ggtk/languages/chitonga.yaml")
 
 
 @pytest.fixture(scope="module")

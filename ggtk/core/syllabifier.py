@@ -1,7 +1,7 @@
 """
 core/syllabifier.py
 ===================
-YAML-driven syllabification helper for GGT.
+YAML-driven syllabification helper for ggtk.
 
 This module syllabifies words using language-specific configuration loaded
 from a Gobelo grammar YAML file. The syllabification algorithm is driven by
@@ -16,8 +16,8 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-from ggt.core.exceptions import GGTError
-from ggt.core.models import SyllabificationData
+from ggtk.core.exceptions import GGTError
+from ggtk.core.models import SyllabificationData
 
 PUNCTUATION_STRIP_RE = re.compile(r"[^\w\u00C0-\u024F\u0300-\u036F]")
 

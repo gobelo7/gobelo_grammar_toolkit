@@ -13,11 +13,11 @@ A grammar-driven NLP library for the 7 official Zambian Bantu languages, built o
 ```bash
 git clone https://github.com/gobelo/gobelo-grammar-toolkit
 cd ggtk
-pip install -e .              # installs ggt CLI + library
+pip install -e .              # installs ggtk CLI + library
 ```
 
 ```python
-from ggt import GobeloGrammarLoader, GrammarConfig
+from ggtk import GobeloGrammarLoader, GrammarConfig
 
 loader   = GobeloGrammarLoader(GrammarConfig(language="chitonga"))
 analyzer = MorphologicalAnalyzer(loader)
@@ -52,12 +52,12 @@ Adding a new language requires only one grammar YAML and one registry entry — 
 ## CLI
 
 ```bash
-ggt info chitonga                         # grammar stats
-ggt noun-classes chitonga                 # NC inventory table
-ggt concords chitonga subject_concords    # SM paradigm
-ggt validate languages/chitonga.yaml      # schema check
-ggt verify-flags chitonga                 # VERIFY annotations
-ggt diff chitonga chibemba --feature nc   # cross-language diff
+ggtk info chitonga                         # grammar stats
+ggtk noun-classes chitonga                 # NC inventory table
+ggtk concords chitonga subject_concords    # SM paradigm
+ggtk validate languages/chitonga.yaml      # schema check
+ggtk verify-flags chitonga                 # VERIFY annotations
+ggtk diff chitonga chibemba --feature nc   # cross-language diff
 ```
 
 ---
@@ -109,10 +109,10 @@ pytest tests/ -v                                   # full suite
 
 ```
 gobelo/
-├── ggt/
+├── ggtk/
 │   ├── core/          loader.py, normalizer.py, validator.py, models.py
 │   ├── apps/          7 NLP app modules
-│   ├── cli/           ggt_cli.py (6 commands)
+│   ├── cli/           ggtk_cli.py (6 commands)
 │   ├── languages/     chitonga.yaml (4 236 lines, fully verified)
 │   └── hfst/          lexc, twolc, build_fst.py, hfst_backend.py
 ├── web/

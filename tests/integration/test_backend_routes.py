@@ -26,8 +26,8 @@ import pytest
 
 # path bootstrap
 _ROOT = Path(__file__).resolve().parents[2]
-_GGT  = _ROOT / "ggt"
-for p in (_GGT, Path("/mnt/user-data/uploads")):
+_GGTK  = _ROOT / "ggtk"
+for p in (_GGTK, Path("/mnt/user-data/uploads")):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
