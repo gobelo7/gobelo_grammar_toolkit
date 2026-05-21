@@ -48,11 +48,13 @@ Public API — 14 methods + 2 properties
 YAML resolution
 ---------------
 When ``GrammarConfig.override_path`` is ``None``:
-    The loader looks up the language id in the registry
-    (``core/registry.py``) to find the YAML filename, then resolves it as
-    a package resource via ``importlib.resources.files()``.  This works
-    whether the package is installed as a wheel, a zip, or a plain
-    directory.
+    The loader accepts an ISO 639-3 code as the language identifier.
+    Any display name or alias (e.g. "chichewa", "silozi") must be resolved
+    to an ISO code via ``ggt.resolve_language()`` before constructing
+    ``GrammarConfig``.  The ISO code maps directly to the YAML filename
+    (``f"{iso_code}.yaml"``) in ``ggt/languages/``, resolved as a package
+    resource via ``importlib.resources.files()``.  This works whether the
+    package is installed as a wheel, a zip, or a plain directory.
 
 When ``GrammarConfig.override_path`` is set:
     The loader skips the registry lookup and reads the YAML directly from
@@ -104,6 +106,7 @@ from ggt.core.models import (
     GrammarMetadata,
     NounClass,
     PhonologyRules,
+    SyllabificationData,
     TAMMarker,
     TokenizationRules,
     VerbExtension,
@@ -203,6 +206,10 @@ class GobeloGrammarLoader:
         verify_flags: List[VerifyFlag] = _VALIDATOR.validate(raw, config, yaml_path)
 
         # ⑤ Language-match sanity check
+        # config.language is an ISO 639-3 code (e.g. "toi").
+        # metadata.language may be a display name ("Chitonga") or ISO code —
+        # resolve both sides via resolve_language() so aliases are handled.
+        from ggt import resolve_language as _resolve_language, LanguageNotFoundError as _AliasLNFError
         if "metadata" in raw:
             meta_lang_raw = raw["metadata"].get("language")
             # Production format: metadata.language is a nested dict with a 'name' key.
@@ -211,11 +218,22 @@ class GobeloGrammarLoader:
                 meta_lang = meta_lang_raw.get("name", "")
             else:
                 meta_lang = meta_lang_raw
-            if meta_lang and str(meta_lang).lower() != self._config.language.lower():
-                raise ValueError(
-                    f"Grammar language mismatch: config='{self._config.language}' "
-                    f"metadata='{meta_lang}'"
-                )
+            if meta_lang:
+                try:
+                    meta_iso = _resolve_language(str(meta_lang))
+                except _AliasLNFError:
+                    # Unrecognised name in YAML — fall back to raw string compare
+                    meta_iso = str(meta_lang).lower().strip()
+                try:
+                    config_iso = _resolve_language(self._config.language)
+                except _AliasLNFError:
+                    config_iso = self._config.language.lower().strip()
+                if meta_iso != config_iso:
+                    raise ValueError(
+                        f"Grammar language mismatch: "
+                        f"config='{self._config.language}' (→ '{config_iso}') "
+                        f"metadata='{meta_lang}' (→ '{meta_iso}')"
+                    )
 
         # ⑥ Normalize → typed model -------------------------------------------
         self._parsed: _ParsedGrammar = _NORMALIZER.normalize(raw, verify_flags)
@@ -240,7 +258,10 @@ class GobeloGrammarLoader:
         if not isinstance(raw, dict):
             return raw
 
-        # Case 1: wrapper matches config language
+        # Case 1: exact match — works when config.language == wrapper prefix.
+        # Note: config.language is now an ISO code (e.g. "toi"), so this branch
+        # fires only if the YAML wraps under "toi_grammar". Existing YAMLs use
+        # display-name wrappers ("chitonga_grammar") — handled by Case 2 below.
         expected_wrapper = f"{self._config.language}_grammar"
         if expected_wrapper in raw:
             return raw[expected_wrapper]
@@ -260,10 +281,11 @@ class GobeloGrammarLoader:
         Translate every known Gobelo YAML variant into the GGT-canonical
         flat schema that the validator and normalizer both expect.
 
-        Handles the chitonga_grammar.yaml reference-grammar format which
-        uses different key names, nested structures, and sub-dict metadata
-        compared to the canonical schema.
+        Handles YAML variants that use non-canonical key names, nested
+        structures, or sub-dict metadata — including the legacy
+        {lang}_grammar wrapper format (e.g. toi.yaml pre-rename).
         """
+        from ggt import resolve_language as _resolve_language, LanguageNotFoundError as _AliasLNFError
         if not isinstance(raw, dict):
             return raw
 
@@ -278,9 +300,15 @@ class GobeloGrammarLoader:
                 meta["iso_code"] = lang_block.get("iso_code", "")
             if "guthrie" not in meta:
                 meta["guthrie"] = lang_block.get("guthrie", "")
-            # Flatten language name to a plain string
+            # Flatten and normalise language name to ISO 639-3 code.
             name = lang_block.get("name", "")
-            meta["language"] = name.lower().strip() if name else self._config.language
+            if name:
+                try:
+                    meta["language"] = _resolve_language(name)
+                except _AliasLNFError:
+                    meta["language"] = name.lower().strip()
+            else:
+                meta["language"] = self._config.language
 
         # grammar_version: try metadata.version first, then framework.Yaml_version
         if "grammar_version" not in meta:
@@ -742,6 +770,22 @@ class GobeloGrammarLoader:
         """
         return self._parsed.phonology
 
+    def get_syllabification(self) -> SyllabificationData:
+        """
+        Return the language-specific syllabification configuration.
+
+        Returns
+        -------
+        SyllabificationData
+
+        Examples
+        --------
+        >>> syl = loader.get_syllabification()
+        >>> syl.structure.max_onset_cluster_length
+        3
+        """
+        return self._parsed.syllabification
+
     def get_tokenization_rules(self) -> TokenizationRules:
         """
         Return the language-specific tokenization rules.
@@ -794,7 +838,7 @@ class GobeloGrammarLoader:
         -------
         List[str]
             Alphabetically sorted list, e.g.
-            ``["chibemba", "chitonga", "chinyanja", ...]``.
+            ``["bem", "kqn", "loz", "lue", "lun", "nya", "toi"]``.
         """
         from ggt.core.registry import list_languages
 
@@ -812,7 +856,10 @@ class GobeloGrammarLoader:
         falls back to ``importlib.resources.open_text()`` for older runtimes.
         Both paths work with installed wheels and zip archives.
         """
-        filename = get_yaml_filename(language)
+        # ISO 639-3 code → filename is always f"{language}.yaml".
+        # get_yaml_filename() is kept as a registry consistency check;
+        # it will return None if the code is not registered (caught upstream).
+        filename = get_yaml_filename(language) or f"{language}.yaml"
         package = "ggt.languages"
 
         if _HAS_FILES_API:
@@ -898,13 +945,13 @@ def _validate_extended(
     config: "GrammarConfig",  # type: ignore[name-defined]
 ) -> List[VerifyFlag]:
     """
-    Lightweight validation pass for the chiTonga extended YAML format.
+    Lightweight validation pass for the extended YAML wrapper format.
 
-    The extended format (top-level key ``chitonga_grammar``) does not
+    The extended format (top-level key ``{lang}_grammar``) does not
     conform to the GGT-canonical flat schema, so the full
     ``GrammarValidator`` is not applicable.  This function:
 
-    * Checks the ``chitonga_grammar`` key is present and is a mapping.
+    * Checks the ``{lang}_grammar`` wrapper key is present and is a mapping.
     * Recursively scans all string values for inline ``VERIFY:`` annotations
       and constructs ``VerifyFlag`` objects for any found.
     * Respects ``strict_mode``: raises ``UnverifiedFormError`` if any
@@ -913,7 +960,7 @@ def _validate_extended(
     Parameters
     ----------
     raw : Dict[str, Any]
-        Full parsed YAML dict (must contain ``chitonga_grammar``).
+        Full parsed YAML dict (must contain a ``{lang}_grammar`` wrapper key).
     config : GrammarConfig
         Loader configuration (used for ``strict_mode`` and language name).
 

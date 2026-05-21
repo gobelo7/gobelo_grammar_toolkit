@@ -365,14 +365,18 @@ def _build_v1_0_schema() -> SchemaDefinition:
             "vowels",
             "consonants",
             "tone_system",
+            "syllable_structure",
         }),
         known_phonology_keys=frozenset({
             "vowels",
             "consonants",
             "tone_system",
+            "tones",
             "nasal_prefixes",
             "sandhi_rules",
             "vowel_harmony_rules",
+            "syllable_structure",
+            "syllabification",
             "notes",
         }),
 
@@ -828,6 +832,14 @@ class GrammarValidator:
         else:
             phon_out["tone_system"] = str(tones_raw) if tones_raw else "four_level"
 
+        syll_struct_raw = raw_phon.get("syllable_structure")
+        if syll_struct_raw is not None:
+            phon_out["syllable_structure"] = syll_struct_raw
+
+        syllabification_raw = raw_phon.get("syllabification")
+        if syllabification_raw is not None:
+            phon_out["syllabification"] = syllabification_raw
+
         out["phonology"] = phon_out
 
         # ── noun_classes ──────────────────────────────────────────────
@@ -961,6 +973,8 @@ class GrammarValidator:
         if isinstance(phonology, dict):
             for key in schema.required_phonology_keys:
                 if key not in phonology:
+                    if key == "tone_system" and "tones" in phonology:
+                        continue
                     missing.append(f"phonology.{key}")
         elif phonology is not None:
             missing.append("phonology.<mapping>")

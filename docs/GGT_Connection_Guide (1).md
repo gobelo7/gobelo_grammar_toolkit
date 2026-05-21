@@ -10,7 +10,7 @@ cd /path/to/your/ggt/repository
 pip install -e .
 
 # Option B: Install from PyPI (when published)
-pip install gobelo-grammar-toolkit
+pip install ggt
 ```
 
 ### Step 2: Verify GGT Installation
@@ -205,7 +205,7 @@ curl -X POST "http://localhost:3000/api/ggt?action=paradigm" \
 **Cause**: Python cannot import GGT module
 
 **Solutions**:
-1. Verify installation: `pip show gobelo-grammar-toolkit`
+1. Verify installation: `pip show ggt`
 2. Check Python path: `python -c "import sys; print(sys.path)"`
 3. Install in correct environment
 

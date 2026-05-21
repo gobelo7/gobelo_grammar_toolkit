@@ -163,7 +163,7 @@ def _ggt_version() -> str:
     """
     try:
         import importlib.metadata as _meta
-        return _meta.version("gobelo-grammar-toolkit")
+        return _meta.version("ggt")
     except Exception:
         pass
     try:

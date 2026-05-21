@@ -35,29 +35,32 @@ resource-resolution logic co-located without duplicating I/O at load time.
 
 Adding a language (maintainer checklist)
 -----------------------------------------
-1. Create ``ggt/languages/<id>.yaml``
-   (follow the GGT-canonical schema).
-2. Add ``"<id>": "<id>.yaml"`` to ``_LANGUAGE_REGISTRY``.
-3. Run: ``python -m pytest tests/ -q``
-4. Run: ``python -m ggt.core.registry probe <id>``
-5. Update ``CHANGELOG.md`` under ``## [Unreleased] → Added``.
-6. Bump version in ``pyproject.toml`` (MINOR if new language, PATCH if
+1. Create ``ggt/languages/<iso_code>.yaml``
+   (follow the GGT-canonical schema; filename = ISO 639-3 code).
+2. Add ``"<iso_code>"`` to ``_LANGUAGE_REGISTRY`` (value is auto-derived
+   as ``f"{iso_code}.yaml"`` — no separate mapping needed).
+3. Add the ISO code, canonical name, and aliases to ``ggt/__init__.py``
+   ``LANGUAGE_REGISTRY``.
+4. Run: ``python -m pytest tests/ -q``
+5. Run: ``python -m ggt.core.registry probe <iso_code>``
+6. Update ``CHANGELOG.md`` under ``## [Unreleased] → Added``.
+7. Bump version in ``pyproject.toml`` (MINOR if new language, PATCH if
    data-only fix).
 
 Language identifiers
 --------------------
-Lowercase ASCII, no separators except optional hyphen where the ISO name
-includes one.
+ISO 639-3 codes are used directly as identifiers throughout GGT.
+Alias resolution (e.g. "chichewa" → "nya") is handled in ``ggt/__init__.py``.
 
-    Identifier    ISO 639-3   Guthrie   Notes
-    ----------    ---------   -------   -----
-    chitonga      toi         M.64      Valley/Lake Tonga (Zambia)
-    chibemba      bem         M.42      Northern Zambia
-    chinyanja     nya         N.31      Also Chichewa/Nyanja
-    luvale        lue         K.14      North-West Zambia / Angola
-    kaonde        kqn         L.41      North-West Zambia
-    silozi        loz         K.21      Western Province, Zambia
-    lunda         lun         L.52      North-West Zambia
+    ISO 639-3   Guthrie   Canonical name   Notes
+    ---------   -------   --------------   -----
+    toi         M.64      Chitonga         Valley/Lake Tonga (Zambia)
+    bem         M.42      Bemba            Northern Zambia
+    nya         N.31      Nyanja           Also Chichewa/Nyanja
+    lue         K.14      Luvale           North-West Zambia / Angola
+    kqn         L.41      Kaonde           North-West Zambia
+    loz         K.21      SiLozi           Western Province, Zambia
+    lun         L.52      Lunda            North-West Zambia
 """
 
 from __future__ import annotations
@@ -78,14 +81,17 @@ __all__ = [
 # Registry dict  — only place language IDs are defined
 # ---------------------------------------------------------------------------
 
+# Keys are ISO 639-3 codes. Values are derived as f"{code}.yaml" —
+# stored explicitly here so the dict remains the single source of truth
+# for which languages are embedded, independent of __init__.py.
 _LANGUAGE_REGISTRY: Dict[str, str] = {
-    "chibemba":  "chibemba.yaml",
-    "chinyanja": "chinyanja.yaml",
-    "chitonga":  "chitonga.yaml",
-    "kaonde":    "kaonde.yaml",
-    "lunda":     "lunda.yaml",
-    "luvale":    "luvale.yaml",
-    "silozi":    "silozi.yaml",
+    "bem": "bem.yaml",  # Bemba
+    "kqn": "kqn.yaml",  # Kaonde
+    "loz": "loz.yaml",  # SiLozi
+    "lue": "lue.yaml",  # Luvale
+    "lun": "lun.yaml",  # Lunda
+    "nya": "nya.yaml",  # Nyanja / Chichewa
+    "toi": "toi.yaml",  # Chitonga
 }
 
 #: Package where YAML files are embedded as ``importlib.resources`` data.
@@ -95,7 +101,7 @@ _LANGUAGES_PACKAGE: str = "ggt.languages"
 # Public constants
 # ---------------------------------------------------------------------------
 
-#: Frozenset of all registered language identifiers (stable within MAJOR).
+#: Frozenset of all registered ISO 639-3 codes (stable within MAJOR).
 SUPPORTED_LANGUAGES: FrozenSet[str] = frozenset(_LANGUAGE_REGISTRY.keys())
 
 
@@ -113,7 +119,7 @@ def is_registered(language: str) -> bool:
 
     Examples
     --------
-    >>> is_registered("chitonga")
+    >>> is_registered("toi")
     True
     >>> is_registered("swahili")
     False
@@ -125,13 +131,13 @@ def get_yaml_filename(language: str) -> Optional[str]:
     """
     Return the YAML resource filename for a registered language, or ``None``.
 
-    Returns the bare filename (e.g. ``"chitonga.yaml"``), not a path.
+    Returns the bare filename (e.g. ``"toi.yaml"``), not a path.
     The loader resolves it via ``importlib.resources.files()``.
 
     Examples
     --------
-    >>> get_yaml_filename("chitonga")
-    'chitonga.yaml'
+    >>> get_yaml_filename("toi")
+    'toi.yaml'
     >>> get_yaml_filename("swahili") is None
     True
     """
@@ -145,7 +151,7 @@ def list_languages() -> List[str]:
     Examples
     --------
     >>> list_languages()
-    ['chibemba', 'chinyanja', 'chitonga', 'kaonde', 'lunda', 'luvale', 'silozi']
+    ['bem', 'kqn', 'loz', 'lue', 'lun', 'nya', 'toi']
     """
     return sorted(_LANGUAGE_REGISTRY.keys())
 
@@ -163,7 +169,7 @@ def probe_language_resource(language: str) -> bool:
 
     Examples
     --------
-    >>> probe_language_resource("chitonga")   # file must exist on disk
+    >>> probe_language_resource("toi")   # file must exist on disk
     True
     >>> probe_language_resource("klingon")
     False
@@ -198,7 +204,7 @@ def get_resource_path(language: str):
 
     Examples
     --------
-    >>> ref = get_resource_path("chitonga")
+    >>> ref = get_resource_path("toi")
     >>> text = ref.read_text(encoding="utf-8")
     """
     filename = _LANGUAGE_REGISTRY[language]  # KeyError if not registered

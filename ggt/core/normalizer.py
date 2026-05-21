@@ -54,6 +54,8 @@ from ggt.core.models import (
     GrammarMetadata,
     NounClass,
     PhonologyRules,
+    SyllabificationData,
+    SyllableStructure,
     TAMMarker,
     TokenizationRules,
     VerbExtension,
@@ -115,6 +117,7 @@ class _ParsedGrammar:
     derivational_patterns: List[DerivationalPattern]
     verb_template: Dict[str, Any]
     phonology: PhonologyRules
+    syllabification: SyllabificationData
     tokenization: TokenizationRules
     verify_flags: List[VerifyFlag]
 
@@ -250,6 +253,7 @@ class GrammarNormalizer:
             phonology=self._normalize_phonology_extended(
                 root.get("phonology_rules") or {}
             ),
+            syllabification=self._normalize_syllabification_extended(root),
             tokenization=self._normalize_tokenization_extended(
                 root.get("tokenization") or {}
             ),
@@ -442,6 +446,15 @@ class GrammarNormalizer:
         phon_out["sandhi_rules"]        = sandhi
         phon_out["vowel_harmony_rules"] = vh
         phon_out["notes"] = ""
+
+        syll_struct_raw = raw_phon.get("syllable_structure")
+        if syll_struct_raw is not None:
+            phon_out["syllable_structure"] = syll_struct_raw
+
+        syllabification_raw = raw_phon.get("syllabification")
+        if syllabification_raw is not None:
+            phon_out["syllabification"] = syllabification_raw
+
         out["phonology"] = phon_out
 
         # ── tokenization ──────────────────────────────────────────────
@@ -524,6 +537,9 @@ class GrammarNormalizer:
                 verb_sys.get("verb_template") or verb_sys
             ),
             phonology=self._normalize_phonology_canonical(
+                raw.get("phonology") or {}
+            ),
+            syllabification=self._normalize_syllabification_canonical(
                 raw.get("phonology") or {}
             ),
             tokenization=self._normalize_tokenization_canonical(
@@ -1359,6 +1375,84 @@ class GrammarNormalizer:
             orthographic_normalization=ortho_norm,
             notes=_get_str(raw_tok, "notes"),
         )
+
+    def _normalize_syllabification_canonical(
+        self,
+        raw_phon: Dict[str, Any],
+    ) -> SyllabificationData:
+        vowels_raw = raw_phon.get("vowels") or []
+        vowels = (
+            _get_str_list(vowels_raw, "segments")
+            if isinstance(vowels_raw, dict)
+            else [str(v) for v in vowels_raw if v is not None]
+        )
+
+        syl_struct_raw = raw_phon.get("syllable_structure") or {}
+        pattern_raw = syl_struct_raw.get("pattern") or []
+        if isinstance(pattern_raw, str):
+            pattern_list = (pattern_raw.strip(),)
+        else:
+            pattern_list = tuple(
+                str(p).strip()
+                for p in pattern_raw
+                if p is not None and str(p).strip()
+            )
+
+        variants_raw = syl_struct_raw.get("variants") or []
+        if isinstance(variants_raw, str):
+            variants = (variants_raw.strip(),)
+        else:
+            variants = tuple(
+                str(v).strip()
+                for v in variants_raw
+                if v is not None and str(v).strip()
+            )
+
+        if not pattern_list:
+            raise ValueError(
+                "phonology.syllable_structure.pattern is required"
+            )
+
+        structure = SyllableStructure(
+            pattern=pattern_list,
+            variants=variants,
+            max_onset_cluster_length=
+                self._infer_max_onset_cluster_length(pattern_list),
+        )
+
+        syllabification_raw = raw_phon.get("syllabification") or {}
+        method = "rule_based_cv"
+        notes: Optional[str] = None
+        if isinstance(syllabification_raw, dict):
+            method = _get_str(syllabification_raw, "method", default=method)
+            notes = _get_optional_str(syllabification_raw, "notes")
+        elif isinstance(syllabification_raw, str):
+            method = syllabification_raw.strip() or method
+
+        return SyllabificationData(
+            vowels=frozenset(vowels),
+            method=method,
+            notes=notes,
+            structure=structure,
+        )
+
+    def _normalize_syllabification_extended(
+        self,
+        root: Dict[str, Any],
+    ) -> SyllabificationData:
+        return self._normalize_syllabification_canonical(
+            root.get("phonology_rules") or {}
+        )
+
+    def _infer_max_onset_cluster_length(
+        self,
+        patterns: Tuple[str, ...],
+    ) -> int:
+        max_length = 0
+        for pattern in patterns:
+            for run in re.findall(r"C+", pattern.upper()):
+                max_length = max(max_length, len(run))
+        return max_length
 
 
 # ---------------------------------------------------------------------------

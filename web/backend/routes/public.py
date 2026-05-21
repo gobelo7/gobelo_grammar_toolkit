@@ -110,7 +110,7 @@ def r_extensions(lang):
 @public_bp.route("/api/analyze", methods=["POST"])
 def r_analyze():
     b     = request.get_json(silent=True) or {}
-    lang  = b.get("language", "chitonga")
+    lang  = b.get("language", "toi")
     token = (b.get("token") or "").strip()
     if not token:
         return _err("'token' required", "validation", 422)
@@ -125,7 +125,7 @@ def r_analyze():
 @public_bp.route("/api/generate", methods=["POST"])
 def r_generate():
     b    = request.get_json(silent=True) or {}
-    lang = b.get("language", "chitonga")
+    lang = b.get("language", "toi")
     root = (b.get("root")       or "").strip()
     subj = (b.get("subject_nc") or "").strip()
     tam  = (b.get("tam_id")     or "").strip()
@@ -216,7 +216,7 @@ def r_concords_all(lang):
 @public_bp.route("/api/annotate", methods=["POST"])
 def r_annotate():
     b    = request.get_json(silent=True) or {}
-    lang = b.get("language", "chitonga")
+    lang = b.get("language", "toi")
     text = (b.get("text") or "").strip()
     fmt  = (b.get("format") or "json").lower()
     if not text:
@@ -326,7 +326,7 @@ def r_verify_flags(lang):
 
 @public_bp.route("/api/interlinear")
 def r_interlinear():
-    lang  = request.args.get("language", "chitonga")
+    lang  = request.args.get("language", "toi")
     token = (request.args.get("token") or "").strip()
     if not token:
         return _err("'token' required", "validation", 422)

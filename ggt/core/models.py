@@ -565,6 +565,51 @@ class PhonologyRules:
     notes: str
 
 
+@dataclass(frozen=True)
+class SyllableStructure:
+    """
+    Language-specific syllable structure information loaded from YAML.
+
+    Parameters
+    ----------
+    pattern : Tuple[str, ...]
+        Canonical syllable templates such as ``("(C)V(N)", "CCV(N)",
+        "CCCV(N)")``.
+    variants : Tuple[str, ...]
+        Optional variant templates, e.g. ``("CVV", "CVVC")``.
+    max_onset_cluster_length : int
+        Maximum number of consonants permitted before a vowel in any
+        supported syllable pattern.
+    """
+
+    pattern: Tuple[str, ...]
+    variants: Tuple[str, ...]
+    max_onset_cluster_length: int
+
+
+@dataclass(frozen=True)
+class SyllabificationData:
+    """
+    Typed syllabification configuration derived from the language YAML.
+
+    Parameters
+    ----------
+    vowels : FrozenSet[str]
+        The phonemic vowel inventory used to detect syllable nuclei.
+    method : str
+        The syllabification method name declared in YAML.
+    notes : Optional[str]
+        Optional authoring note from the grammar file.
+    structure : SyllableStructure
+        Language-specific syllable structure patterns driving onset rules.
+    """
+
+    vowels: FrozenSet[str]
+    method: str
+    notes: Optional[str]
+    structure: SyllableStructure
+
+
 # ---------------------------------------------------------------------------
 # Tokenization rules
 # ---------------------------------------------------------------------------

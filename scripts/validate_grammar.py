@@ -8,8 +8,8 @@ Reports all structural errors, version compatibility issues, and
 unresolved VERIFY flags.  Exit code 0 = valid, 1 = invalid.
 
 Usage:
-    python scripts/validate_grammar.py languages/chitonga.yaml
-    python scripts/validate_grammar.py languages/chibemba.yaml --strict
+    python scripts/validate_grammar.py languages/toi.yaml
+    python scripts/validate_grammar.py languages/bem.yaml --strict
     python scripts/validate_grammar.py languages/ --all
     python scripts/validate_grammar.py --all              # default languages/ dir
 
@@ -18,6 +18,10 @@ Options:
     --all       Validate every .yaml file in the target directory
     --quiet     Only print errors, not the section-by-section summary
     --json      Output a machine-readable JSON report to stdout
+
+NOTE: YAML filenames must be ISO 639-3 codes (e.g. toi.yaml, bem.yaml).
+      Language identity is derived from the filename stem, which is looked
+      up directly in the registry (keyed by ISO code).
 """
 
 from __future__ import annotations
@@ -33,7 +37,7 @@ from typing import List, Optional
 _SCRIPT = Path(__file__).resolve().parent
 _REPO   = _SCRIPT.parent
 _GGT    = _REPO / "ggt"
-for p in (_GGT, Path("/mnt/user-data/uploads")):
+for p in (_GGT,):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
@@ -62,7 +66,7 @@ def _c(text: str, color: str, quiet: bool = False) -> str:
 @dataclass
 class ValidationReport:
     path:       Path
-    language:   Optional[str]      = None
+    iso_code:   Optional[str]      = None   # renamed from 'language' for clarity
     valid:      bool               = False
     errors:     List[str]          = field(default_factory=list)
     warnings:   List[str]          = field(default_factory=list)
@@ -78,21 +82,24 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
     """
     report = ValidationReport(path=yaml_path)
 
-    # ── Step 1: detect language from filename ─────────────────────
-    lang = yaml_path.stem   # e.g. "chitonga.yaml" → "chitonga"
-    report.language = lang
+    # ── Step 1: derive ISO code from filename stem ─────────────────
+    # After the rename, stems are ISO 639-3 codes: toi.yaml → "toi"
+    iso_code = yaml_path.stem
+    report.iso_code = iso_code
 
-    # ── Step 2: check registry ────────────────────────────────────
-    if not is_registered(lang):
+    # ── Step 2: check registry ─────────────────────────────────────
+    if not is_registered(iso_code):
         report.errors.append(
-            f"Language '{lang}' is not in the GGT registry. "
-            f"Add it to ggt/core/registry.py before validating."
+            f"ISO code '{iso_code}' is not in the GGT registry. "
+            f"Add it to both ggt/core/registry.py (_LANGUAGE_REGISTRY) "
+            f"and ggt/__init__.py (LANGUAGE_REGISTRY with aliases) "
+            f"before validating."
         )
         return report
 
-    # ── Step 3: attempt full load ─────────────────────────────────
+    # ── Step 3: attempt full load ──────────────────────────────────
     try:
-        cfg    = GrammarConfig(language=lang, override_path=str(yaml_path))
+        cfg    = GrammarConfig(language=iso_code, override_path=str(yaml_path))
         loader = GobeloGrammarLoader(cfg)
     except VersionIncompatibleError as e:
         report.errors.append(f"Version incompatible: {e}")
@@ -111,7 +118,7 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
         report.exception = type(e).__name__
         return report
 
-    # ── Step 4: collect statistics ────────────────────────────────
+    # ── Step 4: collect statistics ─────────────────────────────────
     try:
         m       = loader.get_metadata()
         ncs     = loader.get_noun_classes(active_only=False)
@@ -127,6 +134,7 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
 
         report.stats = {
             "grammar_version":    m.grammar_version,
+            "iso_code":           m.iso_code,
             "noun_class_count":   len(ncs),
             "active_nc_count":    len(ncs_act),
             "tam_count":          len(tams),
@@ -148,7 +156,6 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
                     "Check verb_slots section."
                 )
 
-        # Warn if subject_concords or object_concords is missing
         for ct_name in ("subject_concords", "object_concords"):
             if ct_name not in cts:
                 report.warnings.append(
@@ -157,11 +164,11 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
                 )
 
         # ── Step 6: VERIFY flags ──────────────────────────────────
-        for f in flags:
+        for vf in flags:
             msg = (
-                f"VERIFY [{f.field_path}] = {f.current_value!r}  "
-                f"→ {f.note or 'no note'}  "
-                f"(source: {f.suggested_source or 'unspecified'})"
+                f"VERIFY [{vf.field_path}] = {vf.current_value!r}  "
+                f"→ {vf.note or 'no note'}  "
+                f"(source: {vf.suggested_source or 'unspecified'})"
             )
             report.flags.append(msg)
             if strict:
@@ -177,30 +184,36 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
 
 def print_report(report: ValidationReport, quiet: bool = False) -> None:
     """Pretty-print one validation report."""
-    status = (_c("✓ VALID",   _GREEN, quiet) if report.valid
-              else _c("✗ INVALID", _RED,   quiet))
+    status = (
+        _c("✓ VALID",   _GREEN, quiet) if report.valid
+        else _c("✗ INVALID", _RED, quiet)
+    )
     print(f"\n{_c(str(report.path), _BOLD, quiet)}")
     print(f"  Status:   {status}")
-    if report.language:
-        print(f"  Language: {report.language}")
+    if report.iso_code:
+        print(f"  ISO code: {report.iso_code}")
 
     if report.stats and not quiet:
         s = report.stats
-        print(f"  Grammar:  v{s.get('grammar_version','?')}  |  "
-              f"{s.get('noun_class_count','?')} NCs  |  "
-              f"{s.get('tam_count','?')} TAM  |  "
-              f"{s.get('extension_count','?')} ext  |  "
-              f"{s.get('concord_type_count','?')} concord types")
-        print(f"  Phonology: tone={s.get('tone_system','?')}  |  "
-              f"SC entries={s.get('sc_entry_count','?')}  |  "
-              f"OC entries={s.get('oc_entry_count','?')}")
+        print(
+            f"  Grammar:  v{s.get('grammar_version','?')}  |  "
+            f"{s.get('noun_class_count','?')} NCs  |  "
+            f"{s.get('tam_count','?')} TAM  |  "
+            f"{s.get('extension_count','?')} ext  |  "
+            f"{s.get('concord_type_count','?')} concord types"
+        )
+        print(
+            f"  Phonology: tone={s.get('tone_system','?')}  |  "
+            f"SC entries={s.get('sc_entry_count','?')}  |  "
+            f"OC entries={s.get('oc_entry_count','?')}"
+        )
 
     for e in report.errors:
-        print(f"  {_c('ERROR',   _RED,    quiet)}: {e}")
+        print(f"  {_c('ERROR',  _RED,    quiet)}: {e}")
     for w in report.warnings:
-        print(f"  {_c('WARN',    _YELLOW, quiet)}: {w}")
-    for f in report.flags:
-        print(f"  {_c('VERIFY',  _CYAN,   quiet)}: {f}")
+        print(f"  {_c('WARN',   _YELLOW, quiet)}: {w}")
+    for vf in report.flags:
+        print(f"  {_c('VERIFY', _CYAN,   quiet)}: {vf}")
 
     if not report.errors and not report.warnings and not report.flags:
         print(f"  {_c('No issues found.', _GREEN, quiet)}")
@@ -212,7 +225,10 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    parser.add_argument("paths", nargs="*", help="YAML file(s) or directory to validate")
+    parser.add_argument(
+        "paths", nargs="*",
+        help="YAML file(s) or directory to validate (default: languages/)",
+    )
     parser.add_argument("--all",    action="store_true", help="Validate all .yaml files in target directory")
     parser.add_argument("--strict", action="store_true", help="Treat VERIFY flags as errors")
     parser.add_argument("--quiet",  action="store_true", help="Only print errors")
@@ -245,7 +261,7 @@ def main() -> int:
         for r in reports:
             out.append({
                 "path":     str(r.path),
-                "language": r.language,
+                "iso_code": r.iso_code,
                 "valid":    r.valid,
                 "errors":   r.errors,
                 "warnings": r.warnings,
@@ -257,13 +273,14 @@ def main() -> int:
         for r in reports:
             print_report(r, quiet=args.quiet)
 
-        # Summary line
         n_valid   = sum(1 for r in reports if r.valid)
         n_invalid = len(reports) - n_valid
         print(f"\n{'─'*50}")
-        print(f"  {_c(str(n_valid)+' valid', _GREEN, args.quiet)}  "
-              f"{_c(str(n_invalid)+' invalid', _RED if n_invalid else _GREEN, args.quiet)}  "
-              f"({len(reports)} total)")
+        print(
+            f"  {_c(str(n_valid)+' valid', _GREEN, args.quiet)}  "
+            f"{_c(str(n_invalid)+' invalid', _RED if n_invalid else _GREEN, args.quiet)}  "
+            f"({len(reports)} total)"
+        )
 
     return 0 if all(r.valid for r in reports) else 1
 
