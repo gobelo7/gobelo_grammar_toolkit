@@ -1,7 +1,7 @@
 """
 tests/integration/test_apps_chitonga.py
 ========================================
-Integration tests for all GGT NLP apps against the chiTonga grammar.
+Integration tests for all ggtk NLP apps against the chiTonga grammar.
 
 Tests validate that every public method on every app:
   - Returns the correct data type
@@ -522,3 +522,4 @@ class TestFeatureComparator:
         md = fc.to_markdown(table)
         assert isinstance(md, str)
         assert "chitonga" in md
+

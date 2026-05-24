@@ -95,7 +95,7 @@ from annotation_pipeline import (
 # =============================================================================
 
 class MockLoader:
-    """Realistic GGT loader stub with enough YAML data to drive both phases."""
+    """Realistic ggtk loader stub with enough YAML data to drive both phases."""
 
     lang_iso = "toi"
     lexicon_verb: Dict = {}
@@ -1055,3 +1055,4 @@ class TestPipelineRun:
 if __name__ == "__main__":
     import pytest as _pytest
     _pytest.main([__file__, "-v", "--tb=short"])
+

@@ -17,7 +17,7 @@ Requirements:
     gcbt_v40.py and corpus_config.yaml must be in the same directory.
 
 Coverage areas:
-    1.  CorpusConfigLoader — YAML loading, GGT fallback, merging rules
+    1.  CorpusConfigLoader — YAML loading, ggtk fallback, merging rules
     2.  LanguageProfile     — zero hardcoded defaults, field presence
     3.  Language detection  — path keyword matching, fallback to und
     4.  UnifiedConfig       — YAML sync, preset overrides, legacy compat
@@ -169,7 +169,7 @@ class TestCorpusConfigLoader(unittest.TestCase):
         with self.assertRaises(ConfigError):
             CorpusConfigLoader("/tmp/does_not_exist_abc123.yaml")
 
-    # ── Minimal config with no GGT YAML ─────────────────────────────────────
+    # ── Minimal config with no ggtk YAML ─────────────────────────────────────
     def test_minimal_config_no_GGTK(self):
         cfg_path = _make_corpus_config()
         try:
@@ -1288,3 +1288,4 @@ if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2, failfast=False)
     result = runner.run(suite)
     sys.exit(0 if result.wasSuccessful() else 1)
+

@@ -1,5 +1,5 @@
 """
-GGT Morphophonology Engine
+ggtk Morphophonology Engine
 ==========================
 Implements phonological rules from the Gobelo YAML grammar files.
 
@@ -253,3 +253,4 @@ def ca2_palatalize(segment: str, lang: str) -> str:
 #    Corpus attests "bakabona" (ba-aka-bona-a) → the test expected 'baaka'
 #    which is the UNDERLYING form; the surface is 'bakabona'. Test was wrong.
 # (No code change needed for #1.)
+

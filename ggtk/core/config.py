@@ -1,7 +1,7 @@
 """
 core/config.py
 ==============
-Configuration dataclass for the Gobelo (Bantu) Grammar Toolkit (GGT).
+Configuration dataclass for the Gobelo (Bantu) Grammar Toolkit (ggtk).
 
 ``GrammarConfig`` is the single object passed to ``GobeloGrammarLoader`` at
 instantiation.  It carries every setting that controls *how* a grammar file
@@ -17,7 +17,7 @@ Design principles
   invalid configurations are caught at instantiation time rather than surfacing
   as obscure failures deep in the loading pipeline.
 * **No grammar knowledge** — this module imports nothing from the rest of the
-  GGT core.  It is safe to import in isolation (e.g. in a CLI entrypoint or
+  ggtk core.  It is safe to import in isolation (e.g. in a CLI entrypoint or
   REST layer) without triggering any YAML loading.
 * **Normalisation** — ``language`` is normalised to lowercase and stripped of
   whitespace so that ``GrammarConfig(language="chiTonga")`` and
@@ -72,7 +72,7 @@ __all__ = ["GrammarConfig"]
 
 # Semantic versioning pattern: MAJOR.MINOR.PATCH — each component is one or
 # more decimal digits.  Pre-release suffixes (1.0.0-alpha) are intentionally
-# excluded; the GGT uses plain SemVer only.
+# excluded; the ggtk uses plain SemVer only.
 _SEMVER_RE: re.Pattern[str] = re.compile(r"^\d+\.\d+\.\d+$")
 
 # Minimum viable language identifier: at least two characters, only letters,
@@ -126,7 +126,7 @@ class GrammarConfig:
         a ``GGTWarning`` but do not block loading.
 
     schema_version : Optional[str]
-        Pin validation to a specific GGT schema version (e.g. ``"1.0.0"``).
+        Pin validation to a specific ggtk schema version (e.g. ``"1.0.0"``).
         When ``None`` (default), the validator uses the latest known schema.
         Pinning is useful when an external YAML was authored for an older
         schema and should not be checked against newer optional-field
@@ -398,7 +398,7 @@ class GrammarConfig:
             raise ValueError(
                 "GrammarConfig.locale must not be an empty string.  "
                 "Use a BCP-47 locale code such as 'en' or 'en-GB'.  "
-                "Only 'en' is fully supported in GGT v1.0."
+                "Only 'en' is fully supported in ggtk v1.0."
             )
 
         self.locale = stripped
@@ -451,3 +451,4 @@ class GrammarConfig:
             f"override={override_display}, "
             f"cache={self.cache})"
         )
+

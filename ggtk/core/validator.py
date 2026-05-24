@@ -2,7 +2,7 @@
 core/validator.py
 =================
 Schema validation, version compatibility checking, and VERIFY-flag extraction
-for the Gobelo (Bantu) Grammar Toolkit (GGT).
+for the Gobelo (Bantu) Grammar Toolkit (ggtk).
 
 This module is the gatekeeper between raw YAML data and the typed model layer.
 No ``GobeloGrammarLoader`` method should ever expose data from a YAML file that
@@ -40,7 +40,7 @@ failure mode:
 
 Schema definition model
 -----------------------
-The GGT grammar YAML schema is itself versioned.  A ``SchemaDefinition``
+The ggtk grammar YAML schema is itself versioned.  A ``SchemaDefinition``
 dataclass captures the required and known keys for every section of the YAML
 for one schema version.  All schema definitions live in ``SCHEMA_REGISTRY``,
 keyed by their semver string.
@@ -53,7 +53,7 @@ grammar data error) if the version is not found.
 VERIFY annotation convention
 -----------------------------
 Because YAML comments (``#``) are stripped by the PyYAML parser, VERIFY
-annotations must be embedded in actual string *values*.  The GGT authoring
+annotations must be embedded in actual string *values*.  The ggtk authoring
 convention is:
 
     ``"VERIFY: <note text>"``  — entire value is a VERIFY annotation
@@ -116,7 +116,7 @@ __all__ = [
 # Package-level constants
 # ---------------------------------------------------------------------------
 
-#: The semantic version of the running GGT loader.  Increment this value when
+#: The semantic version of the running ggtk loader.  Increment this value when
 #: releasing a new toolkit version.  Grammar YAML files declare the range of
 #: loader versions they support via ``min_loader_version`` /
 #: ``max_loader_version``; the validator enforces that this constant falls
@@ -148,10 +148,10 @@ _VERIFY_INLINE_RE: re.Pattern[str] = re.compile(r"VERIFY\s*:", re.IGNORECASE)
 
 class GGTWarning(UserWarning):
     """
-    Base class for all non-fatal GGT warnings.
+    Base class for all non-fatal ggtk warnings.
 
     Catching or filtering ``GGTWarning`` targets exactly the warnings
-    emitted by the GGT library, without affecting unrelated ``UserWarning``
+    emitted by the ggtk library, without affecting unrelated ``UserWarning``
     instances from other libraries.
 
     The most common cause is the presence of unresolved ``VERIFY:``
@@ -161,9 +161,9 @@ class GGTWarning(UserWarning):
 
     >>> import warnings
     >>> warnings.filterwarnings("error", category=GGTWarning)
-    >>> # Now any GGT warning raises an exception instead of printing.
+    >>> # Now any ggtk warning raises an exception instead of printing.
 
-    To silence GGT warnings entirely (not recommended for production):
+    To silence ggtk warnings entirely (not recommended for production):
 
     >>> warnings.filterwarnings("ignore", category=GGTWarning)
     """
@@ -177,7 +177,7 @@ class GGTWarning(UserWarning):
 @dataclass(frozen=True)
 class SchemaDefinition:
     """
-    The complete schema specification for one version of the GGT grammar YAML.
+    The complete schema specification for one version of the ggtk grammar YAML.
 
     A ``SchemaDefinition`` captures which keys are *required* and which are
     *known* (required ∪ optional) for every section of the grammar YAML.
@@ -270,7 +270,7 @@ class SchemaDefinition:
 
 def _build_v1_0_schema() -> SchemaDefinition:
     """
-    Build and return the canonical GGT schema definition for version 1.0.0.
+    Build and return the canonical ggtk schema definition for version 1.0.0.
 
     This function is called once at module import time and its result is
     stored in ``SCHEMA_REGISTRY["1.0.0"]``.  It is a private function (not
@@ -285,7 +285,7 @@ def _build_v1_0_schema() -> SchemaDefinition:
     Returns
     -------
     SchemaDefinition
-        Fully-populated schema definition for GGT grammar YAML v1.0.
+        Fully-populated schema definition for ggtk grammar YAML v1.0.
     """
     return SchemaDefinition(
         schema_version="1.0.0",
@@ -405,7 +405,7 @@ def _build_v1_0_schema() -> SchemaDefinition:
 
         # ── verb_system ────────────────────────────────────────────────────
         # TAM markers, verb extensions, and verb slots are the three pillars
-        # of the GGT slot architecture and are required.
+        # of the ggtk slot architecture and are required.
         # Derivational patterns and the verb template are optional enrichments.
         required_verb_system_keys=frozenset({
             "tam_markers",
@@ -544,7 +544,7 @@ def _semver_in_range(
 
 class GrammarValidator:
     """
-    Validates a raw YAML grammar dict against the GGT schema.
+    Validates a raw YAML grammar dict against the ggtk schema.
 
     ``GrammarValidator`` is stateless after construction — the ``loader_version``
     is fixed at instantiation and all validation state is local to each
@@ -725,7 +725,7 @@ class GrammarValidator:
                 f"GrammarConfig.schema_version {target_version!r} is not in "
                 f"SCHEMA_REGISTRY.  Known schema versions: {available}.  "
                 f"Either use schema_version=None to target the latest schema, "
-                f"or update the GGT package to a version that includes the "
+                f"or update the ggtk package to a version that includes the "
                 f"requested schema."
             )
 
@@ -1391,9 +1391,10 @@ class GrammarValidator:
             f"Grammar for '{config.language}' contains {count} unresolved "
             f"VERIFY {noun}.  Forms marked VERIFY have not been confirmed "
             f"against a primary reference grammar.  Use "
-            f"'ggt verify-flags {config.language}' to review them, or "
+            f"'ggtk verify-flags {config.language}' to review them, or "
             f"set strict_mode=True to raise an error on these.  "
             f"Proceeding with caution is advised in production workflows.",
             GGTWarning,
             stacklevel=4,
         )
+

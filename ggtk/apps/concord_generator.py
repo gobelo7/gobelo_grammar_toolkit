@@ -4,7 +4,7 @@ apps/concord_generator.py
 ConcordGenerator — given a noun class, produce all concord forms across every
 concord paradigm declared in the loaded grammar.
 
-This module implements the ``ConcordGenerator`` app specified in GGT Part 9 and
+This module implements the ``ConcordGenerator`` app specified in ggtk Part 9 and
 is the primary tool for building agreement-paradigm tables, populating NLP
 feature vectors, and generating reference-grammar concord matrices.
 
@@ -979,3 +979,4 @@ class ConcordGenerator:
                 form = row.forms.get(ct, "—")
                 parts.append(f"    {row.nc_id:<8} {form}")
         return "\n".join(parts)
+

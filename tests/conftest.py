@@ -213,3 +213,4 @@ def assert_conllu_valid():
                 f"Expected 10 CoNLL-U columns, got {len(cols)} in row: {row!r}"
             )
     return _check
+

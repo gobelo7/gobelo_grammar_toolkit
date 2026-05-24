@@ -1,5 +1,5 @@
 # ============================================================
-# GGT CANONICAL GRAMMAR YAML — template for new languages
+# ggtk CANONICAL GRAMMAR YAML — template for new languages
 # Schema version: 1.0.0
 # Copy this file, rename to <language>.yaml, fill every field.
 # Fields marked REQUIRED must be present or the loader rejects the file.
@@ -12,7 +12,7 @@ metadata:
   iso_code: "bem"               # REQUIRED: ISO 639-3
   guthrie: "M.42"               # REQUIRED: Guthrie classification
   grammar_version: "1.0.0"      # REQUIRED: semver of this file's data
-  min_loader_version: "1.0.0"   # REQUIRED: minimum GGT loader version
+  min_loader_version: "1.0.0"   # REQUIRED: minimum ggtk loader version
   max_loader_version: "999.0.0" # REQUIRED: maximum (999.0.0 = no upper bound)
   display_name: "ChiBemba"      # OPTIONAL: properly capitalised name
   contributors: []              # OPTIONAL: list of contributor names
@@ -195,3 +195,4 @@ tokenization:
 # ── VERIFY FLAGS [OPTIONAL] ───────────────────────────────────
 # Written by the F-06 resolver workflow. Leave absent in new files.
 # verify_flags: []
+

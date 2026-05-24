@@ -744,3 +744,4 @@ adapter and analyser behave for each language.
 Phase 3 (PoS tagger, dependency parser, code-switch detector) is the next
 development milestone. All architecture decisions in this guide are designed
 to remain stable across Phase 3 additions.*
+

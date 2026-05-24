@@ -1,5 +1,5 @@
 """
-morph_analyser.py — GobelloMorphAnalyser  (GGT Phase 2)
+morph_analyser.py — GobelloMorphAnalyser  (ggtk Phase 2)
 =========================================================
 Language-agnostic morphological analyser for the Gobelo Grammar Toolkit.
 
@@ -13,7 +13,7 @@ each WordToken with:
   * Confirmed LexiconEntry matches (replaces Phase 1 stub hits)
   * Updated upos / lemma / is_oov on each token
 
-All language-specific knowledge comes exclusively from the GGT YAML grammar
+All language-specific knowledge comes exclusively from the ggtk YAML grammar
 file (via GobeloGrammarLoader) and the LexiconEntry dicts it exposes.
 No language-specific logic lives in this file.
 
@@ -429,7 +429,7 @@ _MAX_HYPOTHESES = 5
 
 
 class GobeloVerbParser:
-    """Left-to-right verb slot-filler for all seven GGT languages.
+    """Left-to-right verb slot-filler for all seven ggtk languages.
 
     The verb template is:
 
@@ -1174,3 +1174,4 @@ class GobelloMorphAnalyser:
 
     def __repr__(self) -> str:
         return f"GobelloMorphAnalyser(lang={self._lang_iso!r}, v={self.VERSION})"
+

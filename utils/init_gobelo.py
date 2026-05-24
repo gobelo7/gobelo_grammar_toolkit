@@ -46,7 +46,7 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
 
     # ── apps ────────────────────────────────────────────────────────────────
     # NLP app interfaces — morphological analysis and other tools are
-    # provided by the GGT package (pip install gobelo-ggt), not duplicated here.
+    # provided by the ggtk package (pip install gobelo-ggtk), not duplicated here.
     for app in ["tokenizer", "tagger", "concordancer", "corpus_viewer"]:
         d(f"apps/{app}")
         f(f"apps/{app}/__init__.py")
@@ -74,7 +74,7 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
 
     # ── grammar (BGT YAML — single source of truth) ─────────────────────────
     # Note: HFST transducers and .lexc/.twolc source files live inside the
-    # GGT package (ggtk/hfst/) and are managed there. Gobelo consumes GGT as
+    # ggtk package (ggtk/hfst/) and are managed there. Gobelo consumes ggtk as
     # a pip dependency — do not duplicate FST resources here.
     d("grammar")
     for code, name in langs.items():
@@ -94,11 +94,11 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
     f(
         "scripts/build_hfst.sh",
         "#!/usr/bin/env bash\n"
-        "# Build all HFST transducers from GGT package source\n"
-        "# Assumes GGT is installed (pip install -e ../ggt) and\n"
+        "# Build all HFST transducers from ggtk package source\n"
+        "# Assumes ggtk is installed (pip install -e ../ggtk) and\n"
         "# that ggtk/hfst/{lang}_hfst/ folders contain .lexc + .twolc files.\n"
         "set -euo pipefail\n\n"
-        "ggtk_HFST=\"$(python -c 'import ggt; import pathlib; "
+        "ggtk_HFST=\"$(python -c 'import ggtk; import pathlib; "
         "print(pathlib.Path(ggtk.__file__).parent / \"hfst\")')\"\n\n"
         f"LANGS=({' '.join(langs.keys())})\n\n"
         "declare -A LANG_FOLDERS=(\n"
@@ -159,7 +159,7 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
     d("tests")
     f(".gitignore",
         "# Python\n__pycache__/\n*.py[cod]\n*.egg-info/\ndist/\nbuild/\n\n"
-        "# HFST compiled transducers live in GGT package — not duplicated here\n"
+        "# HFST compiled transducers live in ggtk package — not duplicated here\n"
         "# OS\n.DS_Store\nThumbs.db\n",
     )
     f(
@@ -178,10 +178,10 @@ def build_tree(langs: dict) -> list[tuple[str, str | None]]:
         "| `scripts/` | Build, validation, and pipeline scripts |\n\n"
         "## Dependencies\n\n"
         "Morphological analysis and HFST transducers are provided by the "
-        "**GGT package** (`gobelo-ggt`), maintained as a separate repository.\n\n"
+        "**ggtk package** (`gobelo-ggtk`), maintained as a separate repository.\n\n"
         "```bash\n"
-        "pip install gobelo-ggt          # from PyPI (once published)\n"
-        "pip install -e ../ggt           # local dev install\n"
+        "pip install gobelo-ggtk          # from PyPI (once published)\n"
+        "pip install -e ../ggtk           # local dev install\n"
         "```\n\n"
         "## Philosophy\n\n"
         "Frugal innovation · Language-agnostic design · YAML as single source of truth\n",
@@ -262,3 +262,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

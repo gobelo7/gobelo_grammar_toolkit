@@ -114,7 +114,7 @@ _MISC_UNSAFE_RE = re.compile(r"[|\s]")
 @dataclass(frozen=True)
 class AnnotatedToken:
     """
-    One CoNLL-U token row with full GGT annotation.
+    One CoNLL-U token row with full ggtk annotation.
 
     Parameters
     ----------
@@ -817,3 +817,4 @@ def _make_failed_token(
         is_ambiguous=False,
         warnings=(f"Annotation failed: {error_class}",),
     )
+

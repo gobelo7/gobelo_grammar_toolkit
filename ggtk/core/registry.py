@@ -1,7 +1,7 @@
 """
 core/registry.py
 ================
-Language registry for the Gobelo (Bantu) Grammar Toolkit (GGT).
+Language registry for the Gobelo (Bantu) Grammar Toolkit (ggtk).
 
 The registry is the **single source of truth** for which languages are
 embedded in the package and what YAML filename each one uses.  It is kept
@@ -13,7 +13,7 @@ registry's only job is name → filename resolution and resource probing.
 
 Design principles
 -----------------
-* **Zero grammar knowledge** — no imports from the rest of GGT; prevents
+* **Zero grammar knowledge** — no imports from the rest of ggtk; prevents
   circular-import cycles.
 * **Single addition point** — adding a new language requires one dict
   entry here plus the YAML file.  See maintainer checklist below.
@@ -162,7 +162,7 @@ def probe_language_resource(language: str) -> bool:
 
     Verifies the embedded file is reachable in the installed package
     *without* reading it.  Useful for build/CI diagnostics and the
-    ``ggt probe`` CLI command.
+    ``ggtk probe`` CLI command.
 
     A ``False`` result typically means the ``languages/*.yaml`` glob in
     ``pyproject.toml`` did not pick up the file during packaging.
@@ -242,3 +242,4 @@ if __name__ == "__main__":
     else:
         print("Usage: python -m ggtk.core.registry [list | probe <language>]")
         sys.exit(1)
+

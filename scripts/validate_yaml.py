@@ -22,3 +22,4 @@ if __name__ == '__main__':
     results = [validate(f) for f in files]
     passed = sum(results)
     print(f'\n{passed}/{len(results)} configs valid.')
+

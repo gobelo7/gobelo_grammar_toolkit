@@ -1,6 +1,6 @@
 # LUNDA LANGUAGE - COMPREHENSIVE GRAMMAR
 # ============================================================================
-# ciLunda Grammar — Gobelo Grammar Toolkit (GGT)
+# ciLunda Grammar — Gobelo Grammar Toolkit (ggtk)
 # Schema: Gobelo-YAML Grammar Framework v1.0
 # Reference: Kawasha (2003) Lunda Grammar (PhD, University of Oregon)
 #            Doke (1945); White Fathers Dictionary
@@ -87,7 +87,7 @@ phonology:
       ciLunda (L.52) is a Zone L Bantu language of NW Zambia/DRC/Angola.
       Key phonological properties: contrastive vowel length (Zone L feature;
       like Chibemba and Luvale); 2-tone H/L system; NC8 prefix i- is
-      distinct from all other languages in the GGT set (VERIFY Kawasha 2003);
+      distinct from all other languages in the ggtk set (VERIFY Kawasha 2003);
       NC2 a- human plural prefix (VERIFY). No extended H-spread.
     schema_compatibility:
       min_parser_version: "1.0"
@@ -759,7 +759,7 @@ noun_class_system:
             condition: before_vowels
             condition_formal: _V
         tone: L
-        notes: "CRITICAL DIFFERENCE from ALL other languages in GGT set: ciLunda NC8 = i- (NOT zi- as in Chitonga/Chichewa; NOT bi-/fi- as in Kaonde/Chibemba; NOT vi- as in Luvale; NOT li- as in SiLozi). This i- prefix is the Zone L.52 Lunda diagnostic for NC8. # VERIFY carefully against Kawasha (2003) — form could be yi- or i-."
+        notes: "CRITICAL DIFFERENCE from ALL other languages in ggtk set: ciLunda NC8 = i- (NOT zi- as in Chitonga/Chichewa; NOT bi-/fi- as in Kaonde/Chibemba; NOT vi- as in Luvale; NOT li- as in SiLozi). This i- prefix is the Zone L.52 Lunda diagnostic for NC8. # VERIFY carefully against Kawasha (2003) — form could be yi- or i-."
       augment:
         form: "a-"
         usage: optional
@@ -1049,7 +1049,7 @@ noun_class_system:
         "mu-": [NC1, NC3, NC18]
         "ku-": [NC15, NC17]
         "i-": [NC8]
-        note: "NC8 i- is unique to ciLunda in the GGT set; NC9 SM i- adds a cross-paradigm homophony that requires concord context for disambiguation"
+        note: "NC8 i- is unique to ciLunda in the ggtk set; NC9 SM i- adds a cross-paradigm homophony that requires concord context for disambiguation"
 
       derivational_patterns:
 
@@ -1281,11 +1281,11 @@ noun_class_system:
           - note: "nc2_a_prefix"
             description: "The a- NC2 human plural prefix groups ciLunda with Luvale in the K/L zone pattern"
           - note: "nc8_uniqueness"
-            description: "NC8 i- is unique in the GGT language set; computational parsers must handle this carefully"
+            description: "NC8 i- is unique in the ggtk language set; computational parsers must handle this carefully"
 
         special_rules:
           - rule: "nc7_nc8_zone_l52"
-            description: "NC7 ci- pairs with NC8 i-; this ci-/i- pairing is unique to ciLunda (L.52) in the GGT set"
+            description: "NC7 ci- pairs with NC8 i-; this ci-/i- pairing is unique to ciLunda (L.52) in the ggtk set"
           - rule: "nc2_a_prefix"
             description: "NC2 human plural a- (not ba-); all NC2 concords use a- stem"
           - rule: "nc8_nc9_disambiguation"
@@ -2909,7 +2909,7 @@ verb_system:
           form: "u-bon-e"
           gloss: "3SG-see-SUBJ"
           translation: "That he/she see"
-    cross_linguistic_note: "ciLunda uniquely has NC8 i- prefix in the GGT set (Zone L.52 diagnostic); NC2 a- cascades through concords; augment a- marks definiteness; contrastive vowel length requires careful handling in tokenisation."
+    cross_linguistic_note: "ciLunda uniquely has NC8 i- prefix in the ggtk set (Zone L.52 diagnostic); NC2 a- cascades through concords; augment a- marks definiteness; contrastive vowel length requires careful handling in tokenisation."
 
   morphophonology:
     description: "Morphophonological processes"
@@ -3234,4 +3234,5 @@ tokenization:
     punctuation: [".", ",", "!", "?"]
     discourse_markers: ["na", "kuti", "pano"]
   preserve_case: false
+
 

@@ -1,6 +1,6 @@
 # LUVALE LANGUAGE - COMPREHENSIVE GRAMMAR
 # ============================================================================
-# ciLuvale Grammar — Gobelo Grammar Toolkit (GGT)
+# ciLuvale Grammar — Gobelo Grammar Toolkit (ggtk)
 # Schema: Gobelo-YAML Grammar Framework v1.0
 # Reference: Horton (1949) A Grammar of Luvale; Pearson (1908); SIL Luvale
 # Generated: 2025-07-11
@@ -3491,4 +3491,5 @@ tokenization:
     punctuation: [".", ",", "!", "?"]
     discourse_markers: ["na", "kuti", "pano"]
   preserve_case: false
+
 

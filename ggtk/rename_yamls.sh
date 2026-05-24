@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # rename_yamls.sh — Rename ggtk/languages/ files to ISO 639-3 code names.
 #
-# Run from inside your GGT repo root.
+# Run from inside your GGTK repo root.
 # Uses git mv so full history is preserved on each file.
 #
 # Before:                After:
@@ -42,7 +42,7 @@ for old in "${!RENAMES[@]}"; do
     fi
 done
 
-git commit -m "refactor(ggt): rename language YAMLs to ISO 639-3 codes"
+git commit -m "refactor(ggtk): rename language YAMLs to ISO 639-3 codes"
 echo ""
 echo "Done. All YAML files now use ISO 639-3 names."
 echo "Update GobeloGrammarLoader to load f'{iso_code}.yaml' if not already done."

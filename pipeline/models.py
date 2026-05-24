@@ -1,5 +1,5 @@
 """
-models.py — Gobelo Grammar Toolkit (GGT) pipeline data models (Phase 1)
+models.py — Gobelo Grammar Toolkit (ggtk) pipeline data models (Phase 1)
 ========================================================================
 Central data layer for the annotation pipeline.  All pipeline stages
 (tokenizer, morph analyser, PoS tagger, dependency parser) operate on
@@ -256,7 +256,7 @@ class WordToken:
     deps     : List[Tuple[int, str]] = field(default_factory=list)
     misc     : Dict[str, str]        = field(default_factory=dict)
 
-    # GGT core
+    # ggtk core
     lang_iso        : str            = ""
     token_type      : TokenType      = TokenType.WORD
     char_start      : int            = -1
@@ -473,3 +473,4 @@ class AnnotatedSentence:
     def __repr__(self) -> str:
         return (f"AnnotatedSentence(id={self.sent_id!r}, "
                 f"lang={self.lang_iso!r}, tokens={len(self.tokens)})")
+

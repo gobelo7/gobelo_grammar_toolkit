@@ -1,9 +1,9 @@
 """
-test_phase1.py — GGT Phase 1 smoke tests
+test_phase1.py — ggtk Phase 1 smoke tests
 =========================================
 Run with:  python test_phase1.py
 All tests should pass with zero imports beyond the standard library and
-the two GGT Phase 1 modules (models.py, word_tokenizer.py).
+the two ggtk Phase 1 modules (models.py, word_tokenizer.py).
 """
 
 import sys
@@ -314,3 +314,4 @@ if failures:
 else:
     print(f"\n  {PASS} All tests passed.\n")
     sys.exit(0)
+

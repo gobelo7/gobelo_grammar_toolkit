@@ -805,3 +805,4 @@ def _truncate(s: str, max_len: int) -> str:
 def _escape_md(s: str) -> str:
     """Escape Markdown pipe characters and backticks within a table cell."""
     return s.replace("|", "\\|").replace("`", "\\`")
+

@@ -24,7 +24,7 @@ Multilingual NLP infrastructure for Zambian Bantu languages.
 
 ## Dependencies
 
-Morphological analysis and HFST transducers are provided by the **ggtk package** (`gobelo-ggt`), maintained as a separate repository.
+Morphological analysis and HFST transducers are provided by the **ggtk package** (`gobelo-ggtk`), maintained as a separate repository.
 
 ```bash
 pip install gobelo-ggtk          # from PyPI (once published)
@@ -34,3 +34,4 @@ pip install -e ../ggtk           # local dev install
 ## Philosophy
 
 Frugal innovation · Language-agnostic design · YAML as single source of truth
+

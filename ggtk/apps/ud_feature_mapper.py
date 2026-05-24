@@ -1,10 +1,10 @@
 """
 apps/ud_feature_mapper.py
 ==========================
-UDFeatureMapper — map GGT morphological analysis to Universal Dependencies
+UDFeatureMapper — map ggtk morphological analysis to Universal Dependencies
 (UD) FEATS column values for use in UD treebank construction.
 
-This module implements the core of GGT Feature F-07.  Given a
+This module implements the core of ggtk Feature F-07.  Given a
 ``SegmentedToken`` produced by ``MorphologicalAnalyzer`` (F-02), it yields
 a ``UDFeatureBundle`` whose fields are UD-compliant strings suitable for the
 CoNLL-U ``FEATS`` column.  Individual mapping methods (``map_nc``,
@@ -24,7 +24,7 @@ Key UD features used for Bantu:
 ``Nounclass``
     The Bantu noun-class index, expressed as ``Bantu1`` – ``Bantu23``
     following the Bleek–Meinhof convention.  The numeric index is derived
-    from the GGT ``NounClass.id`` field (``"NC7"`` → ``Bantu7``).  Subclass
+    from the ggtk ``NounClass.id`` field (``"NC7"`` → ``Bantu7``).  Subclass
     suffixes (``"NC1a"`` → ``Bantu1``) are stripped.
 
 ``Number``
@@ -42,7 +42,7 @@ Key UD features used for Bantu:
     Derived from ``TAMMarker.tense``:
 
     ============  ===========
-    GGT value     UD value
+    ggtk value     UD value
     ============  ===========
     present       Pres
     immediate_past Past
@@ -56,7 +56,7 @@ Key UD features used for Bantu:
     Derived from ``TAMMarker.aspect``:
 
     ============  ===========
-    GGT value     UD value
+    ggtk value     UD value
     ============  ===========
     imperfective  Imp
     perfective    Perf
@@ -70,7 +70,7 @@ Key UD features used for Bantu:
     Derived from ``TAMMarker.mood``:
 
     ============  ===========
-    GGT value     UD value
+    ggtk value     UD value
     ============  ===========
     indicative    Ind
     subjunctive   Sub
@@ -256,7 +256,7 @@ class UDNounClassFeatures:
     Parameters
     ----------
     nc_id : str
-        The original GGT noun-class identifier (e.g. ``"NC7"``).
+        The original ggtk noun-class identifier (e.g. ``"NC7"``).
     nounclass : Optional[str]
         UD ``Nounclass`` value, e.g. ``"Bantu7"``.  ``None`` if the id
         could not be parsed to a Bantu class number.
@@ -282,12 +282,12 @@ class UDNounClassFeatures:
 @dataclass(frozen=True)
 class UDTAMFeatures:
     """
-    UD features derived from a GGT ``TAMMarker``.
+    UD features derived from a ggtk ``TAMMarker``.
 
     Parameters
     ----------
     tam_id : str
-        The original GGT TAM marker identifier.
+        The original ggtk TAM marker identifier.
     tense : Optional[str]
         UD ``Tense`` value: ``"Pres"``, ``"Past"``, ``"Fut"``.  ``None``
         when the TAM marker does not encode tense (e.g. pure aspect markers).
@@ -298,7 +298,7 @@ class UDTAMFeatures:
         UD ``Mood`` value: ``"Ind"``, ``"Sub"``, ``"Imp"``, ``"Cnd"``.
         ``None`` when not applicable.
     warnings : Tuple[str, ...]
-        Non-fatal mapping issues, e.g. when a GGT value (``"persistive"``)
+        Non-fatal mapping issues, e.g. when a ggtk value (``"persistive"``)
         has no direct UD equivalent.
     """
 
@@ -318,7 +318,7 @@ class UDConcordFeatures:
     Parameters
     ----------
     concord_key : str
-        The original GGT concord key, e.g. ``"1SG"``, ``"NC7"``,
+        The original ggtk concord key, e.g. ``"1SG"``, ``"NC7"``,
         ``"3PL_HUMAN"``.
     concord_type : str
         The concord paradigm name, e.g. ``"subject_concords"``.
@@ -340,12 +340,12 @@ class UDConcordFeatures:
 @dataclass(frozen=True)
 class UDVoiceFeature:
     """
-    UD ``Voice`` feature derived from a GGT ``VerbExtension``.
+    UD ``Voice`` feature derived from a ggtk ``VerbExtension``.
 
     Parameters
     ----------
     ext_id : str
-        The original GGT extension identifier, e.g. ``"PASS"``.
+        The original ggtk extension identifier, e.g. ``"PASS"``.
     voice : str
         UD ``Voice`` value: ``"Pass"``, ``"Caus"``, ``"Appl"``, ``"Rcp"``,
         ``"Rfl"``, or ``"Act"`` (active — when no voice-marking extension is
@@ -394,11 +394,11 @@ class UDFeatureBundle:
     gender : Optional[str]
         Always ``None`` for Bantu; included for schema compatibility.
     source_nc_id : Optional[str]
-        The GGT noun-class id that produced the ``nounclass`` value.
+        The ggtk noun-class id that produced the ``nounclass`` value.
     source_tam_id : Optional[str]
-        The GGT TAM id that produced the ``tense`` / ``aspect`` / ``mood``.
+        The ggtk TAM id that produced the ``tense`` / ``aspect`` / ``mood``.
     source_ext_ids : Tuple[str, ...]
-        The GGT extension ids that contributed to ``voice``.
+        The ggtk extension ids that contributed to ``voice``.
     warnings : Tuple[str, ...]
         Accumulated non-fatal mapping warnings from all sub-mappings.
     """
@@ -427,7 +427,7 @@ class UDFeatureBundle:
 
 class UDFeatureMapper:
     """
-    Language-agnostic mapper from GGT grammar analysis to Universal
+    Language-agnostic mapper from ggtk grammar analysis to Universal
     Dependencies FEATS values.
 
     All mapping tables are derived from the ``GobeloGrammarLoader`` public
@@ -533,7 +533,7 @@ class UDFeatureMapper:
     @staticmethod
     def _parse_bantu_class(nc_id: str) -> Optional[str]:
         """
-        Convert a GGT noun-class id to a UD ``Nounclass`` value.
+        Convert a ggtk noun-class id to a UD ``Nounclass`` value.
 
         ``"NC7"`` → ``"Bantu7"``, ``"NC1a"`` → ``"Bantu1"``,
         ``"NC2b"`` → ``"Bantu2"``.  Returns ``None`` if no numeric
@@ -605,7 +605,7 @@ class UDFeatureMapper:
 
     def map_nc(self, nc_id: str) -> UDNounClassFeatures:
         """
-        Map a GGT noun-class identifier to UD ``Nounclass`` and ``Number``.
+        Map a ggtk noun-class identifier to UD ``Nounclass`` and ``Number``.
 
         Parameters
         ----------
@@ -683,7 +683,7 @@ class UDFeatureMapper:
 
     def map_tam(self, tam_id: str) -> UDTAMFeatures:
         """
-        Map a GGT ``TAMMarker.id`` to UD ``Tense``, ``Aspect``, and ``Mood``.
+        Map a ggtk ``TAMMarker.id`` to UD ``Tense``, ``Aspect``, and ``Mood``.
 
         Parameters
         ----------
@@ -725,22 +725,22 @@ class UDFeatureMapper:
 
         if raw_tense not in ("none", "") and tense is None:
             warnings.append(
-                f"GGT tense value {raw_tense!r} for {tam_id!r} has no "
+                f"ggtk tense value {raw_tense!r} for {tam_id!r} has no "
                 f"direct UD Tense mapping; omitted."
             )
         if raw_aspect not in ("none", "", "stative") and aspect is None:
             warnings.append(
-                f"GGT aspect value {raw_aspect!r} for {tam_id!r} has no "
+                f"ggtk aspect value {raw_aspect!r} for {tam_id!r} has no "
                 f"direct UD Aspect mapping; omitted."
             )
         if raw_mood == "persistive":
             warnings.append(
-                f"GGT mood 'persistive' for {tam_id!r} has no UD equivalent "
+                f"ggtk mood 'persistive' for {tam_id!r} has no UD equivalent "
                 f"(UD does not define a Persistive mood); omitted."
             )
         elif raw_mood not in ("none", "") and mood is None:
             warnings.append(
-                f"GGT mood value {raw_mood!r} for {tam_id!r} has no "
+                f"ggtk mood value {raw_mood!r} for {tam_id!r} has no "
                 f"direct UD Mood mapping; omitted."
             )
 
@@ -758,7 +758,7 @@ class UDFeatureMapper:
         concord_type: str = "subject_concords",
     ) -> UDConcordFeatures:
         """
-        Map a GGT subject- or object-concord key to UD ``Person`` and
+        Map a ggtk subject- or object-concord key to UD ``Person`` and
         ``Number``.
 
         Parameters
@@ -823,7 +823,7 @@ class UDFeatureMapper:
 
     def map_extension(self, ext_id: str) -> UDVoiceFeature:
         """
-        Map a GGT ``VerbExtension.id`` to a UD ``Voice`` value.
+        Map a ggtk ``VerbExtension.id`` to a UD ``Voice`` value.
 
         Parameters
         ----------
@@ -1327,3 +1327,4 @@ def _nc_sort_key(nc_id: str) -> Tuple[int, str]:
     """Sort NC ids numerically then alphabetically by subclass suffix."""
     m = _NC_NUM_RE.match(nc_id)
     return (int(m.group(1)), nc_id) if m else (999, nc_id)
+

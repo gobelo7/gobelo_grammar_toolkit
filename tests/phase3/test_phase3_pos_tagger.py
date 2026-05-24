@@ -60,7 +60,7 @@ from pos_tagger import (
 # ---------------------------------------------------------------------------
 
 class MockLoader:
-    """Minimal loader stub providing a realistic GGT grammar subset."""
+    """Minimal loader stub providing a realistic ggtk grammar subset."""
 
     lang_iso = "toi"
 
@@ -771,3 +771,4 @@ class TestGobeloPOSTaggerIntegration:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
+

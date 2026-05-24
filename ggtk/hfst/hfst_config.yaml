@@ -326,3 +326,4 @@ hfst_config:
       description: "No full_form_plural for most nouns yet"
       impact: "Plural forms not in lexicon until added"
       fix: "Add full_form_plural to nouns.yaml entries"
+

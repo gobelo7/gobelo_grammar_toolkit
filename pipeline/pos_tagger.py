@@ -1,5 +1,5 @@
 """
-pos_tagger.py — GobeloPOSTagger  (GGT Phase 3)
+pos_tagger.py — GobeloPOSTagger  (ggtk Phase 3)
 ===============================================
 Deterministic rule-based PoS tagger and UD feature mapper for the Gobelo
 Grammar Toolkit.
@@ -10,7 +10,7 @@ enriches each WordToken with:
   * A confirmed UPOS tag (replaces any Phase 2 heuristic assignment)
   * A full UD FEATS dict (Tense, Aspect, Mood, Number, Person, Polarity,
     VerbForm, Voice, Case, Degree, NounClass, Definite, PronType …)
-  * An XPOS tag in GGT format (e.g. VERB.FIN, NOUN.NC3, PRON.REFL.NC7)
+  * An XPOS tag in ggtk format (e.g. VERB.FIN, NOUN.NC3, PRON.REFL.NC7)
   * Confirmed CoNLL-U MISC entries (Morphemes=, Gloss=, NounClass=, etc.)
   * Closed-class UPOS for tokens not morphologically analysed by Phase 2
     (conjunctions, particles, adpositions, numerals, discourse markers)
@@ -18,7 +18,7 @@ enriches each WordToken with:
 
 Architecture
 ------------
-All language-specific knowledge flows from the GGT YAML grammar file.  The
+All language-specific knowledge flows from the ggtk YAML grammar file.  The
 tagger builds one internal _TaggerConfig at construction time from the loader,
 then the hot tag() path touches only plain dicts and sets — no YAML objects
 in the tagging inner loop.
@@ -162,7 +162,7 @@ _UD_VERBFORM = {
     "ger":  "Ger",  "gerund": "Ger",
 }
 
-# Extension key → Voice feature (cross-linguistic GGT gloss patterns)
+# Extension key → Voice feature (cross-linguistic ggtk gloss patterns)
 _EXT_VOICE_MAP: Dict[str, str] = {
     "PASS": "Pass",
     "CAUS": "Cau",
@@ -453,7 +453,7 @@ def _build_fv_ud(fv_data: dict, cfg: _TaggerConfig) -> None:
     if not isinstance(fv_data, dict):
         return
 
-    # Hard-coded universal Bantu FV semantics (same across all GGT languages)
+    # Hard-coded universal Bantu FV semantics (same across all ggtk languages)
     _fv_defaults: Dict[str, Dict[str, str]] = {
         "indicative":         {"Mood": "Ind"},
         "subjunctive":        {"Mood": "Sub"},
@@ -786,7 +786,7 @@ def _build_full_feats(
 def _build_xpos(
     upos: POSTag, feats: Dict[str, str], sp: Optional[SlotParse], token: WordToken
 ) -> str:
-    """Build a GGT XPOS string.
+    """Build a ggtk XPOS string.
 
     Format:  UPOS[.DETAIL[.DETAIL…]]
     Examples:
@@ -1159,3 +1159,4 @@ class GobeloPOSTagger:
 
     def __repr__(self) -> str:
         return f"GobeloPOSTagger(lang={self._lang_iso!r}, v={self.VERSION})"
+

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Build all HFST transducers from GGT package source
-# Assumes GGT is installed (pip install -e ../ggt) and
+# Build all HFST transducers from GGTK package source
+# Assumes GGTK is installed (pip install -e ../ggtk) and
 # that ggtk/hfst/{lang}_hfst/ folders contain .lexc + .twolc files.
 set -euo pipefail
 
-ggtk_HFST="$(python -c 'import ggt; import pathlib; print(pathlib.Path(ggtk.__file__).parent / "hfst")')"
+ggtk_HFST="$(python -c 'import ggtk; import pathlib; print(pathlib.Path(ggtk.__file__).parent / "hfst")')"
 
 LANGS=(bem toi nya lue lun kqn loz)
 

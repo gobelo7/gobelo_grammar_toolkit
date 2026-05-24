@@ -25,7 +25,7 @@ Running
 Dependencies
 ------------
     pytest >= 7.0
-    ggt (installed or on sys.path)
+    ggtk (installed or on sys.path)
 """
 
 from __future__ import annotations
@@ -1537,7 +1537,7 @@ class TestAssignmentsFromToken:
 
 
 class TestExceptionHierarchy:
-    """All GGT exceptions are subclasses of GGTError."""
+    """All ggtk exceptions are subclasses of GGTError."""
 
     @pytest.mark.parametrize(
         "exc_class",
@@ -1695,3 +1695,4 @@ class TestCrossLanguageInvariants:
     def test_all_languages_loader_version_semver_like(self, lang: str) -> None:
         L = GobeloGrammarLoader(GrammarConfig(language=lang))
         assert re.match(r"^\d+\.\d+", L.loader_version)
+

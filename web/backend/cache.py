@@ -1,5 +1,5 @@
 """
-web/backend/cache.py — In-process cache and GGT service factories.
+web/backend/cache.py — In-process cache and ggtk service factories.
 
 One loader/app instance per language is created on first use and reused.
 Call init_cache(grammar_dir) once at startup (from app.py create_app).
@@ -98,3 +98,4 @@ def get_mapper(lang: str)    -> UDFeatureMapper:
 
 def get_validator(lang: str) -> VerbSlotValidator:
     return _slot(lang, "vv", lambda: VerbSlotValidator(get_loader(lang)))
+

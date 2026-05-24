@@ -185,7 +185,7 @@ ciLunda-specific divergences encoded:
 Feature	Chitonga	ciLunda
 NC2 prefix	ba-	a- (cascades to all NC2 concords)
 NC7 prefix	ci-	ci- (Zone L consistent)
-NC8 prefix	zi-	i- ← unique across the entire 7-language GGT set
+NC8 prefix	zi-	i- ← unique across the entire 7-language ggtk set
 NC14 prefix	bu-	bu- (consistent)
 NC16 locative	pa-	pa- (standard Bantu)
 Augment	i- optional	a- optional (definite contexts)
@@ -193,7 +193,7 @@ Vowel length	less contrastive	contrastive (Zone L feature)
 APPL	-il-/-el-	-il-/-el-
 PASS	-iw-	-w-/-iw-/-ew-
 Perfective FV	-ide	-ile (VERIFY)
-The most linguistically significant feature is NC8 = i- — no other language in the GGT set uses this form (Chitonga has zi-, Chibemba bi-, Luvale vi-, Kaonde bi-/fi-, SiLozi li-). This creates a noteworthy homophony with the NC9 subject marker i-, documented in parser notes throughout. All forms carry # VERIFY flags pointing to Kawasha (2003) as the authoritative source.
+The most linguistically significant feature is NC8 = i- — no other language in the ggtk set uses this form (Chitonga has zi-, Chibemba bi-, Luvale vi-, Kaonde bi-/fi-, SiLozi li-). This creates a noteworthy homophony with the NC9 subject marker i-, documented in parser notes throughout. All forms carry # VERIFY flags pointing to Kawasha (2003) as the authoritative source.
 
 
 Lunda
@@ -208,7 +208,7 @@ Please implement the attached prompt for Chinyanja grammar following the schema 
 
 Synthesized Chinyanja linguistic features and resolved negation slot ambiguities
 Synthesized Chinyanja linguistic features and resolved negation slot ambiguities
-chinyanja.yaml — 3,365 lines, all 18 checks passing. ChiNyanja is by far the most divergent language in the GGT set. Here's the full divergence summary:
+chinyanja.yaml — 3,365 lines, all 18 checks passing. ChiNyanja is by far the most divergent language in the ggtk set. Here's the full divergence summary:
 
 All structural checks passed: 6 flat top-level keys · 21 noun classes · 18/18 concord types · Extension zones Z1–Z4 correct · All duplicated sections present
 
@@ -219,7 +219,7 @@ Augment	i- optional	null (none)
 NC2 prefix	ba-	a- (cascades to all NC2 concords)
 NC7 prefix	ci-	chi- (Zone N)
 NC8 prefix	zi-	zi- (same as Chitonga — unusual in this set)
-NC14 prefix	bu-	u- (unique in GGT — allomorph w- before V)
+NC14 prefix	bu-	u- (unique in ggtk — allomorph w- before V)
 NC12 frequency	high	limited (marginal)
 NC5 prefix	li-	li- / Ø- (dialect variation)
 Negation	ta- SLOT1	-sa- infix SLOT4 (blocks TAM!)
@@ -246,7 +246,7 @@ Inventoried toolkit assets and identified practical development opportunities
 Inventoried toolkit assets and identified practical development opportunities
 Given what you've built, here are the genuinely low-hanging opportunities — ranked by effort vs. payoff:
 
-Immediate (days, mostly plumbing existing GGT modules)
+Immediate (days, mostly plumbing existing ggtk modules)
 
 Chitonga spell-checker / word validator — your verb slot validator already rejects malformed verbs; wrap it in a simple web form or LibreOffice extension. The corpus gives you a real-word frequency list to anchor the lexicon. This is the single most deployable thing: teachers and civil servants actively need this.
 
@@ -286,7 +286,7 @@ For educators + organic visibility, you want something that teachers share with 
 
 The one thing to build first: Chitonga Verb Conjugation Poster Generator
 
-Teachers already print grammar charts and pin them to classroom walls. Give them a tool where they type a verb root (e.g. -bona) and download a print-ready A3 poster showing the full conjugation across all TAM forms, with concord tables. Your GGT already generates all of this — it's mostly a rendering problem.
+Teachers already print grammar charts and pin them to classroom walls. Give them a tool where they type a verb root (e.g. -bona) and download a print-ready A3 poster showing the full conjugation across all TAM forms, with concord tables. Your ggtk already generates all of this — it's mostly a rendering problem.
 
 Why this spreads:
 
@@ -324,13 +324,13 @@ Ohh! i really need a tool that can help me edit the grammar - to add (e.g. allom
 
 Architected comprehensive grammar editing interface with nested data management
 Architected comprehensive grammar editing interface with nested data management
-Here's your GGT Grammar Admin tool. Here's what it does:
+Here's your ggtk Grammar Admin tool. Here's what it does:
 
 Upload & Download
 
 Drag-and-drop or click to upload any .yaml grammar file
 Edits persist to browser storage so you don't lose work on refresh
-Download button exports clean YAML back out (same js-yaml format GGT uses)
+Download button exports clean YAML back out (same js-yaml format ggtk uses)
 Five editing sections:
 
 Metadata — language name, ISO code, Guthrie, dialects, reference grammar
@@ -351,7 +351,7 @@ Verb System — four sub-tabs for TAM markers, Extensions (with allomorphs table
 VERIFY Flags — scans the entire loaded grammar recursively and lists every # VERIFY string with its full path. You can edit the text inline or click "✓ Resolve" to strip the flag automatically. The sidebar shows the count as a warning indicator.
 
 
-Ggt grammar admin
+ggtk grammar admin
 Code · JSX 
 help spec out and prototype the poster generator
 
@@ -363,7 +363,7 @@ The user wants to spec out and prototype the verb conjugation poster generator. 
 
 Input: verb root (e.g., -bona), language selection
 Output: A3 print-ready poster showing full conjugation
-The GGT already has all the data in the YAML files. The poster needs to show:
+The ggtk already has all the data in the YAML files. The poster needs to show:
 
 Full TAM paradigm across all noun classes
 Subject concords + TAM + verb root + final vowel = conjugated form
@@ -373,7 +373,7 @@ Let me think about the poster design - it should be visually striking, something
 Actually I already read it. Let me design a poster generator that:
 
 Takes a verb root input
-Generates conjugation table from GGT grammar rules
+Generates conjugation table from ggtk grammar rules
 Renders a beautiful printable A3 poster
 Can download as PDF or print
 For the prototype, I'll build a React component that:
@@ -392,7 +392,7 @@ Header: Language name, verb root, English gloss
 Grid: rows = NC classes / persons, columns = TAM forms
 Each cell = full conjugated form
 Color coding: human classes (warm), thing classes (cool), locative (neutral)
-Footer: GGT attribution
+Footer: ggtk attribution
 Let me build this as a React artifact with:
 
 A control panel on the left
@@ -404,7 +404,7 @@ Now let me design the poster generator. This is going to be a React component th
 Has a control panel where you pick language, enter verb root and gloss, and select which TAM forms to show
 Renders a beautiful A3 poster preview
 Has a print button
-Since we're working in React and I can't load the actual YAML files, I'll build with hardcoded Chitonga grammar data as a demonstration, clearly structured so it's easy to swap in real GGT data.
+Since we're working in React and I can't load the actual YAML files, I'll build with hardcoded Chitonga grammar data as a demonstration, clearly structured so it's easy to swap in real ggtk data.
 
 Key design decisions:
 
@@ -459,7 +459,7 @@ Header band: language logo, verb, gloss, English meaning
 Grid: rows = persons/classes, columns = TAM forms
 Each cell: the full conjugated form
 Color banding by NC group
-Footer: GGT credit, date
+Footer: ggtk credit, date
 Let me design this properly.
 
 Show more
@@ -476,7 +476,7 @@ What the production version needs
 
 The grammar data here is hardcoded from the YAML files you've already built. The real version should load directly from those YAML files rather than from the embedded objects, so any edit you make in the admin tool flows automatically into the poster generator.
 
-The morphophonology isn't applied yet — forms like u + aka + bona + a render literally as uakabona rather than applying SND.1 (glide formation) to give wakabona. Your GGT morphological analyser already implements these rules, so the production version hooks into that pipeline. This matters most for roots beginning with vowels and for the NC1/NC3 SM u- + vowel-initial roots.
+The morphophonology isn't applied yet — forms like u + aka + bona + a render literally as uakabona rather than applying SND.1 (glide formation) to give wakabona. Your ggtk morphological analyser already implements these rules, so the production version hooks into that pipeline. This matters most for roots beginning with vowels and for the NC1/NC3 SM u- + vowel-initial roots.
 
 The three immediate spec decisions for you to make:
 
@@ -499,15 +499,15 @@ Shareable URL — the URL bar under "Share" encodes language, verb root, gloss, 
 
 Branding — "Zambia Languages Toolkit · Gobelo Platform" in the top right, gobelo.zambantutools.org as the canonical domain (placeholder until you register it), and that same URL in the footer. The language badges (name, ISO code, Guthrie) give it an authoritative reference-card feel that linguists and educators will recognise as serious.
 
-All seven languages are wired in with their correct SC and TAM forms from the GGT YAML files.
+All seven languages are wired in with their correct SC and TAM forms from the ggtk YAML files.
 
 Two things to do next to make this production-ready:
 
 Register zambantutools.org or gobelo.zm — the .zm domain would be particularly powerful for community credibility. The URL needs to actually resolve before you share it widely.
 
-Hook the conjugation engine into the GGT Python backend so the morphophonology rules apply — right now u + aka + bona + a renders as uakabona rather than the correct wakabona via glide formation (SND.1). That one pass through your existing analyser fixes every form across all seven languages simultaneously.
+Hook the conjugation engine into the ggtk Python backend so the morphophonology rules apply — right now u + aka + bona + a renders as uakabona rather than the correct wakabona via glide formation (SND.1). That one pass through your existing analyser fixes every form across all seven languages simultaneously.
 
-Proceed to provide the code for the poster app and the  the conjugation engine into the GGT Python backend so the morphophonology rules apply
+Proceed to provide the code for the poster app and the  the conjugation engine into the ggtk Python backend so the morphophonology rules apply
 
 5:55 am
 
@@ -516,7 +516,7 @@ Ran 8 commands, created 7 files, edited 4 files
 The user wants:
 
 A full production poster app (likely a Flask/FastAPI web app)
-A Python conjugation engine that hooks into the GGT morphophonology rules (SND.1, SND.2, SND.3, SND.4, CA.1, CA.2, VH.1 etc.)
+A Python conjugation engine that hooks into the ggtk morphophonology rules (SND.1, SND.2, SND.3, SND.4, CA.1, CA.2, VH.1 etc.)
 Let me build this properly:
 
 Python conjugation engine - a module that:
@@ -936,9 +936,9 @@ bash
 pip install -r requirements.txt
 python app.py                          # dev server on :5050
 
-# With your GGT YAML files:
+# With your ggtk YAML files:
 ggtk_YAML_DIR=/path/to/yaml python app.py
-The load_yaml_grammar() function enriches the embedded data with the full YAML content when the files are present — so any edits made in the GGT Admin tool flow directly into the poster generator.
+The load_yaml_grammar() function enriches the embedded data with the full YAML content when the files are present — so any edits made in the ggtk Admin tool flow directly into the poster generator.
 
 Save this visual from earlier as an artifact: "chitonga_verb_poster_generator"
 
@@ -951,6 +951,7 @@ Continue
 
 
 Claude is AI and can make mistakes. Please double-check responses.
+
 
 
 

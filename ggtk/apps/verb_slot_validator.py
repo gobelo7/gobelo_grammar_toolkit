@@ -4,7 +4,7 @@ apps/verb_slot_validator.py
 VerbSlotValidator — validate that a verb morpheme sequence is
 well-formed with respect to the slot template of the loaded language.
 
-This module implements GGT Part 9's ``VerbSlotValidator`` app.  It
+This module implements ggtk Part 9's ``VerbSlotValidator`` app.  It
 accepts a ``SegmentedToken`` produced by ``MorphologicalAnalyzer``
 (or an explicit list of ``SlotAssignment`` objects for programmatic
 use) and runs a layered set of structural validation rules derived
@@ -1214,3 +1214,4 @@ class VerbSlotValidator:
     def typical_max_extensions(self) -> int:
         """Typical maximum extensions (above this triggers a WARNING)."""
         return self._typical_max
+

@@ -401,8 +401,14 @@ class GrammarNormalizer:
                 [s["symbol"] if isinstance(s, dict) else str(s) for s in segs]
                 if segs else ["a", "e", "i", "o", "u"]
             )
+            # Preserve long vowels for syllabification
+            long_raw = vowels_raw.get("long") or []
+            phon_out["long_vowels"] = [str(v) for v in long_raw if v]
         else:
             phon_out["vowels"] = [str(v) for v in vowels_raw if v]
+            # Long vowels may already be preserved by loader preprocessing
+            long_raw = raw_phon.get("long_vowels") or []
+            phon_out["long_vowels"] = [str(v) for v in long_raw if v]
 
         # consonants
         cons_raw = raw_phon.get("consonants") or []
@@ -540,7 +546,7 @@ class GrammarNormalizer:
                 raw.get("phonology") or {}
             ),
             syllabification=self._normalize_syllabification_canonical(
-                raw.get("phonology") or {}
+                raw.get("phonology") or {}, raw
             ),
             tokenization=self._normalize_tokenization_canonical(
                 raw.get("tokenization") or {}
@@ -561,7 +567,7 @@ class GrammarNormalizer:
         Bridge the sparse chiTonga metadata block to ``GrammarMetadata``.
 
         The extended format only guarantees ``Yaml_version`` and
-        ``framework_version``; all other GGT fields are supplied from
+        ``framework_version``; all other ggtk fields are supplied from
         per-language defaults.
         """
         yaml_ver = str(
@@ -1379,6 +1385,7 @@ class GrammarNormalizer:
     def _normalize_syllabification_canonical(
         self,
         raw_phon: Dict[str, Any],
+        raw_root: Optional[Dict[str, Any]] = None,
     ) -> SyllabificationData:
         vowels_raw = raw_phon.get("vowels") or []
         vowels = (
@@ -1429,8 +1436,26 @@ class GrammarNormalizer:
         elif isinstance(syllabification_raw, str):
             method = syllabification_raw.strip() or method
 
+        # Extract consonant inventory (includes prenasalized, glide, complex clusters)
+        consonants_raw = raw_phon.get("consonants") or {}
+        if isinstance(consonants_raw, dict):
+            consonant_segments = _get_str_list(consonants_raw, "segments")
+        elif isinstance(consonants_raw, list):
+            consonant_segments = [str(c) for c in consonants_raw if c is not None]
+        else:
+            consonant_segments = []
+
+        # Extract long vowels
+        if isinstance(vowels_raw, dict):
+            long_vowels_list = vowels_raw.get("long") or []
+        else:
+            long_vowels_list = raw_phon.get("long_vowels") or []
+        long_vowels = [str(v) for v in long_vowels_list if v is not None]
+
         return SyllabificationData(
             vowels=frozenset(vowels),
+            consonants=frozenset(consonant_segments),
+            long_vowels=frozenset(long_vowels),
             method=method,
             notes=notes,
             structure=structure,
@@ -1441,7 +1466,8 @@ class GrammarNormalizer:
         root: Dict[str, Any],
     ) -> SyllabificationData:
         return self._normalize_syllabification_canonical(
-            root.get("phonology_rules") or {}
+            root.get("phonology_rules") or root.get("phonology") or {},
+            root,
         )
 
     def _infer_max_onset_cluster_length(
@@ -1566,3 +1592,4 @@ def _get_str_list(
     """Return a list of strings from ``d[key]``, coercing non-string items."""
     raw_list = _get_list(d, key)
     return [str(item) for item in raw_list if item is not None]
+

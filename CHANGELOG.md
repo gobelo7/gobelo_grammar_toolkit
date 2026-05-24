@@ -112,7 +112,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `tests/integration/test_apps_chitonga.py` — 61 app integration checks (60 pass; 1 known API variance fixed)
 - `tests/fixtures/minimal_chitonga.yaml` — 4-NC / 2-TAM / 4-ext fixture; loads in < 50 ms
 - `tests/fixtures/stub_chibemba.yaml` — 2-NC stub for multi-language tests; NC1 prefix `u-` ≠ chiTonga `mu-`
-- `pyproject.toml` — setuptools build, entry point `ggt`, package-data `languages/*.yaml`
+- `pyproject.toml` — setuptools build, entry point `ggtk`, package-data `languages/*.yaml`
 
 ### Known limitations (Phase 2)
 
@@ -121,3 +121,4 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Grammar YAMLs for 6 languages (chibemba, chinyanja, silozi, luvale, lunda, kaonde) are stubs — linguistic data to be added
 - `FeatureComparator.for_all_languages()` requires all 7 grammars to be populated
 - HFST Phase 2 (autosegmental tone overlay) deferred
+

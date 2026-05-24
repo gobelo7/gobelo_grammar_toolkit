@@ -2,7 +2,7 @@
 web/backend/bootstrap.py — Package and path resolution for Gobelo Grammar Toolkit.
 
 Extracted from app.py. Provides four public functions:
-    resolve_package()        — ensures ggt is importable
+    resolve_package()        — ensures ggtk is importable
     resolve_grammar_dir()    — returns Path to languages/*.yaml, or None
     resolve_frontend()       — returns Path to student/teacher index.html
     resolve_admin_frontend() — returns Path to compiled admin shell, or None
@@ -43,7 +43,7 @@ def _find_package_root() -> Optional[Path]:
 
 def resolve_package() -> None:
     """
-    Ensure ggt is importable, setting _GRAMMAR_DIR as a side effect.
+    Ensure ggtk is importable, setting _GRAMMAR_DIR as a side effect.
     Raises ImportError with actionable instructions if all four strategies fail.
     """
     global _GRAMMAR_DIR
@@ -56,7 +56,7 @@ def resolve_package() -> None:
 
     # Strategy 2: pip-installed — try import directly
     try:
-        import ggt as _chk  # noqa: F401
+        import ggtk as _chk  # noqa: F401
         del _chk
         try:
             import importlib.resources as _ir
@@ -88,13 +88,13 @@ def resolve_package() -> None:
 
     raise ImportError(
         "\n\n"
-        "  ggt not found.\n\n"
+        "  ggtk not found.\n\n"
         "  Tried:\n"
         "    1. ggtk_ROOT environment variable — not set\n"
         "    2. Installed package             — not found\n"
         f"   3. Upward search from {_HERE}\n"
         f"      — ggtk/ not found in any parent directory\n"
-        f"   4. Dev layout ({_HERE.parent.parent / 'ggt'}) — not found\n\n"
+        f"   4. Dev layout ({_HERE.parent.parent / 'ggtk'}) — not found\n\n"
         "  Fix (choose one):\n"
         "    a) Install from the repo root:  pip install -e .\n"
         "    b) Set ggtk_ROOT to the dir that CONTAINS ggtk/\n"
@@ -152,3 +152,4 @@ def resolve_admin_frontend() -> Optional[Path]:
         if (c / "index.html").exists():
             return c
     return None
+

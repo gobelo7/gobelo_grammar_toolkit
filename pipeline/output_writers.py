@@ -1,5 +1,5 @@
 """
-output_writers.py — GobeloJsonWriter + GobeloCoNLLUWriter  (GGT Phase 4)
+output_writers.py — GobeloJsonWriter + GobeloCoNLLUWriter  (ggtk Phase 4)
 ========================================================================
 Serialises AnnotatedSentence objects produced by the three-stage pipeline
 (tokenise → morpheme-analyse → POS-tag) to two output formats:
@@ -914,3 +914,4 @@ def iter_conllu(path: str | Path) -> Iterator[List[str]]:
                 block.append(line)
         if block:
             yield block
+

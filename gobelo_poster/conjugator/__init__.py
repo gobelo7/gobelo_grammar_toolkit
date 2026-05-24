@@ -1,7 +1,7 @@
 """
 Gobelo Conjugator Package
 =========================
-Public API for the GGT verb conjugation engine.
+Public API for the ggtk verb conjugation engine.
 
   from conjugator import build_paradigm, morpheme_key_example, GRAMMARS, load_yaml_grammar
 """
@@ -16,3 +16,4 @@ __all__ = [
     'load_yaml_grammar',
     'GRAMMARS',
 ]
+

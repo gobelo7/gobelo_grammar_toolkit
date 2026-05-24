@@ -1,5 +1,5 @@
 """
-Gobelo Grammar Toolkit (GGT)
+Gobelo Grammar Toolkit (ggtk)
 =============================
 Canonical language registry with ISO 639-3 alias resolution.
 
@@ -13,7 +13,7 @@ Supported languages (7):
     loz  SiLozi
 
 Not yet in scope:
-    tum  Tumbuka  (corpus only — no GGT YAML)
+    tum  Tumbuka  (corpus only — no ggtk YAML)
 """
 
 from ggtk.core.loader import GobeloGrammarLoader  # noqa: F401  (re-exported)
@@ -233,3 +233,4 @@ def list_languages() -> list[dict]:
         {"iso": code, "name": entry["name"]}
         for code, entry in LANGUAGE_REGISTRY.items()
     ]
+

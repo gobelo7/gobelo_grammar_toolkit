@@ -1820,3 +1820,4 @@ class MorphologicalAnalyzer:
     def constraint_engine(self) -> ConstraintEngine:
         """Direct access to the constraint engine (for adding custom rules)."""
         return self._constraint_engine
+

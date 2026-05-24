@@ -1,6 +1,6 @@
 # KAONDE LANGUAGE - COMPREHENSIVE GRAMMAR
 # ============================================================================
-# ciKaonde Grammar — Gobelo Grammar Toolkit (GGT)
+# ciKaonde Grammar — Gobelo Grammar Toolkit (ggtk)
 # Schema: Gobelo-YAML Grammar Framework v1.0
 # Reference: Stevick (1965) Kaonde Language Course; Doke (1945)
 # Generated: 2025-07-11
@@ -3595,4 +3595,5 @@ tokenization:
     punctuation: [".", ",", "!", "?"]
     discourse_markers: ["na", "kuti", "pano"]
   preserve_case: false
+
 

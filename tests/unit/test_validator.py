@@ -2,7 +2,7 @@
 tests/unit/test_validator.py
 ===========================
 
-Unit tests for the GGT grammar validator, especially legacy compatibility
+Unit tests for the ggtk grammar validator, especially legacy compatibility
 with production reference-grammar phonology fields.
 """
 
@@ -67,3 +67,4 @@ def test_validator_accepts_legacy_tones_and_syllable_structure() -> None:
     flags = validator.validate(raw, config)
 
     assert flags == []
+

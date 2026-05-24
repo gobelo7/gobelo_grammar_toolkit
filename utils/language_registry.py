@@ -166,3 +166,4 @@ This **one-class change** eliminates the need for 100s of hardcoded references i
 If you want, I can also **draft a pytest-friendly auto-test** that goes through **every YAML** and ensures it conforms to a schema — so you catch errors before they hit runtime.
 
 Do you want me to do that next?
+

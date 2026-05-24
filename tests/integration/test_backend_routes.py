@@ -553,3 +553,4 @@ class TestCORSHeaders:
     def test_options_preflight(self, flask_client):
         r = flask_client.options("/api/analyze")
         assert r.status_code in (200, 204)
+

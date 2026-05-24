@@ -1,12 +1,12 @@
 """
-test_phase2.py — GGT Phase 2 smoke tests
+test_phase2.py — ggtk Phase 2 smoke tests
 =========================================
 Tests for GobelloMorphAnalyser, GobeloVerbParser, and GobeloNounAnalyser.
 
 Run with:  python test_phase2.py
 
 All tests pass with zero external dependencies beyond the standard library
-and the three GGT modules (models.py, word_tokenizer.py, morph_analyser.py).
+and the three ggtk modules (models.py, word_tokenizer.py, morph_analyser.py).
 
 Test strategy
 -------------
@@ -459,3 +459,4 @@ if failures:
 else:
     print(f"\n  {PASS} All Phase 2 tests passed.\n")
     sys.exit(0)
+

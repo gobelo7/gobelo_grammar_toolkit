@@ -1,5 +1,5 @@
 """
-GGT Grammar Data — All 7 Zambian Official Languages
+ggtk Grammar Data — All 7 Zambian Official Languages
 =====================================================
 Sourced from the Gobelo YAML grammar files (v1.0 RC).
 This module provides the grammar data in a Python-native structure
@@ -436,3 +436,4 @@ GRAMMARS: dict[str, GrammarEntry] = {
     'ciluvale':  CILUVALE,
     'cilunda':   CILUNDA,
 }
+

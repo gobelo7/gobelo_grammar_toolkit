@@ -1,5 +1,5 @@
 """
-annotation_pipeline.py — GobeloAnnotationPipeline + CLI  (GGT Phase 5)
+annotation_pipeline.py — GobeloAnnotationPipeline + CLI  (ggtk Phase 5)
 =======================================================================
 Orchestrates the full four-stage annotation pipeline for the Gobelo
 Grammar Toolkit:
@@ -274,7 +274,7 @@ class GobeloAnnotationPipeline:
     Parameters
     ----------
     loader : GobeloGrammarLoader (or compatible mock)
-        Provides the GGT YAML grammar for the target language.
+        Provides the ggtk YAML grammar for the target language.
     corpus_config : CorpusConfig, optional
         Corpus-level settings (clitics, false positives, etc.).
         If omitted, the tokeniser uses the loader defaults.
@@ -797,7 +797,7 @@ Examples:
         p.add_argument(
             "--grammar",
             metavar="FILE",
-            help="Path to GGT YAML grammar file.  Overrides the default loader lookup.",
+            help="Path to ggtk YAML grammar file.  Overrides the default loader lookup.",
         )
         p.add_argument(
             "--corpus-config",
@@ -1058,3 +1058,4 @@ def main(argv: Optional[List[str]] = None) -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -1,5 +1,5 @@
 # GobeloWordTokenizer — Implementation & User Guide
-**Gobelo Grammar Toolkit (GGT) · Phase 1**
+**Gobelo Grammar Toolkit (ggtk) · Phase 1**
 *Language-agnostic word tokeniser for all seven Zambian Bantu languages*
 
 ---
@@ -440,3 +440,4 @@ This enables idempotency checks and reproducibility audits.
 | Reduplification detection is length-based only | Phase 2 can add phonological patterns from YAML |
 | `clitic_of` is set provisionally (no token_id yet at split time) | Re-resolved at token_id assignment step if needed |
 | No sentence boundary detection | Caller responsibility; feed one sentence at a time |
+

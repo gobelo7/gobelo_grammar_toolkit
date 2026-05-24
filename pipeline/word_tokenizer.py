@@ -1,11 +1,11 @@
 """
 word_tokenizer.py — GobeloWordTokenizer
 =======================================
-Language-agnostic word tokeniser for the Gobelo Grammar Toolkit (GGT).
+Language-agnostic word tokeniser for the Gobelo Grammar Toolkit (ggtk).
 
 Replaces ChitongaTokenizer.  All language-specific behaviour is driven
 exclusively by:
-  1. The GGT YAML grammar file (loaded via GobeloGrammarLoader).
+  1. The ggtk YAML grammar file (loaded via GobeloGrammarLoader).
   2. The corpus_config.yaml (per-language overrides for clitic lists,
      special-token patterns, OCR corrections, etc.).
 
@@ -851,3 +851,4 @@ class GobeloWordTokenizer:
             f"GobeloWordTokenizer(lang={self._lang_iso!r}, "
             f"v={self.VERSION})"
         )
+

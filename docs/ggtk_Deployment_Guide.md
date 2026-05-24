@@ -1,6 +1,6 @@
 # ggtk Multi-Platform Deployment Guide
 
-This guide provides comprehensive instructions for packaging the Gobelo Grammar Toolkit (GGT) for web and desktop deployment.
+This guide provides comprehensive instructions for packaging the Gobelo Grammar Toolkit (ggtk) for web and desktop deployment.
 
 ## Architecture Overview
 
@@ -11,7 +11,7 @@ This guide provides comprehensive instructions for packaging the Gobelo Grammar 
 │                                                                 │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
 │  │   Web App    │    │ Desktop App  │    │ Python Core  │      │
-│  │  (Next.js)   │    │  (Electron)  │    │   (GGT)      │      │
+│  │  (Next.js)   │    │  (Electron)  │    │   (ggtk)      │      │
 │  │              │    │              │    │              │      │
 │  │ - React UI   │    │ - Same UI    │    │ - Loader     │      │
 │  │ - API Routes │    │ - Bundled    │    │ - Analyzer   │      │
@@ -160,7 +160,7 @@ a = Analysis(
         ('../ggtk/languages/*.yaml', 'ggtk/languages'),
     ],
     hiddenimports=[
-        'ggt',
+        'ggtk',
         'ggtk.core',
         'ggtk.apps',
         'fastapi',
@@ -286,7 +286,7 @@ contextBridge.exposeInMainWorld('ggtAPI', {
 4. **Electron Builder Config** (`desktop/electron-builder.yml`):
 
 ```yaml
-appId: com.gobelo.ggt
+appId: com.gobelo.ggtk
 productName: Gobelo Grammar Toolkit
 directories:
   output: dist
@@ -370,7 +370,7 @@ npm install
     "bundle": {
       "active": true,
       "targets": ["msi", "nsis"],
-      "identifier": "com.gobelo.ggt",
+      "identifier": "com.gobelo.ggtk",
       "resources": ["../python/dist/*"]
     },
     "allowlist": {
@@ -434,3 +434,4 @@ npm install
 - **Bug Tracking**: GitHub Issues
 - **Feature Requests**: Community feedback portal
 - **Documentation Updates**: Per-release updates
+

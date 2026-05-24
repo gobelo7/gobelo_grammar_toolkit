@@ -697,3 +697,4 @@ class ParadigmGenerator:
     @property
     def concord_types(self) -> Tuple[str, ...]:
         return tuple(self._concord_types)
+

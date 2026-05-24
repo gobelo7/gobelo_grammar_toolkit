@@ -10,7 +10,7 @@ cd /path/to/your/ggtk/repository
 pip install -e .
 
 # Option B: Install from PyPI (when published)
-pip install ggt
+pip install ggtk
 ```
 
 ### Step 2: Verify ggtk Installation
@@ -33,7 +33,7 @@ Expected output:
 
 ### Step 4: Check Connection
 
-Visit: `http://localhost:3000/api/ggt?action=check`
+Visit: `http://localhost:3000/api/ggtk?action=check`
 
 Expected response:
 ```json
@@ -109,11 +109,11 @@ FROM node:20-slim
 # Install Python
 RUN apt-get update && apt-get install -y python3 python3-pip
 
-# Install GGT
+# Install ggtk
 COPY python /app/python
 WORKDIR /app/python
 RUN pip3 install -r requirements.txt
-RUN pip3 install -e /path/to/ggt
+RUN pip3 install -e /path/to/ggtk
 
 # Install Node app
 COPY . /app
@@ -139,25 +139,25 @@ The Electron app bundles the Python executable:
 
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/ggt?action=languages` | List all supported languages |
-| `GET /api/ggt?action=metadata&lang=chitonga` | Get language metadata |
-| `GET /api/ggt?action=tam&lang=chitonga` | Get TAM markers |
-| `GET /api/ggt?action=concords&lang=chitonga` | Get subject/object concords |
-| `GET /api/ggt?action=noun-classes&lang=chitonga` | Get noun classes |
-| `GET /api/ggt?action=extensions&lang=chitonga` | Get verb extensions |
-| `GET /api/ggt?action=verb-slots&lang=chitonga` | Get verb slot template |
-| `GET /api/ggt?action=check` | Check ggtk connection status |
+| `GET /api/ggtk?action=languages` | List all supported languages |
+| `GET /api/ggtk?action=metadata&lang=chitonga` | Get language metadata |
+| `GET /api/ggtk?action=tam&lang=chitonga` | Get TAM markers |
+| `GET /api/ggtk?action=concords&lang=chitonga` | Get subject/object concords |
+| `GET /api/ggtk?action=noun-classes&lang=chitonga` | Get noun classes |
+| `GET /api/ggtk?action=extensions&lang=chitonga` | Get verb extensions |
+| `GET /api/ggtk?action=verb-slots&lang=chitonga` | Get verb slot template |
+| `GET /api/ggtk?action=check` | Check ggtk connection status |
 
 ### POST Endpoints
 
 | Endpoint | Body | Description |
 |----------|------|-------------|
-| `POST /api/ggt?action=analyze` | `{word, language}` | Analyze a word |
-| `POST /api/ggt?action=segment` | `{text, language}` | Segment running text |
-| `POST /api/ggt?action=paradigm` | `{root, language, extensions[]}` | Generate paradigm table |
-| `POST /api/ggt?action=generate` | `{root, subject, tam, language}` | Generate surface form |
-| `POST /api/ggt?action=corpus` | `{text, language}` | Annotate corpus (CoNLL-U) |
-| `POST /api/ggt?action=interlinear` | `{word, language}` | Generate interlinear gloss |
+| `POST /api/ggtk?action=analyze` | `{word, language}` | Analyze a word |
+| `POST /api/ggtk?action=segment` | `{text, language}` | Segment running text |
+| `POST /api/ggtk?action=paradigm` | `{root, language, extensions[]}` | Generate paradigm table |
+| `POST /api/ggtk?action=generate` | `{root, subject, tam, language}` | Generate surface form |
+| `POST /api/ggtk?action=corpus` | `{text, language}` | Annotate corpus (CoNLL-U) |
+| `POST /api/ggtk?action=interlinear` | `{word, language}` | Generate interlinear gloss |
 
 ---
 
@@ -166,7 +166,7 @@ The Electron app bundles the Python executable:
 ### Analyze a Word
 
 ```bash
-curl -X POST "http://localhost:3000/api/ggt?action=analyze" \
+curl -X POST "http://localhost:3000/api/ggtk?action=analyze" \
   -H "Content-Type: application/json" \
   -d '{"word": "balya", "language": "chitonga"}'
 ```
@@ -191,7 +191,7 @@ Response:
 ### Generate a Paradigm
 
 ```bash
-curl -X POST "http://localhost:3000/api/ggt?action=paradigm" \
+curl -X POST "http://localhost:3000/api/ggtk?action=paradigm" \
   -H "Content-Type: application/json" \
   -d '{"root": "bon", "language": "chitonga"}'
 ```
@@ -205,7 +205,7 @@ curl -X POST "http://localhost:3000/api/ggt?action=paradigm" \
 **Cause**: Python cannot import ggtk module
 
 **Solutions**:
-1. Verify installation: `pip show ggt`
+1. Verify installation: `pip show ggtk`
 2. Check Python path: `python -c "import sys; print(sys.path)"`
 3. Install in correct environment
 
@@ -229,7 +229,7 @@ curl -X POST "http://localhost:3000/api/ggt?action=paradigm" \
 
 ### Mock Data Being Used
 
-**Diagnosis**: Visit `/api/ggt?action=check`
+**Diagnosis**: Visit `/api/ggtk?action=check`
 
 If `ggtAvailable: false`, check:
 1. Python is installed and accessible
@@ -259,9 +259,10 @@ If `ggtAvailable: false`, check:
 
 ## Next Steps
 
-1. **Install GGT**: `pip install -e /path/to/ggtk/repository`
+1. **Install ggtk**: `pip install -e /path/to/ggtk/repository`
 2. **Test Bridge**: `echo '{"action": "languages"}' | python3 python/bridge.py`
 3. **Restart Dev Server**: The connection check happens on first API call
-4. **Verify**: Visit `/api/ggt?action=check`
+4. **Verify**: Visit `/api/ggtk?action=check`
 
 For production deployment, consider using the FastAPI service (`python/service/main.py`) as a separate backend service.
+

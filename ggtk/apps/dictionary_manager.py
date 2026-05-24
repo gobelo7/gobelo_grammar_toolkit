@@ -194,8 +194,8 @@ class DictionaryManager:
         try:
             self.iso_code = resolve_language(iso_code)
         except LanguageNotFoundError:
-            # Allow unknown languages (e.g. tum) that are not yet in GGT
-            logger.warning("Language '%s' not in GGT registry — proceeding anyway.", iso_code)
+            # Allow unknown languages (e.g. tum) that are not yet in ggtk
+            logger.warning("Language '%s' not in ggtk registry — proceeding anyway.", iso_code)
             self.iso_code = iso_code.lower().strip()
 
         root = (lexicon_root or LEXICON_ROOT) / self.iso_code
@@ -664,3 +664,4 @@ def main(argv: Optional[list] = None) -> int:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     sys.exit(main())
+

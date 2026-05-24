@@ -286,3 +286,4 @@ class TestErrorHandling:
         m = loader.get_metadata()
         with pytest.raises((AttributeError, TypeError)):
             m.language = "mutated"  # type: ignore[misc]
+

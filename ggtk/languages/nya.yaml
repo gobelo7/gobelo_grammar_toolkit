@@ -1,6 +1,6 @@
 # CHINYANJA LANGUAGE - COMPREHENSIVE GRAMMAR
 # ============================================================================
-# ChiNyanja/Chichewa Grammar — Gobelo Grammar Toolkit (GGT)
+# ChiNyanja/Chichewa Grammar — Gobelo Grammar Toolkit (ggtk)
 # Schema: Gobelo-YAML Grammar Framework v1.0
 # Reference: Mchombo (2004) The Syntax of Chichewa; Mtenje (1986);
 #            Watkins (1937); CBOLD
@@ -96,7 +96,7 @@ phonology:
       affricate causative -its-/-ets-; passive -idw-/-edw-.
       Tonologically: Meeussen's Rule (OCP) applies strictly and feeds
       TS.1 — the rule interaction is feeding: [OCP.1, TS.1]. This is
-      unique among the GGT language set. Vowel length is less contrastive
+      unique among the ggtk language set. Vowel length is less contrastive
       than in Zone L languages.
     schema_compatibility:
       min_parser_version: "1.0"
@@ -533,7 +533,7 @@ noun_class_system:
       NO augment. NC2 = a- (not ba-) — cascades to all NC2 concords.
       NC7 = chi- (Zone N affricate). NC8 = zi- (same as Chitonga — but
       note this is shared with Chitonga, not a divergence). NC14 = u- (NOT
-      bu-!) — unique in GGT set; allomorph w- before vowels. NC5 = Ø- or
+      bu-!) — unique in ggtk set; allomorph w- before vowels. NC5 = Ø- or
       li- (dialect-dependent). NC12 (ka-) marginal productivity.
       Negation via -sa- infix (SLOT4). Perfective = tonal -a.
 
@@ -952,7 +952,7 @@ noun_class_system:
             condition: before_vowels
             condition_formal: _V
         tone: L
-        notes: "CRITICAL DIFFERENCE: ChiNyanja NC14 = u- (NOT bu- as in Chitonga/Chibemba/Luvale). This is unique to ChiNyanja/Chichewa and Nyanja in the GGT set. Allomorph w- before vowels (e.g., wanthu not u+anthu). Confirmed in Mchombo (2004)."
+        notes: "CRITICAL DIFFERENCE: ChiNyanja NC14 = u- (NOT bu- as in Chitonga/Chibemba/Luvale). This is unique to ChiNyanja/Chichewa and Nyanja in the ggtk set. Allomorph w- before vowels (e.g., wanthu not u+anthu). Confirmed in Mchombo (2004)."
       augment:
         form: null
         usage: not_applicable
@@ -961,7 +961,7 @@ noun_class_system:
         primary_domain: abstract_mass
         features: [-human, -count, +singular]
         typical_referents: [abstract_qualities, masses, uncountables]
-      notes: "Typically no plural; mass/abstract interpretation. u- prefix is the most distinctive NC14 form in the GGT set."
+      notes: "Typically no plural; mass/abstract interpretation. u- prefix is the most distinctive NC14 form in the ggtk set."
 
     NC15:
       class_number: 15
@@ -999,7 +999,7 @@ noun_class_system:
           - form: "p-"
             condition: before_vowel_a
         tone: L
-        notes: "pa- standard Bantu locative; consistent across all GGT languages except SiLozi (fa-)"
+        notes: "pa- standard Bantu locative; consistent across all ggtk languages except SiLozi (fa-)"
       augment:
         form: null
         usage: not_applicable
@@ -1328,7 +1328,7 @@ noun_class_system:
           - note: "nc2_a_prefix"
             description: "a- NC2 prefix distinguishes ChiNyanja from Chitonga/Chibemba; anthu (not banthu) for 'people'"
           - note: "nc14_u_prefix"
-            description: "u- NC14 abstract prefix is unique in the GGT set; ChiNyanja uses u- where all other GGT languages use bu-"
+            description: "u- NC14 abstract prefix is unique in the ggtk set; ChiNyanja uses u- where all other ggtk languages use bu-"
 
         special_rules:
           - rule: "nc5_zero_prefix"
@@ -1936,7 +1936,7 @@ verb_system:
         gloss: PERF
         function: "Perfect aspect — encoded by H TONE on -na- (not a distinct FV)"
         interacts_with: ["final_vowels.indicative"]
-        note: "CRITICAL: ChiNyanja perfect = H tone on -ná- TAM marker; FV stays -a (not -ide or -ile). This is a TONAL perfect, unique in the GGT set. Parser must track tone, not just segment. Mchombo (2004) Ch. 4."
+        note: "CRITICAL: ChiNyanja perfect = H tone on -ná- TAM marker; FV stays -a (not -ide or -ile). This is a TONAL perfect, unique in the ggtk set. Parser must track tone, not just segment. Mchombo (2004) Ch. 4."
 
     modal:
       COND:
@@ -2679,7 +2679,7 @@ verb_system:
             form: "a-one"
             gloss: "3SG-see-SUBJ"
             translation: "That he/she see"
-      cross_linguistic_note: "ChiNyanja is the most divergent from Chitonga in the GGT set: -ma- PRES; -na- PST; -dza- FUT; tonal PERF; -sa- NEG infix; -ir-/-er- APPL; -its-/-ets- CAUS; -idw-/-edw- PASS; u- NC14; a- NC2; chi- NC7; -ani IMP.PL; OCP.1 feeds TS.1; no augment."
+      cross_linguistic_note: "ChiNyanja is the most divergent from Chitonga in the ggtk set: -ma- PRES; -na- PST; -dza- FUT; tonal PERF; -sa- NEG infix; -ir-/-er- APPL; -its-/-ets- CAUS; -idw-/-edw- PASS; u- NC14; a- NC2; chi- NC7; -ani IMP.PL; OCP.1 feeds TS.1; no augment."
 
     morphophonology:
       description: "Morphophonological processes"
@@ -2997,7 +2997,7 @@ verb_system:
           form: "a-ná-ona"
           gloss: "3SG-PERF.H-see-IND"
           translation: "He/she has seen"
-        note: "TONAL PERFECT: H tone on -na- TAM marker; FV stays -a. Unique in GGT set."
+        note: "TONAL PERFECT: H tone on -na- TAM marker; FV stays -a. Unique in ggtk set."
       future_near:
         slots:
           SLOT5: "tam.FUT_NEAR (-dza-)"
@@ -3026,7 +3026,7 @@ verb_system:
           form: "a-one"
           gloss: "3SG-see-SUBJ"
           translation: "That he/she see"
-    cross_linguistic_note: "ChiNyanja is maximally divergent from Chitonga in the GGT set. All six TAM forms differ; APPL/CAUS/PASS extensions differ; NC14=u- (not bu-); NC2=a-; augment absent; negation via -sa- infix; perfective is tonal; OCP.1 feeds TS.1; copula=ndi-."
+    cross_linguistic_note: "ChiNyanja is maximally divergent from Chitonga in the ggtk set. All six TAM forms differ; APPL/CAUS/PASS extensions differ; NC14=u- (not bu-); NC2=a-; augment absent; negation via -sa- infix; perfective is tonal; OCP.1 feeds TS.1; copula=ndi-."
 
   morphophonology:
     description: "ChiNyanja morphophonological processes — rhotic harmony system"
@@ -3362,4 +3362,5 @@ tokenization:
     punctuation: [".", ",", "!", "?"]
     discourse_markers: ["koma", "ndipo", "chifukwa", "kodi"]
   preserve_case: false
+
 

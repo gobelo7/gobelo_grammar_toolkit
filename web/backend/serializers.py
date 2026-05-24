@@ -82,3 +82,4 @@ def ser_paradigm(table, gen, fmt: str):
         "cells":         cells,
         "metadata":      table.metadata,
     }
+

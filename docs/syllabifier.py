@@ -340,3 +340,4 @@ def syllabify(word: str, grammar: GrammarData) -> SyllabificationResult:
         SyllabificationResult.
     """
     return _default_syllabifier.syllabify(word, grammar)
+

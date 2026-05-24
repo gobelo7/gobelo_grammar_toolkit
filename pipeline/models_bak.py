@@ -1,5 +1,5 @@
 """
-models.py — Gobelo Grammar Toolkit (GGT) core data models
+models.py — Gobelo Grammar Toolkit (ggtk) core data models
 ==========================================================
 Phase 1 data layer. All downstream phases (morphological parsing, PoS tagging,
 dependency parsing) operate on these structures.
@@ -14,7 +14,7 @@ Design principles
 * Lexicon-ready: LexiconEntry carries enough info for Phase 2 disambiguation.
 * Slot-aware: the eleven-slot Bantu verb template is a first-class concept.
 
-Slot numbering follows the GGT YAML convention  (models.py / VerbSlot)
+Slot numbering follows the ggtk YAML convention  (models.py / VerbSlot)
 -----------------------------------------------------------------------
 SLOT1  : Augment / initial vowel
 SLOT2  : Negation prefix (pre-subject)
@@ -61,7 +61,7 @@ class POSTag(str, Enum):
     SYM   = "SYM"
     VERB  = "VERB"
     X     = "X"          # foreign / unknown
-    # GGT extensions (stored as xpos; upos falls back to nearest UD)
+    # ggtk extensions (stored as xpos; upos falls back to nearest UD)
     IDEOPH = "IDEOPH"    # ideophone
     COP    = "COP"       # copula (often AUX in UD but useful to distinguish)
     NEG    = "NEG"       # sentential negator particle
@@ -167,7 +167,7 @@ class SlotParse:
     This is one *hypothesis* — multiple SlotParses may exist per WordToken
     when the form is morphologically ambiguous.
 
-    Slot numbering follows models.py VerbSlot (GGT canonical):
+    Slot numbering follows models.py VerbSlot (ggtk canonical):
 
     +--------+----------------------------------+
     | SLOT   | Canonical content                |
@@ -341,7 +341,7 @@ class MorphemeSpan:
 
 @dataclass
 class LexiconEntry:
-    """A single entry in a GGT verb or noun lexicon.
+    """A single entry in a ggtk verb or noun lexicon.
 
     Noun entries
     ------------
@@ -362,7 +362,7 @@ class LexiconEntry:
     gloss         : English gloss.
     noun_class    : For nouns: singular NC (e.g. "NC3").
     plural_class  : For nouns: plural NC (e.g. "NC4").
-    tone_pattern  : Lexical tone pattern string as used in the GGT YAML
+    tone_pattern  : Lexical tone pattern string as used in the ggtk YAML
                     (e.g. "H", "L", "HL", "LH", etc.)  Empty if unknown.
     derivations   : List of attested derived / inflected forms (strings).
     source        : Reference shorthand (e.g. "Hoch1960:42").
@@ -409,7 +409,7 @@ class LexiconEntry:
 class WordToken:
     """A single word token in an annotated sentence.
 
-    Mirrors CoNLL-U column semantics where possible, with GGT extensions.
+    Mirrors CoNLL-U column semantics where possible, with ggtk extensions.
 
     CoNLL-U fields
     --------------
@@ -425,7 +425,7 @@ class WordToken:
     deps      : Enhanced dependencies list of (head_id, deprel) tuples.
     misc      : CoNLL-U MISC field encoded as key=value pairs dict.
 
-    GGT extensions
+    ggtk extensions
     --------------
     lang_iso        : ISO 639-3 code for the token's language.
     token_type      : TokenType enum.
@@ -456,7 +456,7 @@ class WordToken:
     deps      : List[Tuple[int, str]] = field(default_factory=list)
     misc      : Dict[str, str]        = field(default_factory=dict)
 
-    # ---------- GGT core ----------
+    # ---------- ggtk core ----------
     lang_iso      : str  = ""
     token_type    : TokenType = TokenType.WORD
     char_start    : int  = -1
@@ -638,7 +638,7 @@ class WordToken:
 class AnnotatedSentence:
     """A sentence with its full annotation.
 
-    Mirrors CoNLL-U sentence-level fields and adds GGT provenance.
+    Mirrors CoNLL-U sentence-level fields and adds ggtk provenance.
 
     Attributes
     ----------
@@ -765,3 +765,4 @@ class AnnotatedSentence:
             f"AnnotatedSentence(id={self.sent_id!r}, "
             f"lang={self.lang_iso!r}, tokens={len(self.tokens)})"
         )
+

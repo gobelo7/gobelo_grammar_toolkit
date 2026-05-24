@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive implementation plan for packaging the Gobelo Grammar Toolkit (GGT) for both web and desktop deployment. The solution addresses the needs of schools in Zambia with varying levels of internet connectivity.
+This document provides a comprehensive implementation plan for packaging the Gobelo Grammar Toolkit (ggtk) for both web and desktop deployment. The solution addresses the needs of schools in Zambia with varying levels of internet connectivity.
 
 ## Project Overview
 
@@ -317,3 +317,4 @@ npm run electron:build
 - **Project**: Gobelo Grammar Toolkit
 - **Repository**: github.com/gobelo/grammar-toolkit
 - **Languages**: chiTonga, chiBemba, chiNyanja, Kaonde, Lunda, Luvale, Silozi
+

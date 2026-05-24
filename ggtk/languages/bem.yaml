@@ -1,6 +1,6 @@
 # CHIBEMBA LANGUAGE - COMPREHENSIVE GRAMMAR
 # ============================================================================
-# ChiBemba Grammar — Gobelo Grammar Toolkit (GGT)
+# ChiBemba Grammar — Gobelo Grammar Toolkit (ggtk)
 # Schema: Gobelo-YAML Grammar Framework v1.0
 # Reference: Spitulnik & Kashoki (1992); Hoch (1960)
 # Generated: 2025-07-11
@@ -3806,4 +3806,5 @@ tokenization:
     punctuation: [".", ",", "!", "?"]
     discourse_markers: ["na", "kuti", "lelo", "nomba"]
   preserve_case: false
+
 

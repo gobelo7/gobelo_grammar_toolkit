@@ -1,7 +1,7 @@
 """
 hfst/hfst_backend.py
 ====================
-Adapter layer between raw ``hfst-lookup`` output and the GGT public API.
+Adapter layer between raw ``hfst-lookup`` output and the ggtk public API.
 
 Architecture
 ------------
@@ -10,7 +10,7 @@ Architecture
     balya   ba+SM2@P.NC.2@@P.NUM.PL@+PRES+ly+V+a+FV_IND   0.0
 
 The tag vocabulary is defined in ``hfst_config.yaml`` and written into
-``chitonga.lexc`` during the FST build.  The GGT mapper layer
+``chitonga.lexc`` during the FST build.  The ggtk mapper layer
 (``UDFeatureMapper``) expects a different vocabulary — ``TAMMarker`` ids
 (``"TAM_PRES"``), concord keys (``"NC2"``, ``"1SG"``), and extension ids
 (``"APPL"``).
@@ -809,3 +809,4 @@ class HFSTBackend:
 
         results.sort(key=lambda r: r.weight)
         return results
+

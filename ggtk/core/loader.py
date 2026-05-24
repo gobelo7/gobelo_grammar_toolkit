@@ -1,7 +1,7 @@
 """
 core/loader.py
 ==============
-Main public entry point for the Gobelo (Bantu) Grammar Toolkit (GGT).
+Main public entry point for the Gobelo (Bantu) Grammar Toolkit (ggtk).
 
 ``GobeloGrammarLoader`` is the **only** class application code needs to
 import.  It owns the full lifecycle of a grammar resource: locating the
@@ -419,6 +419,7 @@ class GobeloGrammarLoader:
         if isinstance(phon, dict):
             vowels = phon.get("vowels")
             if isinstance(vowels, dict):
+                phon["long_vowels"] = vowels.get("long") or []
                 phon["vowels"] = vowels.get("segments") or []
             consonants = phon.get("consonants")
             if isinstance(consonants, dict):
@@ -474,7 +475,7 @@ class GobeloGrammarLoader:
     @property
     def loader_version(self) -> str:
         """
-        Running GGT loader version string (e.g. ``"1.0.0"``).
+        Running ggtk loader version string (e.g. ``"1.0.0"``).
 
         This is the value against which grammar compatibility windows are
         checked at load time.
@@ -832,7 +833,7 @@ class GobeloGrammarLoader:
     @classmethod
     def list_supported_languages(cls) -> List[str]:
         """
-        Return the language ids registered in the GGT toolkit.
+        Return the language ids registered in the ggtk toolkit.
 
         Returns
         -------
@@ -1035,3 +1036,4 @@ def _scan_for_verify(
                 resolved=False,
             )
         )
+

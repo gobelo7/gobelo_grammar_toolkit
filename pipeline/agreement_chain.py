@@ -1,5 +1,5 @@
 """
-agreement_chain.py — GobeloAgreementChain  (GGT Phase 6)
+agreement_chain.py — GobeloAgreementChain  (ggtk Phase 6)
 ==========================================================
 Sentence-level Bantu agreement-chain resolver.
 
@@ -848,3 +848,4 @@ class GobeloAgreementChain:
             f"GobeloAgreementChain(lang={self._cfg.lang_iso!r}, "
             f"v={self.VERSION})"
         )
+

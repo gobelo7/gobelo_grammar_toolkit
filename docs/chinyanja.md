@@ -1,6 +1,6 @@
 # GOBELO GRAMMAR YAML GENERATION PROMPT
 ## Version 2.0 — Aligned to chitonga.yaml v1.0 (RC) Reference Schema
-### For use with: Claude Sonnet / Opus | Gobelo Grammar Toolkit (GGT)
+### For use with: Claude Sonnet / Opus | Gobelo Grammar Toolkit (ggtk)
 
 ---
 
@@ -28,7 +28,7 @@
 
 You are an expert computational linguist and NLP systems architect specialising
 in Bantu language morphology. You are building a production-grade, multi-language
-grammar infrastructure library called the Gobelo Grammar Toolkit (GGT). Your
+grammar infrastructure library called the Gobelo Grammar Toolkit (ggtk). Your
 task is to generate a linguistically accurate grammar YAML file for **<LANGUAGE_NAME>**,
 following the exact schema structure of the attached `chitonga.yaml` reference file.
 
@@ -885,3 +885,4 @@ for k in sorted(missing)[:20]:
 
 ---
 # END OF PROMPT TEMPLATE
+

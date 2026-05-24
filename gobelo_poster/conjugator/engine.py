@@ -1,12 +1,12 @@
 """
-GGT Conjugation Engine
+ggtk Conjugation Engine
 ======================
 Generates surface verb forms by:
   1. Selecting the correct SC allomorph based on phonological context
   2. Assembling morpheme parts in template order (NEG + SC + TAM + ROOT + EXT + FV)
   3. Applying morphophonological rules (SND.1/SND.2) at each boundary
 
-Optionally loads full grammar data from the GGT YAML files when they are
+Optionally loads full grammar data from the ggtk YAML files when they are
 present on disk; falls back to the embedded grammar_data.py otherwise.
 
 Public API
@@ -33,7 +33,7 @@ from .grammar_data import GRAMMARS
 
 def load_yaml_grammar(yaml_path: str | Path) -> dict | None:
     """
-    Attempt to load a GGT grammar YAML file and extract conjugation data.
+    Attempt to load a ggtk grammar YAML file and extract conjugation data.
     Returns a grammar dict compatible with build_paradigm(), or None on error.
 
     The YAML structure expected is the flat top-level schema from chitonga.yaml
@@ -379,3 +379,4 @@ def morpheme_key_example(
         'sc_label':    sc_data.get('label', sc_key),
         'sc_sublabel': sc_data.get('sublabel', ''),
     }
+

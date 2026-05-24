@@ -1,7 +1,7 @@
 """
 core/models.py
 ==============
-Typed data model layer for the Gobelo (Bantu) Grammar Toolkit (GGT).
+Typed data model layer for the Gobelo (Bantu) Grammar Toolkit (ggtk).
 
 All objects in this module are immutable, frozen dataclasses. They form the
 exclusive currency of the public API: every method on ``GobeloGrammarLoader``
@@ -28,7 +28,7 @@ Bantu languages organise nouns into classes (traditionally NC1–NC18) each
 with a dedicated prefix that triggers agreement (concord) on verbs,
 adjectives, and other dependants.  Verbs are highly agglutinative and are
 analysed as a sequence of obligatory and optional slot positions
-(SLOT1–SLOT11 in the GGT slot architecture).  Tense, aspect, and mood
+(SLOT1–SLOT11 in the ggtk slot architecture).  Tense, aspect, and mood
 (TAM) are expressed by distinct morphemes occupying specific slots.  Verb
 extensions (applicative, causative, passive, reciprocal, …) are suffixed to
 the verb root before the final vowel.
@@ -38,8 +38,8 @@ Usage example
 These classes are not instantiated directly by application code.  They are
 returned by ``GobeloGrammarLoader`` methods:
 
->>> from ggt.core.config import GrammarConfig
->>> from ggt.core.loader import GobeloGrammarLoader
+>>> from ggtk.core.config import GrammarConfig
+>>> from ggtk.core.loader import GobeloGrammarLoader
 >>> loader = GobeloGrammarLoader(config=GrammarConfig(language="chitonga"))
 >>> nc1 = loader.get_noun_class("NC1")
 >>> print(nc1.prefix)   # e.g. "mu-"
@@ -62,6 +62,8 @@ __all__ = [
     "TokenizationRules",
     "VerifyFlag",
     "GrammarMetadata",
+    "SyllableStructure",
+    "SyllabificationData",
 ]
 
 
@@ -85,7 +87,7 @@ class NounClass:
     ----------
     id : str
         Canonical class identifier, e.g. ``"NC1"``, ``"NC2"``, ``"NC9a"``.
-        This is the key used throughout the GGT to cross-reference concord
+        This is the key used throughout the ggtk to cross-reference concord
         tables, verb templates, and derivational patterns.
     prefix : str
         The canonical (citation-form) prefix for this class, e.g. ``"mu-"``
@@ -154,7 +156,7 @@ class ConcordSet:
     Bantu languages exhibit pervasive nominal agreement: verbs carry a
     subject marker, an optional object marker, and other dependants carry
     their own agreement prefixes, all of which are indexed to the noun class
-    of the head noun.  The GGT organises these into named concord types
+    of the head noun.  The ggtk organises these into named concord types
     (e.g. ``"subject_concords"``, ``"object_concords"``,
     ``"adjectival_concords"``).
 
@@ -223,7 +225,7 @@ class TAMMarker:
         The canonical surface form of the morpheme, e.g. ``"-a-"``,
         ``"-ka-"``.  Hyphens indicate slot boundaries.
     tense : str
-        Tense value expressed by this morpheme, using the GGT vocabulary:
+        Tense value expressed by this morpheme, using the ggtk vocabulary:
         ``"present"``, ``"immediate_past"``, ``"remote_past"``,
         ``"immediate_future"``, ``"remote_future"``, or ``"none"`` for
         markers that do not encode tense independently.
@@ -291,7 +293,7 @@ class VerbExtension:
         ``["-el-", "-il-"]`` for the applicative under vowel-harmony
         systems.  May be empty if no alternation is documented.
     zone : str
-        Slot zone within the post-root extension field, following the GGT
+        Slot zone within the post-root extension field, following the ggtk
         zone labels ``"Z1"`` through ``"Z4"``.  Extensions in later zones
         are closer to the final vowel.  Use ``"Z1"`` for extensions that
         immediately follow the root, ``"Z4"`` for those closest to the
@@ -333,7 +335,7 @@ class VerbSlot:
     """
     A single positional slot in the Bantu verb template (SLOT1–SLOT11).
 
-    The GGT verb template models the agglutinative Bantu verb as a linear
+    The ggtk verb template models the agglutinative Bantu verb as a linear
     sequence of up to eleven slots, each of which may host a specific set
     of morpheme types.  This architecture follows the analysis in standard
     reference grammars for each supported language.
@@ -744,11 +746,11 @@ class GrammarMetadata:
         Semantic version of this grammar file's *data*, e.g. ``"1.3.2"``.
         Incremented whenever the YAML content changes.
     min_loader_version : str
-        Minimum version of the GGT loader required to parse this grammar,
+        Minimum version of the ggtk loader required to parse this grammar,
         e.g. ``"1.0.0"``.  Loaders older than this value must refuse the
         file.
     max_loader_version : str
-        Maximum version of the GGT loader that is guaranteed to be
+        Maximum version of the ggtk loader that is guaranteed to be
         compatible with this grammar.  Loaders newer than this value may
         attempt the load but will emit a ``VersionIncompatibleError``.
         Use ``"*"`` to indicate no upper bound (not recommended for
@@ -785,3 +787,67 @@ class GrammarMetadata:
     min_loader_version: str
     max_loader_version: str
     verify_count: int
+
+
+
+# ---------------------------------------------------------------------------
+# Syllabification
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class SyllableStructure:
+    """
+    Language-specific syllable structure constraints from YAML.
+
+    Parameters
+    ----------
+    pattern : tuple[str, ...]
+        Syllable patterns declared in the grammar, e.g.
+        ``("(C)V(N)", "CCV(N)", "CCCV(N)")``.
+    variants : tuple[str, ...]
+        Dialectal variants of syllable patterns.
+    max_onset_cluster_length : int
+        Maximum number of consonant segments in a valid onset,
+        inferred from the pattern declarations.
+    """
+
+    pattern: tuple = ()
+    variants: tuple = ()
+    max_onset_cluster_length: int = 3
+
+
+@dataclass(frozen=True)
+class SyllabificationData:
+    """
+    Complete syllabification configuration for a language, loaded from YAML.
+
+    All phonological data needed for syllabification is carried here —
+    no hardcoded constants exist in the syllabifier code.
+
+    Parameters
+    ----------
+    vowels : frozenset[str]
+        Vowel inventory (short segments) from ``phonology.vowels.segments``.
+    consonants : frozenset[str]
+        Full consonant inventory from ``phonology.consonants.segments``,
+        including prenasalized clusters (mb, nd, ng, ...), glide onsets
+        (bw, kw, ny, ...), and complex clusters (ngw, ndw, ...).
+    long_vowels : frozenset[str]
+        Long vowel digraphs from ``phonology.vowels.long``, e.g.
+        ``frozenset({"aa", "ee", "ii", "oo", "uu"})``.
+    method : str
+        Syllabification algorithm to use: ``"rule_based_cv"`` or
+        ``"gobelo_phonological"``.
+    structure : SyllableStructure
+        Syllable structure constraints.
+    notes : Optional[str]
+        Free-text annotation.
+    """
+
+    vowels: frozenset = field(default_factory=frozenset)
+    consonants: frozenset = field(default_factory=frozenset)
+    long_vowels: frozenset = field(default_factory=frozenset)
+    method: str = "rule_based_cv"
+    structure: SyllableStructure = field(default_factory=SyllableStructure)
+    notes: Optional[str] = None

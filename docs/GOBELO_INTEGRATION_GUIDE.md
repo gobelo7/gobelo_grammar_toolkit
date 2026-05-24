@@ -43,7 +43,7 @@ gobelo/                                   ← root of the entire project
 │   ├── ciluvale.yaml                     ✅ done
 │   └── cilunda.yaml                      ✅ done
 │
-├── ggtk/                                  ← ggtk Python library (ggt)
+├── ggtk/                                  ← ggtk Python library (ggtk)
 │   ├── pyproject.toml
 │   ├── README.md
 │   └── ggtk/
@@ -206,10 +206,10 @@ sys.exit(0 if ok else 1)
 ### Step 3 — Install the ggtk library
 
 ```bash
-mkdir ggtk && cd ggt
+mkdir ggtk && cd ggtk
 
 # If ggtk is already a package on disk, install it editably:
-pip install -e /path/to/ggt
+pip install -e /path/to/ggtk
 
 # OR if it is just a folder of .py files, create pyproject.toml:
 cat > pyproject.toml << 'EOF'
@@ -284,7 +284,7 @@ flask>=3.0
 pyyaml>=6.0
 gunicorn>=21.0
 python-dotenv>=1.0
-ggtk @ file://../ggt
+ggtk @ file://../ggtk
 EOF
 
 pip install -r backend/requirements.txt
@@ -457,7 +457,7 @@ def create_app():
         return jsonify({
             'status':    'ok',
             'version':   '1.0.0',
-            'ggt':       ggtk_AVAILABLE,
+            'ggtk':       ggtk_AVAILABLE,
             'languages': list(GRAMMARS.keys()),
             'yaml_dir':  str(YAML_DIR),
         })
@@ -902,3 +902,4 @@ cd frontend/admin    && npm ci && npm run build
 
 All grammar YAML files should be included in the git repo (they are
 linguistics data, not secrets). The `.env` file must never be committed.
+

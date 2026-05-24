@@ -2,7 +2,7 @@
 """
 scripts/validate_grammar.py
 ============================
-Validate a GGT grammar YAML file against the loader schema.
+Validate a ggtk grammar YAML file against the loader schema.
 
 Reports all structural errors, version compatibility issues, and
 unresolved VERIFY flags.  Exit code 0 = valid, 1 = invalid.
@@ -77,7 +77,7 @@ class ValidationReport:
 
 def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
     """
-    Load a grammar YAML through the full GGT loader pipeline and collect
+    Load a grammar YAML through the full ggtk loader pipeline and collect
     all errors, warnings, and VERIFY flags into a report.
     """
     report = ValidationReport(path=yaml_path)
@@ -90,7 +90,7 @@ def validate_file(yaml_path: Path, strict: bool = False) -> ValidationReport:
     # ── Step 2: check registry ─────────────────────────────────────
     if not is_registered(iso_code):
         report.errors.append(
-            f"ISO code '{iso_code}' is not in the GGT registry. "
+            f"ISO code '{iso_code}' is not in the ggtk registry. "
             f"Add it to both ggtk/core/registry.py (_LANGUAGE_REGISTRY) "
             f"and ggtk/__init__.py (LANGUAGE_REGISTRY with aliases) "
             f"before validating."
@@ -221,7 +221,7 @@ def print_report(report: ValidationReport, quiet: bool = False) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate GGT grammar YAML files",
+        description="Validate ggtk grammar YAML files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -287,3 +287,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

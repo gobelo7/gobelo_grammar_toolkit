@@ -1,7 +1,7 @@
 """
 ggtk_loader_adapter.py — GGTLoaderAdapter
 =========================================
-Wraps a raw GGT YAML grammar dict and exposes exactly the interface
+Wraps a raw ggtk YAML grammar dict and exposes exactly the interface
 expected by GobeloWordTokenizer and GobelloMorphAnalyser.
 
 Usage
@@ -40,7 +40,7 @@ def _strip_h(form: str) -> str:
 
 class GGTLoaderAdapter:
     """
-    Adapter from GGT YAML structure to the GobeloWordTokenizer /
+    Adapter from ggtk YAML structure to the GobeloWordTokenizer /
     GobelloMorphAnalyser loader interface.
 
     Parameters
@@ -281,3 +281,4 @@ class GGTLoaderAdapter:
 
     def __repr__(self) -> str:
         return f"GGTLoaderAdapter(lang={self.lang_iso!r})"
+

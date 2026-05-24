@@ -37,3 +37,4 @@ def test_syllabifier_handles_punctuation_and_case(bem_loader: GobeloGrammarLoade
 
     assert result.texts == ("Mwa", "na")
     assert result.word == "Mwa-na!"
+

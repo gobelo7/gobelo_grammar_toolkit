@@ -2,7 +2,7 @@
   "name": "gobelo-frontend",
   "private": true,
   "version": "2.0.0",
-  "description": "GGT Grammar Admin v2 — spec-compliant Gobelo Grammar Toolkit frontend",
+  "description": "ggtk Grammar Admin v2 — spec-compliant Gobelo Grammar Toolkit frontend",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -23,3 +23,4 @@
     "vite": "^5.4.0"
   }
 }
+

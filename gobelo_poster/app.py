@@ -51,7 +51,7 @@ def create_app(yaml_dir: str | Path | None = None) -> Flask:
 
     Parameters
     ----------
-    yaml_dir : optional path to a directory containing GGT .yaml grammar files.
+    yaml_dir : optional path to a directory containing ggtk .yaml grammar files.
                If supplied, the engine will attempt to load richer grammar data
                from those files and patch the embedded defaults.
     """
@@ -60,13 +60,13 @@ def create_app(yaml_dir: str | Path | None = None) -> Flask:
     if yaml_dir is None:
         yaml_dir = os.environ.get(
             'ggtk_YAML_DIR',
-            Path(__file__).resolve().parents[1] / 'ggt' / 'languages'
+            Path(__file__).resolve().parents[1] / 'ggtk' / 'languages'
         )
 
     if yaml_dir is None:
         yaml_dir = os.environ.get(
             'ggtk_YAML_DIR',
-            Path(__file__).resolve().parents[1] / 'ggt' / 'languages'
+            Path(__file__).resolve().parents[1] / 'ggtk' / 'languages'
         )
 
     # Optionally enrich embedded grammar data with .yaml files
@@ -266,3 +266,4 @@ app = create_app(
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5050))
     app.run(debug=True, port=port, host='0.0.0.0')
+

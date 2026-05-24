@@ -1,7 +1,7 @@
 """
 core/exceptions.py
 ==================
-Typed exception hierarchy for the Gobelo (Bantu) Grammar Toolkit (GGT).
+Typed exception hierarchy for the Gobelo (Bantu) Grammar Toolkit (ggtk).
 
 All exceptions inherit from ``GGTError``, which itself inherits from the
 built-in ``Exception``.  This means callers can catch the entire family with
@@ -73,7 +73,7 @@ class GGTError(Exception):
     """
     Base class for all Gobelo Grammar Toolkit errors.
 
-    Catching ``GGTError`` will catch every error originating from the GGT
+    Catching ``GGTError`` will catch every error originating from the ggtk
     library.  Catching a specific subclass will catch only that error type.
 
     All ``GGTError`` subclasses carry a ``message`` attribute that contains a
@@ -90,7 +90,7 @@ class GGTError(Exception):
 
     Examples
     --------
-    Catching all GGT errors:
+    Catching all ggtk errors:
 
     >>> try:
     ...     loader.get_noun_class("NC99")
@@ -121,7 +121,7 @@ class LanguageNotFoundError(GGTError):
 
     This error occurs when a ``GrammarConfig`` is constructed (or a loader
     is initialised) with a ``language`` value that does not match any key in
-    the GGT language registry.  Common causes:
+    the ggtk language registry.  Common causes:
 
     * A typo in the language name (e.g. ``"chitona"`` instead of
       ``"chitonga"``).
@@ -147,7 +147,7 @@ class LanguageNotFoundError(GGTError):
     ...     )
     ... except LanguageNotFoundError as e:
     ...     print(e.message)
-    ...     # "Language 'namwanga' is not in the GGT registry.
+    ...     # "Language 'namwanga' is not in the ggtk registry.
     ...     #  Supported languages: chitonga, chibemba, chinyanja, ..."
     ...     print(e.available_languages)
     ...     # ['chitonga', 'chibemba', 'chinyanja', 'luvale', 'kaonde',
@@ -166,7 +166,7 @@ class LanguageNotFoundError(GGTError):
         if message is None:
             names = ", ".join(sorted(available_languages))
             message = (
-                f"Language '{language}' is not in the GGT registry.  "
+                f"Language '{language}' is not in the ggtk registry.  "
                 f"Supported languages: {names}.  "
                 f"Check the spelling of the language name or consult the "
                 f"language registry documentation."
@@ -185,14 +185,14 @@ class SchemaValidationError(GGTError):
 
     This error is raised by the loader's schema validator before any
     linguistic data is parsed.  It indicates that the YAML file does not
-    conform to the current GGT schema — either because required top-level
+    conform to the current ggtk schema — either because required top-level
     keys are absent, or because unexpected extra keys are present that the
     loader does not know how to handle.
 
     This error is most commonly encountered when:
 
     * An externally-supplied ``override_path`` YAML file was authored without
-      following the GGT schema.
+      following the ggtk schema.
     * A grammar YAML file has been manually edited in a way that broke its
       structure.
     * A schema migration (F-12) was run incompletely, leaving the file in a
@@ -257,7 +257,7 @@ class SchemaValidationError(GGTError):
                     f"fields): {', '.join(extra_keys)}."
                 )
             parts.append(
-                "  Run 'ggt validate <path>' for a detailed report, or use "
+                "  Run 'ggtk validate <path>' for a detailed report, or use "
                 "the schema migration tool (F-12) to update the file."
             )
             message = "  ".join(parts)
@@ -272,7 +272,7 @@ class SchemaValidationError(GGTError):
 class VersionIncompatibleError(GGTError):
     """
     Raised when the grammar YAML's declared version range is incompatible
-    with the running GGT loader version.
+    with the running ggtk loader version.
 
     Every ggtk-conformant YAML file declares ``min_loader_version`` and
     ``max_loader_version`` in its ``metadata`` block.  The loader checks
@@ -293,7 +293,7 @@ class VersionIncompatibleError(GGTError):
         The ``grammar_version`` declared in the YAML file's ``metadata``
         block, e.g. ``"2.0.0"``.
     loader_version : str
-        The version of the running GGT loader, e.g. ``"1.3.0"``.
+        The version of the running ggtk loader, e.g. ``"1.3.0"``.
     min_loader_version : str
         The ``min_loader_version`` declared in the YAML, e.g. ``"1.5.0"``.
     max_loader_version : str
@@ -334,13 +334,13 @@ class VersionIncompatibleError(GGTError):
             location = f" ('{yaml_path}')" if yaml_path else ""
             message = (
                 f"Grammar YAML{location} (grammar_version={yaml_version!r}) "
-                f"is not compatible with the running GGT loader "
+                f"is not compatible with the running ggtk loader "
                 f"(version={loader_version!r}).  "
                 f"The YAML requires a loader in the range "
                 f"[{min_loader_version}, {max_loader_version}].  "
-                f"Either upgrade the GGT package to a compatible version "
+                f"Either upgrade the ggtk package to a compatible version "
                 f"or run the schema migration tool to update the YAML file: "
-                f"'ggt migrate <path> --to <target_version>'."
+                f"'ggtk migrate <path> --to <target_version>'."
             )
         super().__init__(message)
 
@@ -407,7 +407,7 @@ class UnverifiedFormError(GGTError):
                 f"VERIFY {noun} and strict_mode is enabled.  "
                 f"Resolve all VERIFY annotations before using this grammar "
                 f"in a production context, or set strict_mode=False to "
-                f"proceed with a warning.  Use 'ggt verify-flags {language}' "
+                f"proceed with a warning.  Use 'ggtk verify-flags {language}' "
                 f"to list all unresolved flags, or use the F-06 VERIFY Flag "
                 f"Resolver workflow to address them systematically."
             )
@@ -536,3 +536,4 @@ class NounClassNotFoundError(GGTError):
                 f"(pass active_only=False)."
             )
         super().__init__(message)
+

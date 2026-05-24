@@ -1,6 +1,6 @@
 # SILOZI LANGUAGE - COMPREHENSIVE GRAMMAR
 # ============================================================================
-# SiLozi Grammar — Gobelo Grammar Toolkit (GGT)
+# SiLozi Grammar — Gobelo Grammar Toolkit (ggtk)
 # Schema: Gobelo-YAML Grammar Framework v1.0
 # Reference: Givón (1970) The Si-Luyana Language; Jacottet (1896/1927)
 # Generated: 2025-07-11
@@ -3723,4 +3723,5 @@ tokenization:
     punctuation: [".", ",", "!", "?"]
     discourse_markers: ["ni", "kono", "cwañi", "hamulaho"]
   preserve_case: false
+
 

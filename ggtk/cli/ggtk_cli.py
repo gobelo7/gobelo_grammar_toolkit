@@ -1,33 +1,33 @@
 """
 cli/ggtk_cli.py
 ==============
-``ggt`` — Gobelo Grammar Toolkit command-line interface.
+``ggtk`` — Gobelo Grammar Toolkit command-line interface.
 
-Exposes the GGT public API as a ``ggt`` shell command registered via the
+Exposes the ggtk public API as a ``ggtk`` shell command registered via the
 ``[project.scripts]`` entry point in ``pyproject.toml``.
 
 Commands
 --------
-``ggt info <language>``
+``ggtk info <language>``
     Print grammar metadata and a feature-count summary table.
 
-``ggt noun-classes <language>``
+``ggtk noun-classes <language>``
     Print all noun classes as a formatted table.
     ``--active-only``  hide inactive/abstract classes.
 
-``ggt concords <language> <type>``
+``ggtk concords <language> <type>``
     Print all entries in a concord paradigm.
     ``--all-types``  list available paradigm names instead.
 
-``ggt validate <path>``
+``ggtk validate <path>``
     Load and validate a YAML grammar file; report errors / warnings.
 
-``ggt verify-flags <language>``
+``ggtk verify-flags <language>``
     List all unresolved VERIFY flags in a grammar.
     ``--resolved``  include already-resolved flags.
     ``--field <prefix>``  filter by field path prefix.
 
-``ggt diff <language_a> <language_b>``
+``ggtk diff <language_a> <language_b>``
     Semantic diff of two grammars.
     ``--feature <name>``  restrict to one feature section
     (choices: ``noun_classes``, ``tam``, ``concords``, ``extensions``,
@@ -37,7 +37,7 @@ Global options
 --------------
 ``--no-color``  disable ANSI colour output.
 ``--quiet``     suppress progress/info messages; only output data.
-``--version``   print GGT version and exit.
+``--version``   print ggtk version and exit.
 
 Exit codes
 ----------
@@ -154,7 +154,7 @@ def _table(headers: List[str], rows: List[List[str]]) -> str:
 
 def _GGTK_version() -> str:
     """
-    Return the running GGT version string.
+    Return the running ggtk version string.
 
     Tries ``importlib.metadata`` first (works when the package is installed).
     Falls back to ``LOADER_VERSION`` from the validator, which is always
@@ -222,7 +222,7 @@ def cli(ctx: click.Context, no_color: bool, quiet: bool) -> None:
     """
     Gobelo Grammar Toolkit — inspect, validate, and compare Bantu grammars.
 
-    Run ``ggt <command> --help`` for command-specific options.
+    Run ``ggtk <command> --help`` for command-specific options.
     """
     global _COLOR_ENABLED
     if no_color:
@@ -232,7 +232,7 @@ def cli(ctx: click.Context, no_color: bool, quiet: bool) -> None:
 
 
 # ---------------------------------------------------------------------------
-# ggt info
+# ggtk info
 # ---------------------------------------------------------------------------
 
 @cli.command("info")
@@ -244,7 +244,7 @@ def cmd_info(ctx: click.Context, language: str) -> None:
 
     \b
     Example:
-        ggt info chitonga
+        ggtk info chitonga
     """
     quiet = ctx.obj.get("quiet", False)
     loader = _load(language, quiet=quiet)
@@ -330,7 +330,7 @@ def cmd_info(ctx: click.Context, language: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# ggt noun-classes
+# ggtk noun-classes
 # ---------------------------------------------------------------------------
 
 @cli.command("noun-classes")
@@ -346,8 +346,8 @@ def cmd_noun_classes(ctx: click.Context, language: str, active_only: bool) -> No
 
     \b
     Examples:
-        ggt noun-classes chitonga
-        ggt noun-classes chibemba --active-only
+        ggtk noun-classes chitonga
+        ggtk noun-classes chibemba --active-only
     """
     quiet  = ctx.obj.get("quiet", False)
     loader = _load(language, quiet=quiet)
@@ -403,7 +403,7 @@ def meta_lang(loader: GobeloGrammarLoader) -> str:
 
 
 # ---------------------------------------------------------------------------
-# ggt concords
+# ggtk concords
 # ---------------------------------------------------------------------------
 
 @cli.command("concords")
@@ -429,9 +429,9 @@ def cmd_concords(
 
     \b
     Examples:
-        ggt concords chitonga subject
-        ggt concords silozi object_concords
-        ggt concords kaonde --all-types
+        ggtk concords chitonga subject
+        ggtk concords silozi object_concords
+        ggtk concords kaonde --all-types
     """
     quiet  = ctx.obj.get("quiet", False)
     loader = _load(language, quiet=quiet)
@@ -524,7 +524,7 @@ def _resolve_concord_type(
 
 
 # ---------------------------------------------------------------------------
-# ggt validate
+# ggtk validate
 # ---------------------------------------------------------------------------
 
 @cli.command("validate")
@@ -552,8 +552,8 @@ def cmd_validate(
 
     \b
     Examples:
-        ggt validate /path/to/custom.yaml
-        ggt validate ./kaonde.yaml --strict
+        ggtk validate /path/to/custom.yaml
+        ggtk validate ./kaonde.yaml --strict
     """
     quiet = ctx.obj.get("quiet", False)
     import pathlib
@@ -603,7 +603,7 @@ def cmd_validate(
             note  = getattr(flag, 'note', '')
             click.echo(f"     {_dim('·')} {_cyan(field)}: {note[:60]}")
         if len(unresolved) > 10:
-            click.echo(_dim(f"     … and {len(unresolved) - 10} more. Run 'ggt verify-flags' for full list."))
+            click.echo(_dim(f"     … and {len(unresolved) - 10} more. Run 'ggtk verify-flags' for full list."))
     else:
         click.echo(_green("  ✓  Grammar loaded successfully — no unresolved VERIFY flags."))
 
@@ -620,7 +620,7 @@ def cmd_validate(
 
 
 # ---------------------------------------------------------------------------
-# ggt verify-flags
+# ggtk verify-flags
 # ---------------------------------------------------------------------------
 
 @cli.command("verify-flags")
@@ -653,10 +653,10 @@ def cmd_verify_flags(
 
     \b
     Examples:
-        ggt verify-flags kaonde
-        ggt verify-flags kaonde --resolved
-        ggt verify-flags kaonde --field phonology
-        ggt verify-flags kaonde --count
+        ggtk verify-flags kaonde
+        ggtk verify-flags kaonde --resolved
+        ggtk verify-flags kaonde --field phonology
+        ggtk verify-flags kaonde --count
     """
     quiet  = ctx.obj.get("quiet", False)
     loader = _load(language, quiet=quiet)
@@ -717,14 +717,14 @@ def cmd_verify_flags(
                  + (f"  ({unresolved_n} unresolved)" if resolved else ""))
         )
         click.echo(
-            _dim("  Tip: run 'ggt verify-flags "
+            _dim("  Tip: run 'ggtk verify-flags "
                  + language + " --field <section>' to filter by section.")
         )
         click.echo(_hr())
 
 
 # ---------------------------------------------------------------------------
-# ggt diff
+# ggtk diff
 # ---------------------------------------------------------------------------
 
 _DIFF_FEATURES = ("noun_classes", "tam", "concords", "extensions", "phonology", "all")
@@ -755,9 +755,9 @@ def cmd_diff(
 
     \b
     Examples:
-        ggt diff chitonga chibemba
-        ggt diff chitonga silozi --feature noun_classes
-        ggt diff chitonga luvale --feature tam
+        ggtk diff chitonga chibemba
+        ggtk diff chitonga silozi --feature noun_classes
+        ggtk diff chitonga luvale --feature tam
     """
     quiet   = ctx.obj.get("quiet", False)
     loader_a = _load(language_a, quiet=quiet)
@@ -1093,7 +1093,7 @@ def _diff_phonology(
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    """Entry point registered as ``ggt`` in pyproject.toml."""
+    """Entry point registered as ``ggtk`` in pyproject.toml."""
     # Standalone exception safety: Click already handles SystemExit; this
     # catches anything that slips through without a nice error message.
     try:
@@ -1105,3 +1105,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
