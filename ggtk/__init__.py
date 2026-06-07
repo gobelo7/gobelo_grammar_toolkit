@@ -17,6 +17,7 @@ Not yet in scope:
 """
 
 from ggtk.core.loader import GobeloGrammarLoader  # noqa: F401  (re-exported)
+from ggtk.core.config import GrammarConfig  # noqa: F401  (re-exported)
 from ggtk.core.exceptions import LanguageNotFoundError
 
 __version__ = "0.2.0"
@@ -25,6 +26,7 @@ __all__ = [
     "resolve_language",
     "language_info",
     "GobeloGrammarLoader",
+    "GrammarConfig",
     "LanguageNotFoundError",
 ]
 

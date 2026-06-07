@@ -1,10 +1,20 @@
 # Gobelo Grammar Toolkit (GGTK)
+## The Zambian Languages NLP Engine
 
 A grammar-driven NLP library for the 7 official Zambian Bantu languages, built on a single YAML grammar file as the authoritative linguistic source.
 
 **Languages:** chiTonga · chiBemba · chiNyanja · siLozi · Luvale · Lunda · Kaonde  
 **Status:** v1.0.0 — chiTonga fully implemented; 6 languages registered, grammar data in progress  
 **Python:** 3.8+  **License:** MIT
+
+---
+
+### 👥 For Different Audiences
+
+- **📱 End Users:** Try our mobile app **[Gobelo Languages](https://gobelo.org/app)** (coming soon)
+- **💻 Developers:** Use the `ggtk` Python package (below)
+- **🎓 Educators:** Visit **[gobelo.org](https://gobelo.org)** for teaching resources
+- **🔬 Researchers:** Access structured linguistic data and analysis tools
 
 ---
 

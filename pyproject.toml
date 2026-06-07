@@ -46,8 +46,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
-Issues = "https://github.com/pypa/sampleproject/issues"
+Homepage = "https://github.com/gobelo/gobelo-grammar-toolkit"
+Documentation = "https://gobelo.github.io/ggtk"
+Repository = "https://github.com/gobelo/gobelo-grammar-toolkit"
+Issues = "https://github.com/gobelo/gobelo-grammar-toolkit/issues"
+Changelog = "https://github.com/gobelo/gobelo-grammar-toolkit/blob/main/CHANGELOG.md"
 
 
 
@@ -63,10 +66,12 @@ web = [
 
 # Development and testing
 dev = [
-  "pytest>=7.0",
-  "pytest-cov>=4.0",
-  "mypy>=1.0",
-  "ruff>=0.1",
+  "pytest>=7.0,<8.0",
+  "pytest-cov>=4.0,<5.0",
+  "pytest-benchmark>=4.0,<5.0",
+  "hypothesis>=6.0,<7.0",
+  "mypy>=1.0,<2.0",
+  "ruff>=0.1,<1.0",
 ]
 
 # HFST integration (Phase 2)

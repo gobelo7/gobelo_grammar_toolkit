@@ -41,15 +41,23 @@ Key architectural changes over v1
 from __future__ import annotations
 
 import re
+import logging
 from dataclasses import dataclass, field
 from typing import (
-    Dict, FrozenSet, List, Optional, Sequence, Tuple
+    Dict, FrozenSet, List, Optional, Sequence, Tuple, Callable
 )
 
 from ggtk.core.exceptions import (
     GGTError,
     NounClassNotFoundError,
 )
+from ggtk.core.exceptions_enhanced import (
+    MorphologicalAnalysisError as EnhancedAnalysisError,
+    GenerationError,
+)
+from ggtk.core.logging import get_logger
+
+logger = get_logger("morphological_analyzer")
 
 __all__ = [
     "MorphologicalAnalyzer",
@@ -1543,9 +1551,19 @@ class MorphologicalAnalyzer:
         Returns
         -------
         SegmentedToken
+
+        Raises
+        ------
+        MorphologicalAnalysisError
+            If token is invalid or analysis fails completely.
         """
         if not token or not token.strip():
-            raise MorphAnalysisError("token must be a non-empty string.")
+            raise EnhancedAnalysisError(
+                token="",
+                language=self._language,
+                reason="Token must be a non-empty string",
+                suggestion="Provide a valid word token for analysis"
+            )
 
         # Optional HFST backend path (unchanged from v1)
         if self._backend:
@@ -1554,7 +1572,8 @@ class MorphologicalAnalyzer:
                 if results:
                     return self._hfst_results_to_segmented(token, results[:max_hypotheses])
             except Exception as e:
-                pass  # fall through
+                logger.warning(f"HFST backend failed, falling back to rule-based: {e}")
+                # fall through
 
         normed = self._normalise(token.strip())
 
@@ -1574,53 +1593,85 @@ class MorphologicalAnalyzer:
                 hypotheses=(hyp,), best=hyp,
             )
 
-        # Layer 1: reverse phonology → candidate underlying forms
-        underlying_candidates = self._phon_engine.reverse(normed)
+        try:
+            # Layer 1: reverse phonology → candidate underlying forms
+            underlying_candidates = self._phon_engine.reverse(normed)
 
-        # Layer 2 + 3: slot parse each underlying candidate, score, collect
-        all_hyps: Dict[str, ParseHypothesis] = {}
+            # Layer 2 + 3: slot parse each underlying candidate, score, collect
+            all_hyps: Dict[str, ParseHypothesis] = {}
 
-        for underlying_str, phon_trace in underlying_candidates[:3]:
-            structured_morphs = self._slot_parser.parse(
-                underlying=underlying_str,
-                surface_form=token,
-                max_hypotheses=max_hypotheses * 2,
+            for underlying_str, phon_trace in underlying_candidates[:3]:
+                structured_morphs = self._slot_parser.parse(
+                    underlying=underlying_str,
+                    surface_form=token,
+                    max_hypotheses=max_hypotheses * 2,
+                )
+                for sm in structured_morphs:
+                    sm.rule_trace = phon_trace + sm.rule_trace
+                    conf = _score(sm, normed, self._obligatory_slot_ids, self._phon_engine)
+                    hyp = sm.to_hypothesis(conf)
+                    key = hyp.segmented
+                    if key not in all_hyps or hyp.confidence > all_hyps[key].confidence:
+                        all_hyps[key] = hyp
+
+            # Also run nominal analysis
+            nominal_hyps = self._analyze_nominal(token, normed, max_hypotheses)
+            for h in nominal_hyps:
+                key = h.segmented
+                if key not in all_hyps or h.confidence > all_hyps[key].confidence:
+                    all_hyps[key] = h
+
+            ranked = sorted(all_hyps.values(), key=lambda h: h.confidence, reverse=True)
+            ranked = ranked[:max_hypotheses]
+
+            # Fallback if nothing was found
+            if not ranked:
+                m = Morpheme(
+                    form=normed, slot_id="UNKNOWN", slot_name="",
+                    content_type="unknown", gloss=normed, nc_id=None,
+                )
+                ranked = [ParseHypothesis(
+                    morphemes=(m,), surface_form=token,
+                    remaining="", confidence=0.0,
+                    warnings=("No analysis found.",),
+                )]
+
+            return SegmentedToken(
+                token=token,
+                language=self._language,
+                hypotheses=tuple(ranked),
+                best=ranked[0],
             )
-            for sm in structured_morphs:
-                sm.rule_trace = phon_trace + sm.rule_trace
-                conf = _score(sm, normed, self._obligatory_slot_ids, self._phon_engine)
-                hyp = sm.to_hypothesis(conf)
-                key = hyp.segmented
-                if key not in all_hyps or hyp.confidence > all_hyps[key].confidence:
-                    all_hyps[key] = hyp
+        
+        except EnhancedAnalysisError:
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error during analysis of '{token}': {e}")
+            # Return fallback analysis instead of crashing
+            return self._fallback_analysis(token, normed, str(e))
 
-        # Also run nominal analysis
-        nominal_hyps = self._analyze_nominal(token, normed, max_hypotheses)
-        for h in nominal_hyps:
-            key = h.segmented
-            if key not in all_hyps or h.confidence > all_hyps[key].confidence:
-                all_hyps[key] = h
-
-        ranked = sorted(all_hyps.values(), key=lambda h: h.confidence, reverse=True)
-        ranked = ranked[:max_hypotheses]
-
-        # Fallback if nothing was found
-        if not ranked:
-            m = Morpheme(
-                form=normed, slot_id="UNKNOWN", slot_name="",
-                content_type="unknown", gloss=normed, nc_id=None,
-            )
-            ranked = [ParseHypothesis(
-                morphemes=(m,), surface_form=token,
-                remaining="", confidence=0.0,
-                warnings=("No analysis found.",),
-            )]
-
+    def _fallback_analysis(self, token: str, normed: str, error_msg: str) -> SegmentedToken:
+        """Return minimal analysis when full analysis fails."""
+        m = Morpheme(
+            form=normed,
+            slot_id="UNKNOWN",
+            slot_name="",
+            content_type="unknown",
+            gloss=normed,
+            nc_id=None,
+        )
+        hyp = ParseHypothesis(
+            morphemes=(m,),
+            surface_form=token,
+            remaining="",
+            confidence=0.0,
+            warnings=(f"Fallback analysis due to error: {error_msg}",),
+        )
         return SegmentedToken(
             token=token,
             language=self._language,
-            hypotheses=tuple(ranked),
-            best=ranked[0],
+            hypotheses=(hyp,),
+            best=hyp,
         )
 
     def analyze_verbal(self, token: str, max_hypotheses: int = 5) -> SegmentedToken:
@@ -1664,6 +1715,117 @@ class MorphologicalAnalyzer:
             token=token, language=self._language,
             hypotheses=tuple(hyps), best=hyps[0] if hyps else None,
         )
+
+    def analyze_batch(
+        self,
+        tokens: List[str],
+        max_hypotheses: int = 5,
+        progress_callback: Callable[[int, int], None] = None
+    ) -> List[SegmentedToken]:
+        """
+        Analyze multiple tokens efficiently.
+        
+        Uses shared phonology cache to avoid redundant reverse phonology
+        computations for identical tokens.
+
+        Parameters
+        ----------
+        tokens : List[str]
+            List of word tokens to analyze.
+        max_hypotheses : int
+            Maximum hypotheses per token (default 5).
+        progress_callback : callable, optional
+            Callback function(progress, total) called after each token.
+
+        Returns
+        -------
+        List[SegmentedToken]
+            Results in same order as input tokens.
+        """
+        results = []
+        total = len(tokens)
+        
+        # Pre-compute reverse phonology for unique tokens
+        unique_tokens = set(tokens)
+        phon_cache = {}
+        for token in unique_tokens:
+            if token and token.strip():
+                normed = self._normalise(token.strip())
+                if normed not in phon_cache:
+                    phon_cache[normed] = self._phon_engine.reverse(normed)
+        
+        # Process each token
+        for i, token in enumerate(tokens):
+            if not token or not token.strip():
+                # Handle empty tokens gracefully
+                m = Morpheme(
+                    form="", slot_id="EMPTY", slot_name="",
+                    content_type="empty", gloss="", nc_id=None,
+                )
+                hyp = ParseHypothesis(
+                    morphemes=(m,), surface_form=token,
+                    remaining="", confidence=0.0, warnings=("Empty token",),
+                )
+                results.append(SegmentedToken(
+                    token=token, language=self._language,
+                    hypotheses=(hyp,), best=hyp,
+                ))
+                continue
+            
+            # Use cached phonology
+            normed = self._normalise(token.strip())
+            underlying_candidates = phon_cache.get(normed, [])
+            
+            # Rest of analysis logic (similar to analyze())
+            all_hyps: Dict[str, ParseHypothesis] = {}
+            
+            for underlying_str, phon_trace in underlying_candidates[:3]:
+                structured_morphs = self._slot_parser.parse(
+                    underlying=underlying_str,
+                    surface_form=token,
+                    max_hypotheses=max_hypotheses * 2,
+                )
+                for sm in structured_morphs:
+                    sm.rule_trace = phon_trace + sm.rule_trace
+                    conf = _score(sm, normed, self._obligatory_slot_ids, self._phon_engine)
+                    hyp = sm.to_hypothesis(conf)
+                    key = hyp.segmented
+                    if key not in all_hyps or hyp.confidence > all_hyps[key].confidence:
+                        all_hyps[key] = hyp
+            
+            # Nominal analysis
+            nominal_hyps = self._analyze_nominal(token, normed, max_hypotheses)
+            for h in nominal_hyps:
+                key = h.segmented
+                if key not in all_hyps or h.confidence > all_hyps[key].confidence:
+                    all_hyps[key] = h
+            
+            ranked = sorted(all_hyps.values(), key=lambda h: h.confidence, reverse=True)
+            ranked = ranked[:max_hypotheses]
+            
+            if not ranked:
+                m = Morpheme(
+                    form=normed, slot_id="UNKNOWN", slot_name="",
+                    content_type="unknown", gloss=normed, nc_id=None,
+                )
+                ranked = [ParseHypothesis(
+                    morphemes=(m,), surface_form=token,
+                    remaining="", confidence=0.0,
+                    warnings=("No analysis found.",),
+                )]
+            
+            results.append(SegmentedToken(
+                token=token,
+                language=self._language,
+                hypotheses=tuple(ranked),
+                best=ranked[0],
+            ))
+            
+            # Progress callback
+            if progress_callback:
+                progress_callback(i + 1, total)
+        
+        return results
 
     def _analyze_nominal(
         self, token: str, normalised: str, max_hypotheses: int
