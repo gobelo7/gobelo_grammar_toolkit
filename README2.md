@@ -31,6 +31,13 @@ pip install gobelo-ggtk          # from PyPI (once published)
 pip install -e ../ggtk           # local dev install
 ```
 
+or
+
+git clone https://github.com/gobelo/gobelo-grammar-toolkit
+cd ggtk
+pip install -e .   
+
+
 ## Philosophy
 
 Frugal innovation · Language-agnostic design · YAML as single source of truth
